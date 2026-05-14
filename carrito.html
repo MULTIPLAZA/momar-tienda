@@ -3,40 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carrito · MOMAR</title>
+  <meta name="momar-shell" content="full">
+  <title>Carrito · MoMar</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260514d">
+  <link rel="stylesheet" href="css/style.css?v=20260514e">
 </head>
 <body>
-
-  <div class="topbar">ENVÍO GRATIS EN ASUNCIÓN SOBRE 2.500.000 GS</div>
-
-  <header class="header">
-    <div class="header__inner">
-      <div style="display:flex; align-items:center; gap: var(--space-3);">
-        <button class="hamburger js-menu-toggle"><span></span><span></span><span></span></button>
-        <nav class="header__nav">
-          <a href="catalogo.html?cat=joyeria">Joyería</a>
-          <a href="catalogo.html?cat=hogar">Hogar</a>
-          <a href="catalogo.html">Novedades</a>
-          <a href="catalogo.html">Outlet</a>
-        </nav>
-      </div>
-      <a href="index.html" class="header__logo"><svg class="logo-svg" viewBox="0 0 200 50"><text x="100" y="38" text-anchor="middle" font-size="38">MoMar</text></svg></a>
-      <div class="header__actions">
-        <button class="header__action-search"><svg class="header__icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
-        <button><svg class="header__icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></button>
-        <button class="js-cart-toggle"><svg class="header__icon" viewBox="0 0 24 24"><path d="M6 7h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg><span class="cart-count js-cart-count">0</span></button>
-      </div>
-    </div>
-  </header>
+  <div class="js-shell-top"></div>
 
   <div class="container">
     <div class="breadcrumb"><a href="index.html">Inicio</a><span>/</span> Mi carrito</div>
 
-    <!-- Empty state -->
     <div class="carrito-empty js-cart-page-empty" style="display:none;">
       <h2>Tu carrito está vacío</h2>
       <p>Aún no agregaste piezas. Empezá por nuestro catálogo curado.</p>
@@ -49,7 +28,6 @@
       </div>
 
       <div class="carrito-page">
-
         <div class="carrito-items js-cart-page-items"></div>
 
         <aside class="resumen">
@@ -83,49 +61,11 @@
     </div>
   </div>
 
-  <footer class="footer">
-    <div class="container">
-      <div class="footer__bottom" style="border:none;">
-        <span>© 2026 MOMAR · momar.com.py</span>
-        <div class="footer__social"><span>Instagram</span><span>WhatsApp</span><span>Facebook</span></div>
-      </div>
-    </div>
-  </footer>
+  <div class="js-shell-bottom"></div>
 
-  <!-- Mobile menu + Cart drawer -->
-  <aside class="mobile-menu">
-    <div class="mobile-menu__head">
-      <svg class="logo-svg" viewBox="0 0 200 50" style="height:26px; color: var(--color-bg);"><text x="100" y="38" text-anchor="middle" font-size="38">MoMar</text></svg>
-      <button class="mobile-menu__close js-menu-close">Cerrar ×</button>
-    </div>
-    <ul class="mobile-menu__list">
-      <li><a href="catalogo.html?cat=joyeria">Joyería</a></li>
-      <li><a href="catalogo.html?cat=hogar">Hogar</a></li>
-      <li><a href="catalogo.html">Novedades</a></li>
-      <li><a href="catalogo.html">Outlet</a></li>
-    </ul>
-  </aside>
-  <div class="drawer-overlay"></div>
-  <aside class="cart-drawer">
-    <div class="cart-drawer__head"><h3>Tu carrito</h3><button class="cart-drawer__close js-cart-close">Cerrar ×</button></div>
-    <div class="cart-drawer__body">
-      <div class="js-cart-drawer-empty">
-        <p style="font-family: var(--font-display); font-size: 22px; font-style: italic;">Aún no agregaste piezas</p>
-        <button class="btn btn--outline js-cart-close">Seguir comprando</button>
-      </div>
-      <div class="js-cart-drawer-items"></div>
-    </div>
-    <div class="js-cart-drawer-footer">
-      <div class="cart-drawer__subtotal"><span>Subtotal</span><strong class="js-cart-drawer-subtotal">Gs 0</strong></div>
-      <div class="cart-drawer__cta">
-        <a href="checkout.html" class="btn btn--primary btn--block">Finalizar compra</a>
-        <a href="carrito.html" class="btn btn--outline btn--block">Ver carrito completo</a>
-      </div>
-    </div>
-  </aside>
-
-  <script src="js/products.js?v=20260514d"></script>
-  <script src="js/cart.js?v=20260514d"></script>
-  <script src="js/render.js?v=20260514d"></script>
+  <script src="js/products.js?v=20260514e"></script>
+  <script src="js/shell.js?v=20260514e"></script>
+  <script src="js/cart.js?v=20260514e"></script>
+  <script src="js/render.js?v=20260514e"></script>
 </body>
 </html>

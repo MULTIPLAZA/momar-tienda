@@ -754,6 +754,7 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   background: var(--color-bg);
   border-top: 1px solid var(--color-line);
   padding: var(--space-2) var(--space-3);
+  padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom)); /* iPhone safe area */
   z-index: 50;
   align-items: center;
   gap: var(--space-2);
@@ -1049,7 +1050,9 @@ body.menu-open .mobile-menu { transform: translateX(0); }
 .drawer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 15, 15, 0.5);
+  background: rgba(15, 15, 15, 0.4);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   z-index: 199;
   opacity: 0;
   pointer-events: none;
@@ -1060,7 +1063,7 @@ body.menu-open .mobile-menu { transform: translateX(0); }
 .cart-drawer {
   position: fixed;
   top: 0; right: 0;
-  width: 100%; max-width: 440px;
+  width: 92vw; max-width: 440px;
   height: 100vh;
   background: var(--color-bg);
   z-index: 200;
@@ -1068,7 +1071,7 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   transition: transform 0.35s var(--ease);
   display: flex;
   flex-direction: column;
-  box-shadow: -10px 0 30px rgba(15,15,15,0.1);
+  box-shadow: -10px 0 40px rgba(15,15,15,0.18);
 }
 .cart-drawer.is-open { transform: translateX(0); }
 .cart-drawer__head {
@@ -1208,7 +1211,8 @@ body.menu-open .mobile-menu { transform: translateX(0); }
 
   .productos { grid-template-columns: repeat(2, 1fr); gap: var(--space-4) var(--space-2); }
   .producto__nombre { font-size: 16px; }
-  .producto__quick-add { opacity: 1; transform: translateY(0); padding: 9px; font-size: 10px; }
+  /* Quick-add OFF en mobile — patrón Mejuri/Aurate: tap → ficha, no impulso */
+  .producto__quick-add { display: none; }
 
   .promo-banner { grid-template-columns: 1fr; }
   .promo-banner__media { aspect-ratio: 16/10; }

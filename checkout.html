@@ -3,23 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout · MOMAR</title>
+  <meta name="momar-shell" content="minimal">
+  <title>Checkout · MoMar</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260514d">
+  <link rel="stylesheet" href="css/style.css?v=20260514e">
 </head>
 <body>
-
-  <header class="header">
-    <div class="header__inner">
-      <div></div>
-      <a href="index.html" class="header__logo"><svg class="logo-svg" viewBox="0 0 200 50"><text x="100" y="38" text-anchor="middle" font-size="38">MoMar</text></svg></a>
-      <div class="header__actions" style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.7;">
-        Pago seguro · SSL
-      </div>
-    </div>
-  </header>
+  <div class="js-shell-top"></div>
 
   <div class="container">
     <div class="breadcrumb" style="display:flex; gap:24px;">
@@ -33,9 +25,7 @@
     </div>
 
     <div class="checkout-layout">
-
       <div>
-
         <div class="form-step">
           <div class="form-step__head">
             <h3>Datos de contacto</h3>
@@ -48,20 +38,14 @@
         </div>
 
         <div class="form-step">
-          <div class="form-step__head">
-            <h3>Datos de envío</h3>
-            <span class="step-num">02 / 04</span>
-          </div>
+          <div class="form-step__head"><h3>Datos de envío</h3><span class="step-num">02 / 04</span></div>
           <div class="form-row">
             <div class="form-field"><label>Nombre</label><input type="text" placeholder="María"></div>
             <div class="form-field"><label>Apellido</label><input type="text" placeholder="Benítez"></div>
           </div>
           <div class="form-row">
             <div class="form-field"><label>CI / RUC</label><input type="text" placeholder="1.234.567"></div>
-            <div class="form-field">
-              <label>Documento</label>
-              <select><option>Factura</option><option>Boleta</option></select>
-            </div>
+            <div class="form-field"><label>Documento</label><select><option>Factura</option><option>Boleta</option></select></div>
           </div>
           <div class="form-field" style="margin-bottom: var(--space-3);">
             <label>Dirección</label>
@@ -70,10 +54,7 @@
           <div class="form-row">
             <div class="form-field">
               <label>Ciudad</label>
-              <select>
-                <option>Asunción</option><option>Fernando de la Mora</option><option>Lambaré</option>
-                <option>Luque</option><option>San Lorenzo</option><option>Interior</option>
-              </select>
+              <select><option>Asunción</option><option>Fernando de la Mora</option><option>Lambaré</option><option>Luque</option><option>San Lorenzo</option><option>Interior</option></select>
             </div>
             <div class="form-field"><label>Referencia</label><input type="text" placeholder="Edificio Marsala, 3B"></div>
           </div>
@@ -85,61 +66,37 @@
         </div>
 
         <div class="form-step">
-          <div class="form-step__head">
-            <h3>Modalidad de envío</h3>
-            <span class="step-num">03 / 04</span>
-          </div>
+          <div class="form-step__head"><h3>Modalidad de envío</h3><span class="step-num">03 / 04</span></div>
           <div class="metodo-pago is-selected">
             <div class="metodo-pago__icon">→</div>
-            <div style="flex:1;">
-              <div class="metodo-pago__nombre">Envío Asunción · 24 hs</div>
-              <div class="metodo-pago__desc">Entrega al día hábil siguiente, con seguimiento por WhatsApp.</div>
-            </div>
+            <div style="flex:1;"><div class="metodo-pago__nombre">Envío Asunción · 24 hs</div><div class="metodo-pago__desc">Entrega al día hábil siguiente, con seguimiento por WhatsApp.</div></div>
             <strong style="color: var(--color-success);">GRATIS</strong>
           </div>
           <div class="metodo-pago">
             <div class="metodo-pago__icon">→</div>
-            <div style="flex:1;">
-              <div class="metodo-pago__nombre">Retiro en showroom</div>
-              <div class="metodo-pago__desc">Av. España 1234, Asunción · Lun-Sáb 10-18 hs</div>
-            </div>
+            <div style="flex:1;"><div class="metodo-pago__nombre">Retiro en showroom</div><div class="metodo-pago__desc">Av. España 1234, Asunción · Lun-Sáb 10-18 hs</div></div>
             <strong style="color: var(--color-success);">GRATIS</strong>
           </div>
           <div class="metodo-pago">
             <div class="metodo-pago__icon">→</div>
-            <div style="flex:1;">
-              <div class="metodo-pago__nombre">Envío interior · 3-5 días</div>
-              <div class="metodo-pago__desc">Encomienda terrestre asegurada hasta el domicilio.</div>
-            </div>
+            <div style="flex:1;"><div class="metodo-pago__nombre">Envío interior · 3-5 días</div><div class="metodo-pago__desc">Encomienda terrestre asegurada hasta el domicilio.</div></div>
             <strong>Gs 80.000</strong>
           </div>
         </div>
 
         <div class="form-step">
-          <div class="form-step__head">
-            <h3>Forma de pago</h3>
-            <span class="step-num">04 / 04</span>
-          </div>
+          <div class="form-step__head"><h3>Forma de pago</h3><span class="step-num">04 / 04</span></div>
           <div class="metodo-pago is-selected">
             <div class="metodo-pago__icon">BCD</div>
-            <div style="flex:1;">
-              <div class="metodo-pago__nombre">Tarjeta de crédito o débito</div>
-              <div class="metodo-pago__desc">Bancard · Hasta 12 cuotas · 3 sin interés</div>
-            </div>
+            <div style="flex:1;"><div class="metodo-pago__nombre">Tarjeta de crédito o débito</div><div class="metodo-pago__desc">Bancard · Hasta 12 cuotas · 3 sin interés</div></div>
           </div>
           <div class="metodo-pago">
             <div class="metodo-pago__icon">WLY</div>
-            <div style="flex:1;">
-              <div class="metodo-pago__nombre">Wally / Personal Pay</div>
-              <div class="metodo-pago__desc">Pago instantáneo desde la billetera</div>
-            </div>
+            <div style="flex:1;"><div class="metodo-pago__nombre">Wally / Personal Pay</div><div class="metodo-pago__desc">Pago instantáneo desde la billetera</div></div>
           </div>
           <div class="metodo-pago">
             <div class="metodo-pago__icon">BNK</div>
-            <div style="flex:1;">
-              <div class="metodo-pago__nombre">Transferencia bancaria</div>
-              <div class="metodo-pago__desc">Itaú · Continental · Atlas — confirmación manual</div>
-            </div>
+            <div style="flex:1;"><div class="metodo-pago__nombre">Transferencia bancaria</div><div class="metodo-pago__desc">Itaú · Continental · Atlas — confirmación manual</div></div>
           </div>
         </div>
 
@@ -168,8 +125,11 @@
     </div>
   </div>
 
-  <script src="js/products.js?v=20260514d"></script>
-  <script src="js/cart.js?v=20260514d"></script>
-  <script src="js/render.js?v=20260514d"></script>
+  <div class="js-shell-bottom"></div>
+
+  <script src="js/products.js?v=20260514e"></script>
+  <script src="js/shell.js?v=20260514e"></script>
+  <script src="js/cart.js?v=20260514e"></script>
+  <script src="js/render.js?v=20260514e"></script>
 </body>
 </html>
