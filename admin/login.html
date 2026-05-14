@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acceso · MoMar Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=1">
+</head>
+<body>
+  <div class="login-shell">
+    <div class="login-card">
+      <div class="login-card__logo">
+        <svg class="logo-svg" viewBox="0 0 200 50">
+          <text x="100" y="38" text-anchor="middle" font-size="38" font-family="Cormorant Garamond, serif" font-weight="500" font-style="italic" fill="currentColor" letter-spacing="-0.5">MoMar</text>
+        </svg>
+      </div>
+      <h1>Panel de administración</h1>
+      <p class="sub">Ingresá con tu cuenta MoMar para continuar.</p>
+
+      <form class="admin-form" onsubmit="event.preventDefault(); window.location.href='index.html';">
+        <div class="admin-form__group">
+          <label>Email</label>
+          <input type="email" placeholder="martina@momar.com.py" required autofocus>
+        </div>
+        <div class="admin-form__group">
+          <label>Contraseña</label>
+          <input type="password" placeholder="••••••••" required>
+          <div class="hint" style="display:flex; justify-content:space-between; margin-top:8px;">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+              <input type="checkbox" style="width:auto;"> Recordarme
+            </label>
+            <a href="#" style="color: var(--color-text-soft);">Olvidé mi contraseña</a>
+          </div>
+        </div>
+        <button class="btn-sm btn-sm--primary" type="submit" style="width:100%; padding: 14px;">Ingresar</button>
+      </form>
+
+      <p style="text-align:center; font-size:11px; color: var(--color-text-soft); margin-top: var(--space-4); letter-spacing: 1px;">
+        ACCESO RESTRINGIDO · MoMar © 2026
+      </p>
+    </div>
+  </div>
+</body>
+</html>

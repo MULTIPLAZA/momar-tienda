@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar producto · MoMar Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=1">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side"></aside>
+    <div>
+      <div class="admin-topbar"></div>
+      <main class="admin-main">
+
+        <div style="margin-bottom: var(--space-2);"><a href="productos.html" style="font-size:12px; color: var(--color-text-soft); letter-spacing: 1px; text-transform: uppercase;">← Productos</a></div>
+
+        <div class="admin-main__head">
+          <div>
+            <h1 class="js-nombre">Producto</h1>
+            <p style="color: var(--color-text-soft); font-size: 13px; margin: 4px 0 0;"><span class="js-sku">—</span> · <span class="js-stock">—</span></p>
+          </div>
+          <div class="actions">
+            <a class="btn-sm js-ver-tienda" target="_blank">Ver en tienda ↗</a>
+            <button class="btn-sm">Duplicar</button>
+            <button class="btn-sm btn-sm--danger">Eliminar</button>
+            <button class="btn-sm btn-sm--primary">Guardar cambios</button>
+          </div>
+        </div>
+
+        <div class="admin-tabs">
+          <span class="admin-tabs__item is-active">Información</span>
+          <span class="admin-tabs__item">Fotos</span>
+          <span class="admin-tabs__item">Variantes</span>
+          <span class="admin-tabs__item">SEO</span>
+          <span class="admin-tabs__item">Ofertas</span>
+        </div>
+
+        <div class="admin-grid-2">
+          <div>
+            <div class="admin-card">
+              <h3 style="margin-bottom: var(--space-3);">Información básica</h3>
+              <div class="admin-form">
+                <div class="admin-form__group">
+                  <label>Nombre del producto</label>
+                  <input type="text" class="js-input-nombre">
+                </div>
+                <div class="admin-form__row">
+                  <div class="admin-form__group">
+                    <label>SKU / Código</label>
+                    <input type="text" class="js-input-sku">
+                  </div>
+                  <div class="admin-form__group">
+                    <label>Código de barras (EAN-13)</label>
+                    <input type="text" placeholder="7791234567890">
+                  </div>
+                </div>
+                <div class="admin-form__group">
+                  <label>Descripción corta</label>
+                  <input type="text" class="js-input-corta">
+                  <div class="hint">Sale en listados (1 línea).</div>
+                </div>
+                <div class="admin-form__group">
+                  <label>Descripción larga</label>
+                  <textarea class="js-input-larga"></textarea>
+                  <div class="hint">Sale en la ficha del producto. Contá la historia, el material, la ocasión.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <h3 style="margin-bottom: var(--space-3);">Fotos</h3>
+              <div class="uploader">
+                <svg class="uploader__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 4v12m0-12 4 4m-4-4-4 4M4 20h16"/>
+                </svg>
+                <div class="uploader__title">Arrastrá fotos acá o hacé click</div>
+                <div class="uploader__sub">JPG · PNG · mínimo 2000 px · fondo blanco para joyería</div>
+              </div>
+              <div class="fotos-grid js-fotos"></div>
+            </div>
+
+            <div class="admin-card">
+              <h3 style="margin-bottom: var(--space-3);">Atributos específicos</h3>
+              <div class="admin-form__row">
+                <div class="admin-form__group"><label>Material</label><input type="text" placeholder="Oro 18k"></div>
+                <div class="admin-form__group"><label>Peso (gr)</label><input type="text" placeholder="3.8"></div>
+              </div>
+              <div class="admin-form__row">
+                <div class="admin-form__group"><label>Piedra</label><input type="text" placeholder="Diamante 0,15 ct"></div>
+                <div class="admin-form__group"><label>Origen</label><input type="text" placeholder="Italia"></div>
+              </div>
+              <div class="admin-form__row">
+                <div class="admin-form__group"><label>Certificado</label><select><option>No</option><option>Sí · GIA</option><option>Sí · Otro</option></select></div>
+                <div class="admin-form__group"><label>Packaging</label><select><option>Caja MOMAR estándar</option><option>Estuche premium</option><option>Bolsa</option></select></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="admin-card">
+              <h3 style="margin-bottom: var(--space-3);">Visibilidad</h3>
+              <div class="admin-form__group">
+                <label>Estado</label>
+                <select>
+                  <option>Publicado en la tienda</option>
+                  <option>Borrador (solo admin)</option>
+                  <option>Oculto</option>
+                </select>
+              </div>
+              <div class="admin-form__group" style="margin-top: var(--space-3);">
+                <label>Visibilidad</label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text); margin-bottom: 6px;"><input type="checkbox" checked> Mostrar en catálogo público</label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text); margin-bottom: 6px;"><input type="checkbox" checked> Aparecer en búsquedas</label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text);"><input type="checkbox"> Destacar en home</label>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <h3 style="margin-bottom: var(--space-3);">Precio</h3>
+              <div class="admin-form__group">
+                <label>Precio venta (Gs)</label>
+                <input type="text" class="js-input-precio">
+              </div>
+              <div class="admin-form__group" style="margin-top: var(--space-2);">
+                <label>Precio antes (tachado)</label>
+                <input type="text" class="js-input-precio-antes" placeholder="Vacío si no hay oferta">
+                <div class="hint">Si lo completás, sale como "oferta" en la tienda.</div>
+              </div>
+              <div class="admin-form__group" style="margin-top: var(--space-2);">
+                <label>Costo interno (Gs)</label>
+                <input type="text" placeholder="No se muestra en la tienda">
+                <div class="hint">Solo para reportes de margen.</div>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <h3 style="margin-bottom: var(--space-3);">Stock</h3>
+              <div class="admin-form__group">
+                <label>Cantidad disponible</label>
+                <input type="text" class="js-input-stock">
+              </div>
+              <div class="admin-form__group" style="margin-top: var(--space-2);">
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text);"><input type="checkbox" class="js-input-unica"> Es pieza única (no se repone)</label>
+              </div>
+              <div class="admin-form__group" style="margin-top: var(--space-2);">
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text);"><input type="checkbox"> Avisar cuando queden menos de 2</label>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <h3 style="margin-bottom: var(--space-3);">Categoría</h3>
+              <div class="admin-form__group">
+                <label>Categoría principal</label>
+                <select><option>Anillos</option><option>Collares</option><option>Aros</option><option>Pulseras</option><option>Hogar · Decoración</option></select>
+              </div>
+              <div class="admin-form__group" style="margin-top: var(--space-2);">
+                <label>Etiquetas</label>
+                <input type="text" placeholder="oro, diamante, novia, regalo">
+                <div class="hint">Separadas por coma. Ayudan en búsqueda.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/products.js?v=1"></script>
+  <script src="js/admin-data.js?v=1"></script>
+  <script src="js/admin-shell.js?v=1"></script>
+  <script>
+    MOMAR_renderAdminShell('productos.html', 'Editar producto');
+    const params = new URLSearchParams(location.search);
+    const sku = params.get('sku') || 'AN-001';
+    const p = window.MOMAR_findProduct(sku) || window.MOMAR_PRODUCTS[0];
+
+    document.querySelector('.js-nombre').textContent = p.nombre;
+    document.querySelector('.js-sku').textContent = p.sku;
+    document.querySelector('.js-stock').textContent = p.stock + ' unidades disponibles';
+    document.querySelector('.js-ver-tienda').href = '../producto.html?sku=' + p.sku;
+    document.querySelector('.js-input-nombre').value = p.nombre;
+    document.querySelector('.js-input-sku').value = p.sku;
+    document.querySelector('.js-input-corta').value = p.descripcion_corta;
+    document.querySelector('.js-input-larga').value = p.descripcion;
+    document.querySelector('.js-input-precio').value = p.precio;
+    document.querySelector('.js-input-precio-antes').value = p.precio_antes || '';
+    document.querySelector('.js-input-stock').value = p.stock;
+    document.querySelector('.js-input-unica').checked = p.es_unica;
+
+    const fotos = p.imagenes || [p.imagen];
+    document.querySelector('.js-fotos').innerHTML = fotos.slice(0, 4).map((src, i) => `
+      <div class="foto-item ${i === 0 ? 'foto-item--main' : ''}">
+        <img src="${src}" onerror="this.style.opacity=0;">
+        <span class="foto-item__remove">×</span>
+      </div>
+    `).join('');
+  </script>
+</body>
+</html>

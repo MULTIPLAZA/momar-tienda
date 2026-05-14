@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio · MoMar Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=1">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side"></aside>
+    <div>
+      <div class="admin-topbar"></div>
+      <main class="admin-main">
+
+        <div class="admin-main__head">
+          <div>
+            <h1>Buen día, Martina <span style="font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: 24px; color: var(--color-text-soft);">·</span> <span style="font-weight: 400; color: var(--color-text-soft); font-size: 16px;">hoy es <span id="js-fecha">14 de mayo</span></span></h1>
+          </div>
+          <div class="actions">
+            <a href="productos.html" class="btn-sm">+ Cargar producto</a>
+            <a href="pedidos.html" class="btn-sm btn-sm--primary">Ver pedidos del día</a>
+          </div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpis js-kpis"></div>
+
+        <!-- Notificaciones rápidas -->
+        <div class="admin-card" style="background: #FFF8E8; border-color: #E8D998;">
+          <div class="admin-card__head">
+            <div>
+              <h3 style="color: #6E5418;">⚠ Atención hoy</h3>
+              <p class="admin-card__sub">3 pendientes que requieren tu acción.</p>
+            </div>
+          </div>
+          <ul style="margin: 0; padding-left: var(--space-3);">
+            <li style="margin-bottom: 6px;"><strong>3 pedidos esperan envío</strong> · <a href="pedidos.html" style="color: var(--color-text);">Ir a pedidos</a></li>
+            <li style="margin-bottom: 6px;"><strong>Pago transferencia #1245 a confirmar</strong> · Laura Cáceres envió comprobante por WhatsApp</li>
+            <li><strong>7 productos con stock bajo</strong> · <a href="productos.html?stock=bajo" style="color: var(--color-text);">Ver listado</a></li>
+          </ul>
+        </div>
+
+        <div class="admin-grid-2">
+
+          <!-- Pedidos recientes -->
+          <div class="admin-card" style="padding: 0;">
+            <div class="admin-card__head" style="padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-line); margin: 0;">
+              <h3>Pedidos recientes</h3>
+              <a href="pedidos.html" style="font-size: 12px; color: var(--color-text-soft);">Ver todos →</a>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table" style="border: none;">
+                <thead>
+                  <tr><th>Pedido</th><th>Clienta</th><th class="col-num">Total</th><th class="col-hide-sm">Pago</th><th>Envío</th></tr>
+                </thead>
+                <tbody class="js-pedidos-recientes"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Acciones rápidas -->
+          <div>
+            <div class="admin-card">
+              <h3 style="margin-bottom: var(--space-3);">Acciones rápidas</h3>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <a href="productos.html" class="btn-sm" style="display: block; text-align: center;">+ Cargar producto nuevo</a>
+                <a href="banners.html" class="btn-sm" style="display: block; text-align: center;">Cambiar banner home</a>
+                <a href="ofertas.html" class="btn-sm" style="display: block; text-align: center;">Crear oferta del día</a>
+                <a href="productos.html?import=1" class="btn-sm" style="display: block; text-align: center;">Importar lote (Excel)</a>
+              </div>
+            </div>
+
+            <div class="admin-card" style="background: var(--color-dark); color: var(--color-bg); border-color: var(--color-dark);">
+              <h3 style="color: var(--color-nude);">💡 Sugerencia</h3>
+              <p style="font-size: 13px; opacity: 0.85; line-height: 1.6;">El banner principal no se cambia hace 18 días. Las visitas que repiten ven la misma imagen. Refrescar puede mejorar la conversión 8-12%.</p>
+              <a href="banners.html" class="btn-sm" style="background: var(--color-bg); color: var(--color-dark); border-color: var(--color-bg); margin-top: 8px;">Ir a banners →</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-grid-2">
+          <!-- Más vendidos -->
+          <div class="admin-card" style="padding: 0;">
+            <div class="admin-card__head" style="padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-line); margin: 0;">
+              <h3>Más vendidos del mes</h3>
+            </div>
+            <div class="admin-table-wrap">
+              <table class="admin-table" style="border: none;">
+                <thead><tr><th>Producto</th><th class="col-num">Vendidos</th><th class="col-num">Ingreso</th><th>Stock</th></tr></thead>
+                <tbody class="js-top-productos"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Notificaciones -->
+          <div class="admin-card">
+            <h3 style="margin-bottom: var(--space-3);">Últimas notificaciones</h3>
+            <ul class="js-notifs" style="list-style: none; padding: 0; margin: 0;"></ul>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/products.js?v=1"></script>
+  <script src="js/admin-data.js?v=1"></script>
+  <script src="js/admin-shell.js?v=1"></script>
+  <script>
+    MOMAR_renderAdminShell('index.html', 'Inicio');
+    const fmt = window.MOMAR_fmtGs;
+
+    // KPIs
+    const k = window.MOMAR_KPIS;
+    document.querySelector('.js-kpis').innerHTML = `
+      <div class="kpi">
+        <div class="kpi__label">Ventas hoy</div>
+        <div class="kpi__value">${fmt(k.ventas_hoy)}</div>
+        <div class="kpi__delta">↑ ${k.ventas_hoy_delta}% vs ayer</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi__label">Pedidos hoy</div>
+        <div class="kpi__value">${k.pedidos_hoy}</div>
+        <div class="kpi__delta kpi__delta--warn">${k.pedidos_pendientes} esperan envío</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi__label">Ventas del mes</div>
+        <div class="kpi__value">${fmt(k.ventas_mes)}</div>
+        <div class="kpi__delta">↑ ${k.ventas_mes_delta}% vs mes pasado</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi__label">Stock bajo</div>
+        <div class="kpi__value">${k.productos_bajo_stock}</div>
+        <div class="kpi__delta kpi__delta--bad">Revisar →</div>
+      </div>
+    `;
+
+    // Pedidos recientes (4)
+    document.querySelector('.js-pedidos-recientes').innerHTML = window.MOMAR_PEDIDOS.slice(0, 5).map(p => `
+      <tr>
+        <td><a href="pedido.html?n=${p.num.replace('#','')}">${p.num}</a><br><span style="font-size:11px; color:var(--color-text-soft);">${p.fecha}</span></td>
+        <td>${p.cliente}</td>
+        <td class="col-num">${fmt(p.total)}</td>
+        <td class="col-hide-sm">${window.MOMAR_pillPago(p.pagoEstado)}</td>
+        <td>${window.MOMAR_pillEnvio(p.envioEstado)}</td>
+      </tr>
+    `).join('');
+
+    // Top productos (4)
+    const top = window.MOMAR_PRODUCTS.slice(0, 4).map((p, i) => ({...p, vendidos: 8 - i*2, ingreso: p.precio * (8 - i*2), stockTxt: i === 0 ? 'OK' : i === 1 ? 'Quedan 2' : i === 2 ? 'OK' : 'Sin stock'}));
+    document.querySelector('.js-top-productos').innerHTML = top.map(p => `
+      <tr>
+        <td><div style="display:flex; align-items:center; gap:10px;"><img src="${p.imagen}" style="width:36px; height:36px; object-fit:cover;" onerror="this.style.opacity=0;">${p.nombre}</div></td>
+        <td class="col-num">${p.vendidos}</td>
+        <td class="col-num">${fmt(p.ingreso)}</td>
+        <td><span class="pill ${p.stockTxt === 'OK' ? 'pill--green' : p.stockTxt === 'Sin stock' ? 'pill--red' : 'pill--amber'}">${p.stockTxt}</span></td>
+      </tr>
+    `).join('');
+
+    // Notificaciones
+    document.querySelector('.js-notifs').innerHTML = window.MOMAR_NOTIFS.map(n => `
+      <li style="padding: 10px 0; border-bottom: 1px solid var(--color-line); font-size: 13px;">
+        <div>${n.texto}</div>
+        <div style="font-size: 11px; color: var(--color-text-soft); margin-top: 2px;">${n.tiempo}</div>
+      </li>
+    `).join('');
+  </script>
+</body>
+</html>

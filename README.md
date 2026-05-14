@@ -20,22 +20,39 @@ Mockup de e-commerce premium para **MoMar**, joyería y accesorios de hogar de a
 
 ```
 .
-├── index.html          # Home
-├── catalogo.html       # Listado con filtros
-├── producto.html       # Ficha de producto (lee ?sku=)
-├── carrito.html        # Carrito completo
-├── checkout.html       # Checkout 4 pasos
-├── admin.html          # Mockup del panel administrativo
-├── css/
-│   └── style.css       # Estilos completos (mobile-first)
+├── index.html               # Home pública
+├── catalogo.html            # Listado con filtros
+├── producto.html            # Ficha de producto (lee ?sku=)
+├── carrito.html             # Carrito completo
+├── checkout.html            # Checkout 4 pasos
+├── css/style.css            # Estilos de la tienda pública (mobile-first)
 ├── js/
-│   ├── products.js     # Catálogo de demo
-│   ├── cart.js         # Lógica del carrito + drawer
-│   └── render.js       # Render dinámico de grids
-├── img/
-│   └── logo.png        # Logo MoMar
-└── server.js           # Mini server local para dev (Node, sin deps)
+│   ├── products.js          # Catálogo de demo
+│   ├── cart.js              # Lógica del carrito + drawer
+│   └── render.js            # Render dinámico de grids
+├── img/logo.png             # Logo MoMar
+├── server.js                # Mini server local para dev (Node, sin deps)
+└── admin/                   # Panel de administración (mockup)
+    ├── login.html
+    ├── index.html           # Dashboard
+    ├── pedidos.html         # Listado de pedidos
+    ├── pedido.html          # Detalle de pedido (cambio estado, WhatsApp, KUDE)
+    ├── productos.html       # Listado de productos
+    ├── producto-edit.html   # Editar / crear producto
+    ├── clientes.html        # Listado de clientas (segmentación VIP)
+    ├── banners.html         # Gestión de banners de home
+    ├── ofertas.html         # Cupones y descuentos
+    ├── estadisticas.html    # Reportes y gráficos
+    ├── configuracion.html   # Datos de la tienda, SIFEN, redes, SEO
+    ├── css/admin.css
+    └── js/
+        ├── admin-data.js    # Datos mock (pedidos, clientes, banners, ofertas)
+        └── admin-shell.js   # Sidebar + topbar reutilizables
 ```
+
+**URLs en producción:**
+- Tienda pública → `/`
+- Panel admin → `/admin/`
 
 ## Cómo correr localmente
 

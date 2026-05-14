@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banners · MoMar Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=1">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side"></aside>
+    <div>
+      <div class="admin-topbar"></div>
+      <main class="admin-main">
+
+        <div class="admin-main__head">
+          <div>
+            <h1>Banners de la tienda</h1>
+            <p style="color: var(--color-text-soft); font-size: 13px; margin: 4px 0 0;">Hero principal, banners promocionales y home secundarios. Arrastrá para reordenar.</p>
+          </div>
+          <div class="actions">
+            <button class="btn-sm">📐 Plantillas Canva</button>
+            <button class="btn-sm btn-sm--primary">+ Banner nuevo</button>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h3 style="margin-bottom: var(--space-3);">Hero principal de la home</h3>
+          <p class="admin-card__sub" style="margin-bottom: var(--space-3);">Solo uno activo a la vez. Cambia automáticamente cuando programás otro.</p>
+
+          <div class="js-banners-hero"></div>
+
+          <div class="uploader" style="margin-top: var(--space-3);">
+            <svg class="uploader__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4v12m0-12 4 4m-4-4-4 4M4 20h16"/></svg>
+            <div class="uploader__title">Subir nuevo banner</div>
+            <div class="uploader__sub">JPG o PNG · proporción 21:9 · mín. 1920×820 px · máx. 800 KB</div>
+          </div>
+        </div>
+
+        <div class="admin-grid-2">
+
+          <div class="admin-card">
+            <h3 style="margin-bottom: var(--space-3);">Plantilla del banner</h3>
+            <div class="admin-form">
+              <div class="admin-form__group">
+                <label>Título (titular del banner)</label>
+                <input type="text" value="Colección Otoño 2026">
+                <div class="hint">Sale grande, en serif itálica.</div>
+              </div>
+              <div class="admin-form__group">
+                <label>Subtítulo</label>
+                <input type="text" value="Piezas que perduran">
+              </div>
+              <div class="admin-form__group">
+                <label>Texto del botón (CTA)</label>
+                <input type="text" value="Ver colección">
+              </div>
+              <div class="admin-form__group">
+                <label>Link del botón</label>
+                <select>
+                  <option>Catálogo completo</option>
+                  <option>Catálogo · Joyería</option>
+                  <option>Catálogo · Hogar</option>
+                  <option>Categoría específica…</option>
+                  <option>URL personalizada…</option>
+                </select>
+              </div>
+              <div class="admin-form__row">
+                <div class="admin-form__group">
+                  <label>Activar desde</label>
+                  <input type="date" value="2026-05-14">
+                </div>
+                <div class="admin-form__group">
+                  <label>Hasta</label>
+                  <input type="date">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <h3 style="margin-bottom: var(--space-3);">Banner promo del home</h3>
+            <p class="admin-card__sub" style="margin-bottom: var(--space-3);">El banner ancho oscuro que aparece después de productos destacados.</p>
+            <div class="js-banner-promo"></div>
+            <button class="btn-sm" style="width: 100%; margin-top: var(--space-3);">Editar banner promo</button>
+          </div>
+
+        </div>
+
+        <div class="admin-card">
+          <h3 style="margin-bottom: var(--space-3);">Banners programados / inactivos</h3>
+          <div class="js-banners-inactivos"></div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/products.js?v=1"></script>
+  <script src="js/admin-data.js?v=1"></script>
+  <script src="js/admin-shell.js?v=1"></script>
+  <script>
+    MOMAR_renderAdminShell('banners.html', 'Banners');
+    const bs = window.MOMAR_BANNERS;
+
+    const renderBanner = (b) => `
+      <div class="banner-card">
+        <img src="${b.img}" onerror="this.style.opacity=0;">
+        <div class="banner-card__overlay">
+          <div>
+            <h3>${b.titulo}</h3>
+            <p style="margin: 6px 0 0; opacity: 0.85; font-size: 13px;">${b.sub}</p>
+          </div>
+        </div>
+        <div class="banner-card__actions">
+          <button>Editar</button>
+          <button>${b.activo ? 'Pausar' : 'Activar'}</button>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--color-text-soft); margin-bottom: var(--space-3);">
+        <span>${b.ubicacion} · ${b.activo ? '<span class="pill pill--green">Activo</span>' : '<span class="pill pill--gray">Inactivo</span>'}</span>
+        <span>${b.clicks.toLocaleString('es-PY')} clicks</span>
+      </div>
+    `;
+
+    document.querySelector('.js-banners-hero').innerHTML = renderBanner(bs[0]);
+    document.querySelector('.js-banner-promo').innerHTML = renderBanner(bs[1]);
+    document.querySelector('.js-banners-inactivos').innerHTML = bs.filter(b => !b.activo).map(renderBanner).join('');
+  </script>
+</body>
+</html>

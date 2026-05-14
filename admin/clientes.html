@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes · MoMar Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=1">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side"></aside>
+    <div>
+      <div class="admin-topbar"></div>
+      <main class="admin-main">
+
+        <div class="admin-main__head">
+          <h1>Clientes <span style="color: var(--color-text-soft); font-weight: 400; font-size: 14px;" class="js-total-count">cargando…</span></h1>
+          <div class="actions">
+            <button class="btn-sm">Exportar CSV</button>
+            <button class="btn-sm">📧 Newsletter</button>
+            <button class="btn-sm btn-sm--primary">+ Cliente nuevo</button>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi">
+            <div class="kpi__label">Clientas totales</div>
+            <div class="kpi__value js-k-total">—</div>
+            <div class="kpi__delta">↑ 5 este mes</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi__label">Compradoras VIP</div>
+            <div class="kpi__value js-k-vip">—</div>
+            <div class="kpi__delta">+3M Gs en compras</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi__label">Ticket promedio</div>
+            <div class="kpi__value">Gs 2.45M</div>
+            <div class="kpi__delta">↑ 12% vs mes pasado</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi__label">Tasa de recompra</div>
+            <div class="kpi__value">38%</div>
+            <div class="kpi__delta">↑ Excelente para premium</div>
+          </div>
+        </div>
+
+        <div class="admin-toolbar">
+          <div class="admin-toolbar__filters">
+            <select><option>Segmento: Todas</option><option>VIP</option><option>Recurrentes</option><option>Nuevas (últimos 30d)</option><option>Sin compras (90+ días)</option></select>
+            <select><option>Período: Todo el tiempo</option><option>Este mes</option><option>Últimos 3 meses</option><option>Último año</option></select>
+            <input type="text" placeholder="Buscar nombre, email…" style="width: 240px;">
+          </div>
+          <select><option>Ordenar: Total gastado</option><option>Cantidad de pedidos</option><option>Última compra</option><option>Nombre A-Z</option></select>
+        </div>
+
+        <div class="admin-table-wrap" style="background: var(--color-bg);">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 30px;"><input type="checkbox"></th>
+                <th>Clienta</th>
+                <th class="col-hide-sm">Contacto</th>
+                <th class="col-num">Pedidos</th>
+                <th class="col-num">Total gastado</th>
+                <th class="col-hide-sm">Última compra</th>
+                <th>Segmento</th>
+                <th class="col-actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="js-clientes-tbody"></tbody>
+          </table>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/products.js?v=1"></script>
+  <script src="js/admin-data.js?v=1"></script>
+  <script src="js/admin-shell.js?v=1"></script>
+  <script>
+    MOMAR_renderAdminShell('clientes.html', 'Clientes');
+    const fmt = window.MOMAR_fmtGs;
+    const cs = window.MOMAR_CLIENTES;
+    document.querySelector('.js-total-count').textContent = `· ${cs.length} registradas`;
+    document.querySelector('.js-k-total').textContent = cs.length;
+    document.querySelector('.js-k-vip').textContent = cs.filter(c => c.vip).length;
+
+    document.querySelector('.js-clientes-tbody').innerHTML = cs.map(c => {
+      const inicial = c.nombre.split(' ').map(n => n[0]).slice(0, 2).join('');
+      const segPill = c.vip
+        ? '<span class="pill pill--dark">VIP</span>'
+        : c.pedidos >= 3 ? '<span class="pill pill--purple">Recurrente</span>'
+        : '<span class="pill pill--gray">Ocasional</span>';
+      return `
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>
+            <div style="display:flex; align-items:center; gap: 10px;">
+              <div style="width:32px; height:32px; background: var(--color-bg-alt); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family: var(--font-display); font-style: italic; font-size: 13px;">${inicial}</div>
+              <strong>${c.nombre}</strong>
+            </div>
+          </td>
+          <td class="col-hide-sm" style="font-size: 12px;">${c.email}<br>${c.whatsapp}</td>
+          <td class="col-num"><strong>${c.pedidos}</strong></td>
+          <td class="col-num"><strong>${fmt(c.total)}</strong></td>
+          <td class="col-hide-sm">${c.ultima}</td>
+          <td>${segPill}</td>
+          <td class="col-actions">
+            <a class="btn-sm btn-sm--ghost" target="_blank" href="https://wa.me/${c.whatsapp.replace(/\D/g, '')}">💬</a>
+            <a href="#" class="btn-sm btn-sm--ghost">Ver →</a>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  </script>
+</body>
+</html>

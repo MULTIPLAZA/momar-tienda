@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ofertas y cupones · MoMar Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=1">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side"></aside>
+    <div>
+      <div class="admin-topbar"></div>
+      <main class="admin-main">
+
+        <div class="admin-main__head">
+          <h1>Ofertas y cupones</h1>
+          <div class="actions">
+            <button class="btn-sm">Historial de uso</button>
+            <button class="btn-sm btn-sm--primary">+ Cupón nuevo</button>
+          </div>
+        </div>
+
+        <div class="admin-tabs">
+          <span class="admin-tabs__item is-active">Cupones</span>
+          <span class="admin-tabs__item">Ofertas automáticas</span>
+          <span class="admin-tabs__item">Combos / bundles</span>
+        </div>
+
+        <div class="admin-toolbar">
+          <div class="admin-toolbar__filters">
+            <select><option>Estado: Todos</option><option>Activos</option><option>Vencidos</option><option>Programados</option></select>
+            <select><option>Tipo: Todos</option><option>Porcentaje</option><option>Monto fijo</option><option>Envío gratis</option></select>
+          </div>
+        </div>
+
+        <div class="admin-table-wrap" style="background: var(--color-bg);">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Tipo</th>
+                <th>Descuento</th>
+                <th class="col-hide-sm">Condición</th>
+                <th class="col-num">Usos</th>
+                <th class="col-hide-sm">Vence</th>
+                <th>Estado</th>
+                <th class="col-actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="js-ofertas-tbody"></tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: var(--space-5);">
+          <h2 style="font-family: var(--font-body); font-size: 16px; margin-bottom: var(--space-3);">Crear cupón rápido</h2>
+          <div class="admin-card">
+            <div class="admin-form">
+              <div class="admin-form__row">
+                <div class="admin-form__group">
+                  <label>Código del cupón</label>
+                  <input type="text" placeholder="MADRE15" style="font-family: monospace; letter-spacing: 2px; text-transform: uppercase;">
+                  <div class="hint">La clienta lo va a escribir en el checkout.</div>
+                </div>
+                <div class="admin-form__group">
+                  <label>Tipo de descuento</label>
+                  <select>
+                    <option>Porcentaje (%)</option>
+                    <option>Monto fijo (Gs)</option>
+                    <option>Envío gratis</option>
+                  </select>
+                </div>
+                <div class="admin-form__group">
+                  <label>Valor</label>
+                  <input type="text" placeholder="15">
+                </div>
+              </div>
+              <div class="admin-form__row">
+                <div class="admin-form__group">
+                  <label>Compra mínima (Gs)</label>
+                  <input type="text" placeholder="0 = sin mínimo">
+                </div>
+                <div class="admin-form__group">
+                  <label>Usos máximos</label>
+                  <input type="text" placeholder="Vacío = sin límite">
+                </div>
+                <div class="admin-form__group">
+                  <label>Vence</label>
+                  <input type="date">
+                </div>
+              </div>
+              <div class="admin-form__group">
+                <label>Aplicable a</label>
+                <select>
+                  <option>Todo el catálogo</option>
+                  <option>Solo joyería</option>
+                  <option>Solo hogar</option>
+                  <option>Categorías específicas…</option>
+                  <option>Productos específicos…</option>
+                </select>
+              </div>
+              <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button class="btn-sm">Guardar como borrador</button>
+                <button class="btn-sm btn-sm--primary">Crear y activar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/products.js?v=1"></script>
+  <script src="js/admin-data.js?v=1"></script>
+  <script src="js/admin-shell.js?v=1"></script>
+  <script>
+    MOMAR_renderAdminShell('ofertas.html', 'Ofertas y cupones');
+    const os = window.MOMAR_OFERTAS;
+    document.querySelector('.js-ofertas-tbody').innerHTML = os.map(o => `
+      <tr>
+        <td><strong style="font-family: monospace; letter-spacing: 1px;">${o.codigo}</strong></td>
+        <td>${o.tipo}</td>
+        <td><strong>${o.tipo === 'Envío' ? 'Envío gratis' : o.tipo === 'Porcentaje' ? o.valor + '%' : 'Gs ' + o.valor.toLocaleString('es-PY')}</strong></td>
+        <td class="col-hide-sm">${o.condicion}</td>
+        <td class="col-num">${o.usos}${o.max ? ' / ' + o.max : ''}</td>
+        <td class="col-hide-sm">${o.vence}</td>
+        <td>${o.activo ? '<span class="pill pill--green">Activo</span>' : '<span class="pill pill--gray">Pausado</span>'}</td>
+        <td class="col-actions">
+          <button class="btn-sm btn-sm--ghost">${o.activo ? 'Pausar' : 'Activar'}</button>
+          <button class="btn-sm btn-sm--ghost">Editar</button>
+        </td>
+      </tr>
+    `).join('');
+  </script>
+</body>
+</html>

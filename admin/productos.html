@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos · MoMar Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=1">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side"></aside>
+    <div>
+      <div class="admin-topbar"></div>
+      <main class="admin-main">
+
+        <div class="admin-main__head">
+          <h1>Productos <span style="color: var(--color-text-soft); font-weight: 400; font-size: 14px;" class="js-total-count">cargando…</span></h1>
+          <div class="actions">
+            <button class="btn-sm">📤 Importar CSV</button>
+            <button class="btn-sm">📥 Exportar</button>
+            <a href="producto-edit.html" class="btn-sm btn-sm--primary">+ Producto nuevo</a>
+          </div>
+        </div>
+
+        <div class="admin-toolbar">
+          <div class="admin-toolbar__filters">
+            <select>
+              <option>Categoría: Todas</option>
+              <option>Joyería</option>
+              <option>Hogar</option>
+            </select>
+            <select>
+              <option>Material: Todos</option>
+              <option>Oro 18k</option>
+              <option>Plata 925</option>
+              <option>Mármol</option>
+              <option>Cristal</option>
+            </select>
+            <select>
+              <option>Estado: Todos</option>
+              <option>Publicado</option>
+              <option>Borrador</option>
+              <option>Oculto</option>
+              <option>Sin stock</option>
+            </select>
+            <input type="text" placeholder="Buscar SKU, nombre…" style="width: 240px;">
+          </div>
+          <div>
+            <select>
+              <option>Vista: Tabla</option>
+              <option>Vista: Galería</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-table-wrap" style="background: var(--color-bg);">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 30px;"><input type="checkbox"></th>
+                <th></th>
+                <th>Producto</th>
+                <th class="col-hide-sm">SKU</th>
+                <th class="col-hide-sm">Categoría</th>
+                <th class="col-num">Precio</th>
+                <th class="col-num">Stock</th>
+                <th>Estado</th>
+                <th class="col-actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="js-productos-tbody"></tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-top: var(--space-3); align-items:center;">
+          <span style="font-size: 12px; color: var(--color-text-soft); margin-right: 8px;">Con seleccionados:</span>
+          <button class="btn-sm btn-sm--ghost">Aplicar oferta</button>
+          <button class="btn-sm btn-sm--ghost">Cambiar categoría</button>
+          <button class="btn-sm btn-sm--ghost">Ocultar</button>
+          <button class="btn-sm btn-sm--ghost btn-sm--danger">Eliminar</button>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/products.js?v=1"></script>
+  <script src="js/admin-data.js?v=1"></script>
+  <script src="js/admin-shell.js?v=1"></script>
+  <script>
+    MOMAR_renderAdminShell('productos.html', 'Productos');
+    const fmt = window.MOMAR_fmtGs;
+    const prods = window.MOMAR_PRODUCTS;
+    document.querySelector('.js-total-count').textContent = `· ${prods.length} productos`;
+    document.querySelector('.js-productos-tbody').innerHTML = prods.map(p => {
+      const stockBadge = p.stock === 0 ? '<span class="pill pill--red">Sin stock</span>' :
+                       p.stock <= 2 ? '<span class="pill pill--amber">Stock bajo · ' + p.stock + '</span>' :
+                       '<span class="pill pill--green">' + p.stock + ' unid.</span>';
+      const estado = p.stock === 0 ? '<span class="pill pill--gray">Oculto</span>' :
+                     p.badge === 'new' ? '<span class="pill pill--purple">Nuevo</span>' :
+                     p.badge === 'sale' ? '<span class="pill pill--amber">En oferta</span>' :
+                     '<span class="pill pill--green">Publicado</span>';
+      return `
+        <tr>
+          <td><input type="checkbox"></td>
+          <td class="col-mini-img"><img src="${p.imagen}" onerror="this.style.opacity=0;"></td>
+          <td>
+            <a href="producto-edit.html?sku=${p.sku}"><strong>${p.nombre}</strong></a>
+            <div style="font-size: 11px; color: var(--color-text-soft); margin-top: 2px;">${p.material}${p.variantes ? ' · ' + p.variantes.opciones.length + ' ' + p.variantes.tipo.toLowerCase() + 's' : ''}</div>
+          </td>
+          <td class="col-hide-sm"><span style="font-family: monospace; font-size: 12px;">${p.sku}</span></td>
+          <td class="col-hide-sm">${p.cat}</td>
+          <td class="col-num">
+            <strong>${fmt(p.precio)}</strong>
+            ${p.precio_antes ? '<br><del style="font-size:11px; color: var(--color-text-soft);">' + fmt(p.precio_antes) + '</del>' : ''}
+          </td>
+          <td class="col-num">${stockBadge}</td>
+          <td>${estado}</td>
+          <td class="col-actions">
+            <a href="producto-edit.html?sku=${p.sku}" class="btn-sm btn-sm--ghost">Editar</a>
+            <a href="../producto.html?sku=${p.sku}" target="_blank" class="btn-sm btn-sm--ghost" title="Ver en la tienda">↗</a>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  </script>
+</body>
+</html>

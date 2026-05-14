@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estadísticas · MoMar Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=1">
+  <style>
+    .chart-mock {
+      height: 220px;
+      background:
+        repeating-linear-gradient(to right, var(--color-line), var(--color-line) 1px, transparent 1px, transparent 60px),
+        repeating-linear-gradient(to top, var(--color-line) 0, var(--color-line) 1px, transparent 1px, transparent 44px),
+        linear-gradient(to top, rgba(15,15,15,0.04), transparent);
+      position: relative;
+      border-bottom: 1px solid var(--color-text);
+    }
+    .chart-mock svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .chart-legend { display: flex; gap: var(--space-3); font-size: 12px; color: var(--color-text-soft); margin-top: var(--space-2); }
+    .chart-legend__dot { display: inline-block; width: 10px; height: 10px; margin-right: 6px; }
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side"></aside>
+    <div>
+      <div class="admin-topbar"></div>
+      <main class="admin-main">
+
+        <div class="admin-main__head">
+          <h1>Estadísticas</h1>
+          <div class="actions">
+            <select class="btn-sm" style="padding-right: 30px;">
+              <option>Últimos 30 días</option>
+              <option>Esta semana</option>
+              <option>Este mes</option>
+              <option>Último trimestre</option>
+              <option>Año</option>
+            </select>
+            <button class="btn-sm">Exportar PDF</button>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><div class="kpi__label">Ingresos</div><div class="kpi__value">Gs 87.4M</div><div class="kpi__delta">↑ 24% vs período ant.</div></div>
+          <div class="kpi"><div class="kpi__label">Pedidos</div><div class="kpi__value">36</div><div class="kpi__delta">↑ 18% vs período ant.</div></div>
+          <div class="kpi"><div class="kpi__label">Ticket promedio</div><div class="kpi__value">Gs 2.43M</div><div class="kpi__delta">↑ 5% vs período ant.</div></div>
+          <div class="kpi"><div class="kpi__label">Tasa conversión</div><div class="kpi__value">2.8%</div><div class="kpi__delta kpi__delta--warn">→ Sin cambio</div></div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card__head">
+            <h3>Ventas por día — últimos 30 días</h3>
+            <span class="admin-card__sub">Promedio diario: Gs 2.91M</span>
+          </div>
+          <div class="chart-mock">
+            <svg viewBox="0 0 600 220" preserveAspectRatio="none">
+              <path d="M 0,180 L 20,160 L 40,170 L 60,140 L 80,120 L 100,135 L 120,110 L 140,90 L 160,100 L 180,70 L 200,80 L 220,60 L 240,75 L 260,50 L 280,60 L 300,40 L 320,55 L 340,30 L 360,45 L 380,25 L 400,40 L 420,20 L 440,35 L 460,30 L 480,15 L 500,25 L 520,40 L 540,30 L 560,50 L 580,35 L 600,20"
+                fill="none" stroke="#0F0F0F" stroke-width="2"/>
+              <path d="M 0,180 L 20,160 L 40,170 L 60,140 L 80,120 L 100,135 L 120,110 L 140,90 L 160,100 L 180,70 L 200,80 L 220,60 L 240,75 L 260,50 L 280,60 L 300,40 L 320,55 L 340,30 L 360,45 L 380,25 L 400,40 L 420,20 L 440,35 L 460,30 L 480,15 L 500,25 L 520,40 L 540,30 L 560,50 L 580,35 L 600,20 L 600,220 L 0,220 Z"
+                fill="rgba(15,15,15,0.06)"/>
+            </svg>
+          </div>
+          <div class="chart-legend"><span><span class="chart-legend__dot" style="background: var(--color-text);"></span>Ventas Gs (acumulado)</span></div>
+        </div>
+
+        <div class="admin-grid-2">
+          <div class="admin-card">
+            <h3 style="margin-bottom: var(--space-3);">Top categorías</h3>
+            <table class="admin-table" style="border: none;">
+              <thead><tr><th>Categoría</th><th class="col-num">Vendidos</th><th class="col-num">% total</th></tr></thead>
+              <tbody>
+                <tr><td>Anillos</td><td class="col-num">14</td><td class="col-num"><strong>39%</strong></td></tr>
+                <tr><td>Collares</td><td class="col-num">9</td><td class="col-num"><strong>25%</strong></td></tr>
+                <tr><td>Aros</td><td class="col-num">7</td><td class="col-num"><strong>19%</strong></td></tr>
+                <tr><td>Hogar · Decoración</td><td class="col-num">4</td><td class="col-num"><strong>11%</strong></td></tr>
+                <tr><td>Pulseras</td><td class="col-num">2</td><td class="col-num"><strong>6%</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="admin-card">
+            <h3 style="margin-bottom: var(--space-3);">Métodos de pago</h3>
+            <table class="admin-table" style="border: none;">
+              <thead><tr><th>Método</th><th class="col-num">Pedidos</th><th class="col-num">% total</th></tr></thead>
+              <tbody>
+                <tr><td>Bancard 3 cuotas s/int</td><td class="col-num">18</td><td class="col-num"><strong>50%</strong></td></tr>
+                <tr><td>Bancard contado</td><td class="col-num">9</td><td class="col-num"><strong>25%</strong></td></tr>
+                <tr><td>Transferencia</td><td class="col-num">6</td><td class="col-num"><strong>17%</strong></td></tr>
+                <tr><td>Wally</td><td class="col-num">3</td><td class="col-num"><strong>8%</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-grid-2">
+          <div class="admin-card">
+            <h3 style="margin-bottom: var(--space-3);">Tráfico del sitio</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+              <div><div style="font-size: 11px; color: var(--color-text-soft); letter-spacing: 1.5px;">VISITAS</div><div style="font-size: 24px; font-weight: 600;">8.420</div></div>
+              <div><div style="font-size: 11px; color: var(--color-text-soft); letter-spacing: 1.5px;">VISITAS ÚNICAS</div><div style="font-size: 24px; font-weight: 600;">6.118</div></div>
+              <div><div style="font-size: 11px; color: var(--color-text-soft); letter-spacing: 1.5px;">DURACIÓN PROMEDIO</div><div style="font-size: 24px; font-weight: 600;">2:34</div></div>
+              <div><div style="font-size: 11px; color: var(--color-text-soft); letter-spacing: 1.5px;">REBOTE</div><div style="font-size: 24px; font-weight: 600;">42%</div></div>
+            </div>
+            <div style="font-size: 11px; color: var(--color-text-soft); letter-spacing: 1.5px; margin-bottom: 8px;">ORIGEN DEL TRÁFICO</div>
+            <div style="display: flex; height: 14px; margin-bottom: 8px;">
+              <div style="background: var(--color-text); flex: 0 0 48%;"></div>
+              <div style="background: var(--color-nude-dark); flex: 0 0 27%;"></div>
+              <div style="background: var(--color-success); flex: 0 0 15%;"></div>
+              <div style="background: var(--color-nude); flex: 0 0 10%;"></div>
+            </div>
+            <div style="font-size: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+              <span><span style="display:inline-block; width:8px; height:8px; background: var(--color-text); margin-right:4px;"></span> Instagram (48%)</span>
+              <span><span style="display:inline-block; width:8px; height:8px; background: var(--color-nude-dark); margin-right:4px;"></span> Google (27%)</span>
+              <span><span style="display:inline-block; width:8px; height:8px; background: var(--color-success); margin-right:4px;"></span> Directo (15%)</span>
+              <span><span style="display:inline-block; width:8px; height:8px; background: var(--color-nude); margin-right:4px;"></span> Otros (10%)</span>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <h3 style="margin-bottom: var(--space-3);">Productos más vistos sin venta</h3>
+            <p class="admin-card__sub" style="margin-bottom: var(--space-3);">Mucho clic pero poco add-to-cart. Revisar foto o precio.</p>
+            <table class="admin-table" style="border: none;">
+              <thead><tr><th>Producto</th><th class="col-num">Vistas</th><th class="col-num">Ratio</th></tr></thead>
+              <tbody>
+                <tr><td>Trinity Petite</td><td class="col-num">340</td><td class="col-num"><span class="pill pill--red">0.3%</span></td></tr>
+                <tr><td>Florero Saint-Just</td><td class="col-num">210</td><td class="col-num"><span class="pill pill--amber">0.5%</span></td></tr>
+                <tr><td>Gargantilla Étoile</td><td class="col-num">180</td><td class="col-num"><span class="pill pill--amber">1.1%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/products.js?v=1"></script>
+  <script src="js/admin-data.js?v=1"></script>
+  <script src="js/admin-shell.js?v=1"></script>
+  <script>MOMAR_renderAdminShell('estadisticas.html', 'Estadísticas');</script>
+</body>
+</html>
