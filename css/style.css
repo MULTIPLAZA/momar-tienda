@@ -1039,7 +1039,7 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   border-left-color: var(--color-nude);
   opacity: 1;
 }
-.admin-side__icon { width: 18px; height: 18px; background: var(--color-nude); opacity: 0.4; border-radius: 2px; }
+/* .admin-side__icon — definido en admin/css/admin.css con SVG real */
 
 .admin-main { padding: var(--space-4); }
 .admin-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-3); }
