@@ -2,16 +2,22 @@
    MOMAR Admin — Estilo utilitario, denso, profesional
    Hereda paleta del style.css principal
    ============================================ */
-@import url('../../css/style.css?v=20260514d');
+@import url('../../css/style.css?v=20260514g');
 
-:root {
-  --side-w: 240px;
-  --topbar-h: 60px;
+/* Override variables para densificar el admin (hereda del público que tiene más aire) */
+.admin-shell {
+  --side-w: 220px;
+  --topbar-h: 54px;
+  --space-3: 12px;
+  --space-4: 18px;
+  --space-5: 28px;
+  --space-6: 40px;
+  --space-7: 60px;
 }
 
-body {
+body:has(.admin-shell) {
   background: #F5F4F0;
-  font-size: 14px;
+  font-size: 13px;
   font-family: var(--font-body);
 }
 
@@ -21,15 +27,16 @@ body {
   font-weight: 600;
   letter-spacing: 0;
 }
-.admin-shell h1 { font-size: 22px; font-weight: 600; }
-.admin-shell h2 { font-size: 18px; }
-.admin-shell h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-soft); font-weight: 500; }
+.admin-shell h1 { font-size: 19px; font-weight: 600; line-height: 1.3; }
+.admin-shell h2 { font-size: 16px; }
+.admin-shell h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-soft); font-weight: 600; }
 
 /* Shell */
 .admin-shell {
   display: grid;
   grid-template-columns: var(--side-w) 1fr;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* SIDEBAR */
@@ -80,19 +87,21 @@ body {
 .admin-side__menu li a {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 10px var(--space-4);
+  gap: 10px;
+  padding: 9px var(--space-4);
   font-size: 13px;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
+  font-weight: 400;
   border-left: 2px solid transparent;
-  opacity: 0.65;
-  transition: opacity 0.15s;
+  color: rgba(247, 245, 240, 0.78);
+  transition: color 0.15s, background 0.15s;
 }
-.admin-side__menu li a:hover { opacity: 1; background: rgba(232, 223, 211, 0.04); }
+.admin-side__menu li a:hover { color: var(--color-bg); background: rgba(232, 223, 211, 0.05); }
 .admin-side__menu li.is-active a {
-  background: rgba(232, 223, 211, 0.08);
+  background: rgba(232, 223, 211, 0.09);
   border-left-color: var(--color-nude);
-  opacity: 1;
+  color: var(--color-bg);
+  font-weight: 500;
 }
 .admin-side__menu li.section-label {
   padding: var(--space-3) var(--space-4) var(--space-1);
@@ -187,7 +196,7 @@ body {
 
 /* MAIN */
 .admin-main {
-  padding: var(--space-4);
+  padding: 16px 18px;
   min-height: calc(100vh - var(--topbar-h));
 }
 .admin-main__head {
@@ -226,9 +235,31 @@ body {
 .admin-card {
   background: var(--color-bg);
   border: 1px solid var(--color-line);
-  padding: var(--space-4);
+  padding: 14px 16px;
   margin-bottom: var(--space-3);
 }
+/* Variante "consejo" — sutil, no agresiva (reemplaza la versión negra hinchada) */
+.admin-card--tip {
+  background: var(--color-bg);
+  border-left: 3px solid var(--color-dark);
+  position: relative;
+}
+.admin-card--tip h3 {
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+.admin-card--tip p {
+  font-size: 13px;
+  color: var(--color-text-soft);
+  margin: 0 0 var(--space-2);
+  line-height: 1.55;
+}
+.admin-card--alerta {
+  background: #FBF6E9;
+  border-color: #E8D998;
+  border-left: 3px solid #B07A2E;
+}
+.admin-card--alerta h3 { color: #6E5418; }
 .admin-card__head {
   display: flex;
   justify-content: space-between;
@@ -249,13 +280,13 @@ body {
 .kpis {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-3);
+  gap: 10px;
   margin-bottom: var(--space-3);
 }
-.kpi { background: var(--color-bg); padding: var(--space-3); border: 1px solid var(--color-line); }
-.kpi__label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-text-soft); margin-bottom: 6px; font-weight: 500; }
-.kpi__value { font-size: 26px; font-weight: 600; }
-.kpi__delta { font-size: 11px; color: var(--color-success); margin-top: 4px; letter-spacing: 0.3px; }
+.kpi { background: var(--color-bg); padding: 12px 14px; border: 1px solid var(--color-line); }
+.kpi__label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-text-soft); margin-bottom: 4px; font-weight: 500; }
+.kpi__value { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.kpi__delta { font-size: 11px; color: var(--color-success); margin-top: 4px; letter-spacing: 0; font-weight: 500; }
 .kpi__delta--warn { color: #B07A2E; }
 .kpi__delta--bad { color: var(--color-sale); }
 
@@ -269,16 +300,16 @@ body {
 }
 .admin-table th, .admin-table td {
   text-align: left;
-  padding: 11px var(--space-3);
+  padding: 9px 12px;
   border-bottom: 1px solid var(--color-line);
-  font-size: 13px;
+  font-size: 12.5px;
   vertical-align: middle;
 }
 .admin-table th {
-  font-size: 11px; letter-spacing: 1.5px;
+  font-size: 10px; letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--color-text-soft);
-  font-weight: 500;
+  font-weight: 600;
   background: var(--color-bg-alt);
   position: sticky; top: 0;
 }

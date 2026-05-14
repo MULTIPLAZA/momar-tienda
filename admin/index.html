@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=2">
+  <link rel="stylesheet" href="css/admin.css?v=3">
 </head>
 <body>
   <div class="admin-shell">
@@ -18,7 +18,7 @@
 
         <div class="admin-main__head">
           <div>
-            <h1>Buen día, Martina <span style="font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: 24px; color: var(--color-text-soft);">·</span> <span style="font-weight: 400; color: var(--color-text-soft); font-size: 16px;">hoy es <span id="js-fecha">14 de mayo</span></span></h1>
+            <h1>Buen día, Martina<span style="font-weight: 400; color: var(--color-text-soft); font-size: 13px; margin-left: 10px;">Hoy es <span id="js-fecha">14 de mayo</span></span></h1>
           </div>
           <div class="actions">
             <a href="productos.html" class="btn-sm">+ Cargar producto</a>
@@ -30,23 +30,20 @@
         <div class="kpis js-kpis"></div>
 
         <!-- Notificaciones rápidas -->
-        <div class="admin-card" style="background: #FFF8E8; border-color: #E8D998;">
-          <div class="admin-card__head">
-            <div style="display:flex; align-items:flex-start; gap:12px;">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6E5418" stroke-width="1.5" style="flex-shrink:0; margin-top:2px;">
-                <circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16v.5"/>
-              </svg>
-              <div>
-                <h3 style="color: #6E5418;">Atención hoy</h3>
-                <p class="admin-card__sub">3 pendientes que requieren tu acción.</p>
-              </div>
+        <div class="admin-card admin-card--alerta">
+          <div style="display:flex; align-items:flex-start; gap:10px;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6E5418" stroke-width="1.5" style="flex-shrink:0; margin-top:1px;">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16v.5"/>
+            </svg>
+            <div style="flex:1;">
+              <h3 style="margin-bottom: 4px;">Atención hoy · 3 pendientes</h3>
+              <ul style="margin: 0; padding-left: 16px; font-size: 13px; line-height: 1.7;">
+                <li><strong>3 pedidos esperan envío</strong> · <a href="pedidos.html" style="color: var(--color-text); border-bottom: 1px solid var(--color-line);">Ir a pedidos</a></li>
+                <li><strong>Pago transferencia #1245 a confirmar</strong> · Laura Cáceres envió comprobante por WhatsApp</li>
+                <li><strong>7 productos con stock bajo</strong> · <a href="productos.html?stock=bajo" style="color: var(--color-text); border-bottom: 1px solid var(--color-line);">Ver listado</a></li>
+              </ul>
             </div>
           </div>
-          <ul style="margin: 0; padding-left: var(--space-3);">
-            <li style="margin-bottom: 6px;"><strong>3 pedidos esperan envío</strong> · <a href="pedidos.html" style="color: var(--color-text);">Ir a pedidos</a></li>
-            <li style="margin-bottom: 6px;"><strong>Pago transferencia #1245 a confirmar</strong> · Laura Cáceres envió comprobante por WhatsApp</li>
-            <li><strong>7 productos con stock bajo</strong> · <a href="productos.html?stock=bajo" style="color: var(--color-text);">Ver listado</a></li>
-          </ul>
         </div>
 
         <div class="admin-grid-2">
@@ -79,15 +76,15 @@
               </div>
             </div>
 
-            <div class="admin-card" style="background: var(--color-dark); color: var(--color-bg); border-color: var(--color-dark);">
-              <div style="display:flex; align-items:center; gap:8px; margin-bottom: var(--space-3);">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--color-nude)" stroke-width="1.5">
+            <div class="admin-card admin-card--tip">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--color-text)" stroke-width="1.5">
                   <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c1 1 1 2 1 4h6c0-2 0-3 1-4a7 7 0 0 0-4-12Z"/>
                 </svg>
-                <h3 style="color: var(--color-nude); margin: 0;">Sugerencia</h3>
+                <h3>Sugerencia</h3>
               </div>
-              <p style="font-size: 13px; opacity: 0.85; line-height: 1.6; margin-top: 0;">El banner principal no se cambia hace 18 días. Las visitas que repiten ven la misma imagen. Refrescar puede mejorar la conversión 8-12%.</p>
-              <a href="banners.html" class="btn-sm" style="background: var(--color-bg); color: var(--color-dark); border-color: var(--color-bg); margin-top: 8px;">Ir a banners →</a>
+              <p>El banner principal no se cambia hace 18 días. Las visitas que repiten ven la misma imagen. Refrescar puede mejorar la conversión 8-12%.</p>
+              <a href="banners.html" class="btn-sm">Ir a banners →</a>
             </div>
           </div>
         </div>
