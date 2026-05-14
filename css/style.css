@@ -506,12 +506,25 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   text-overflow: ellipsis;
 }
 .producto__precio {
-  font-size: 14px;
-  letter-spacing: 0.3px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+  margin-top: 2px;
+  line-height: 1.3;
 }
 .producto__precio del {
   color: var(--color-text-soft);
+  font-weight: 400;
+  font-size: 13px;
   margin-right: 8px;
+  text-decoration-thickness: 1px;
+}
+/* Precio en oferta: bordó sutil para el precio actual */
+.producto:has(.producto__badge--sale) .producto__precio,
+.producto__precio:has(del) > :not(del) {
+  color: var(--color-sale);
 }
 
 /* ============================================
@@ -880,7 +893,22 @@ body.menu-open .mobile-menu { transform: translateX(0); }
 .carrito-item__img img { width: 100%; height: 100%; object-fit: cover; }
 .carrito-item__nombre { font-family: var(--font-display); font-size: 18px; font-weight: 500; }
 .carrito-item__variante { font-size: 11px; color: var(--color-text-soft); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
-.carrito-item__precio { font-size: 15px; min-width: 100px; text-align: right; }
+.carrito-item__precio {
+  font-size: 17px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  min-width: 110px;
+  text-align: right;
+  letter-spacing: -0.2px;
+  line-height: 1.3;
+}
+.carrito-item__precio del {
+  display: block;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--color-text-soft);
+  margin-bottom: 2px;
+}
 .carrito-item__quitar { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--color-text-soft); cursor: pointer; }
 .carrito-item__quitar:hover { color: var(--color-sale); }
 
@@ -902,16 +930,34 @@ body.menu-open .mobile-menu { transform: translateX(0); }
 .resumen__linea {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   padding: 8px 0;
   font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.resumen__linea > :last-child {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--color-text);
 }
 .resumen__total {
   border-top: 1px solid var(--color-text);
   margin-top: var(--space-2);
   padding-top: var(--space-3);
-  font-size: 20px;
-  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
   font-weight: 500;
+  align-items: baseline;
+}
+.resumen__total > :last-child {
+  font-family: var(--font-body);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
 }
 .cupon {
   display: flex;
@@ -1165,10 +1211,22 @@ body.menu-open .mobile-menu { transform: translateX(0); }
 .cart-drawer__subtotal {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
+  align-items: baseline;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
   margin-bottom: var(--space-2);
+  font-weight: 500;
 }
-.cart-drawer__subtotal strong { font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.cart-drawer__subtotal strong {
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
 .cart-drawer__hint {
   font-size: 11px;
   letter-spacing: 1px;
@@ -1280,7 +1338,10 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   .carrito-item__img { grid-area: img; }
   .carrito-item > div:nth-child(2) { grid-area: info; }
   .carrito-item .cantidad { grid-area: qty; }
-  .carrito-item__precio { grid-area: price; text-align: left; font-size: 16px; }
+  .carrito-item__precio { grid-area: price; text-align: left; font-size: 18px; }
+  .producto__precio { font-size: 15px; }
+  .resumen__total > :last-child { font-size: 24px; }
+  .cart-drawer__subtotal strong { font-size: 20px; }
 
   /* Checkout */
   .checkout-layout { grid-template-columns: 1fr; }
