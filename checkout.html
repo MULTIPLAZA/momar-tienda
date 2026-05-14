@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout · MOMAR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20260514d">
+</head>
+<body>
+
+  <header class="header">
+    <div class="header__inner">
+      <div></div>
+      <a href="index.html" class="header__logo"><svg class="logo-svg" viewBox="0 0 200 50"><text x="100" y="38" text-anchor="middle" font-size="38">MoMar</text></svg></a>
+      <div class="header__actions" style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.7;">
+        Pago seguro · SSL
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="breadcrumb" style="display:flex; gap:24px;">
+      <span style="opacity:0.4;">1 · Carrito</span>
+      <span style="font-weight:500; color: var(--color-text);">2 · Datos y pago</span>
+      <span style="opacity:0.4;">3 · Confirmación</span>
+    </div>
+
+    <div class="section__head" style="text-align: left; margin-bottom: var(--space-4);">
+      <h1 style="font-style: italic;">Finalizar compra</h1>
+    </div>
+
+    <div class="checkout-layout">
+
+      <div>
+
+        <div class="form-step">
+          <div class="form-step__head">
+            <h3>Datos de contacto</h3>
+            <span class="step-num">01 / 04</span>
+          </div>
+          <div class="form-row">
+            <div class="form-field"><label>Email</label><input type="email" placeholder="tu@email.com"></div>
+            <div class="form-field"><label>WhatsApp</label><input type="tel" placeholder="+595 981 234 567"></div>
+          </div>
+        </div>
+
+        <div class="form-step">
+          <div class="form-step__head">
+            <h3>Datos de envío</h3>
+            <span class="step-num">02 / 04</span>
+          </div>
+          <div class="form-row">
+            <div class="form-field"><label>Nombre</label><input type="text" placeholder="María"></div>
+            <div class="form-field"><label>Apellido</label><input type="text" placeholder="Benítez"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-field"><label>CI / RUC</label><input type="text" placeholder="1.234.567"></div>
+            <div class="form-field">
+              <label>Documento</label>
+              <select><option>Factura</option><option>Boleta</option></select>
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom: var(--space-3);">
+            <label>Dirección</label>
+            <input type="text" placeholder="Av. España 1234 c/ Brasilia">
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Ciudad</label>
+              <select>
+                <option>Asunción</option><option>Fernando de la Mora</option><option>Lambaré</option>
+                <option>Luque</option><option>San Lorenzo</option><option>Interior</option>
+              </select>
+            </div>
+            <div class="form-field"><label>Referencia</label><input type="text" placeholder="Edificio Marsala, 3B"></div>
+          </div>
+          <div style="margin-top: var(--space-3); padding: var(--space-3); background: var(--color-bg-alt); font-size: 13px;">
+            <label style="display:flex; gap:8px; align-items:center; cursor:pointer;">
+              <input type="checkbox"> Es un regalo (enviamos sin precio en el packaging)
+            </label>
+          </div>
+        </div>
+
+        <div class="form-step">
+          <div class="form-step__head">
+            <h3>Modalidad de envío</h3>
+            <span class="step-num">03 / 04</span>
+          </div>
+          <div class="metodo-pago is-selected">
+            <div class="metodo-pago__icon">→</div>
+            <div style="flex:1;">
+              <div class="metodo-pago__nombre">Envío Asunción · 24 hs</div>
+              <div class="metodo-pago__desc">Entrega al día hábil siguiente, con seguimiento por WhatsApp.</div>
+            </div>
+            <strong style="color: var(--color-success);">GRATIS</strong>
+          </div>
+          <div class="metodo-pago">
+            <div class="metodo-pago__icon">→</div>
+            <div style="flex:1;">
+              <div class="metodo-pago__nombre">Retiro en showroom</div>
+              <div class="metodo-pago__desc">Av. España 1234, Asunción · Lun-Sáb 10-18 hs</div>
+            </div>
+            <strong style="color: var(--color-success);">GRATIS</strong>
+          </div>
+          <div class="metodo-pago">
+            <div class="metodo-pago__icon">→</div>
+            <div style="flex:1;">
+              <div class="metodo-pago__nombre">Envío interior · 3-5 días</div>
+              <div class="metodo-pago__desc">Encomienda terrestre asegurada hasta el domicilio.</div>
+            </div>
+            <strong>Gs 80.000</strong>
+          </div>
+        </div>
+
+        <div class="form-step">
+          <div class="form-step__head">
+            <h3>Forma de pago</h3>
+            <span class="step-num">04 / 04</span>
+          </div>
+          <div class="metodo-pago is-selected">
+            <div class="metodo-pago__icon">BCD</div>
+            <div style="flex:1;">
+              <div class="metodo-pago__nombre">Tarjeta de crédito o débito</div>
+              <div class="metodo-pago__desc">Bancard · Hasta 12 cuotas · 3 sin interés</div>
+            </div>
+          </div>
+          <div class="metodo-pago">
+            <div class="metodo-pago__icon">WLY</div>
+            <div style="flex:1;">
+              <div class="metodo-pago__nombre">Wally / Personal Pay</div>
+              <div class="metodo-pago__desc">Pago instantáneo desde la billetera</div>
+            </div>
+          </div>
+          <div class="metodo-pago">
+            <div class="metodo-pago__icon">BNK</div>
+            <div style="flex:1;">
+              <div class="metodo-pago__nombre">Transferencia bancaria</div>
+              <div class="metodo-pago__desc">Itaú · Continental · Atlas — confirmación manual</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn--primary btn--block" style="margin-top: var(--space-4);" onclick="alert('¡Pedido confirmado! En producción acá va a SIFEN.');">
+          Confirmar pedido — <span class="js-cart-page-total">Gs 0</span>
+        </button>
+
+        <p style="text-align:center; font-size:10px; letter-spacing:2px; color: var(--color-text-soft); margin-top: var(--space-3);">
+          AL CONFIRMAR ACEPTÁS TÉRMINOS Y POLÍTICA DE PRIVACIDAD
+        </p>
+      </div>
+
+      <aside class="resumen">
+        <h3>Tu pedido</h3>
+        <div class="js-cart-page-items" style="font-size: 13px;"></div>
+        <div style="border-top: 1px solid var(--color-line); margin-top: var(--space-3); padding-top: var(--space-3);">
+          <div class="resumen__linea"><span>Subtotal</span><span class="js-cart-page-subtotal">Gs 0</span></div>
+          <div class="resumen__linea"><span>Descuento</span><span class="js-cart-page-discount" style="color: var(--color-success);">Gs 0</span></div>
+          <div class="resumen__linea"><span>Envío</span><span style="color: var(--color-success);">GRATIS</span></div>
+          <div class="resumen__linea resumen__total"><span>Total</span><span class="js-cart-page-total">Gs 0</span></div>
+        </div>
+        <p style="font-size: 12px; color: var(--color-text-soft); margin-top: var(--space-3);">
+          <strong>3 cuotas sin interés</strong> de <span class="js-cart-page-cuota">Gs 0</span>
+        </p>
+      </aside>
+    </div>
+  </div>
+
+  <script src="js/products.js?v=20260514d"></script>
+  <script src="js/cart.js?v=20260514d"></script>
+  <script src="js/render.js?v=20260514d"></script>
+</body>
+</html>
