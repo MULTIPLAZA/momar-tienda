@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260514e">
+  <link rel="stylesheet" href="css/style.css?v=20260514f">
 </head>
 <body>
   <div class="js-shell-top"></div>
@@ -36,9 +36,10 @@
         <div style="margin-bottom: var(--space-3);">
           <div class="variantes__label">Cantidad</div>
           <div class="cantidad">
-            <button onclick="const i = this.nextElementSibling; i.value = Math.max(1, parseInt(i.value)-1); document.querySelectorAll('.js-add-this-product').forEach(b => b.dataset.qty = i.value);">−</button>
-            <input type="text" value="1" id="prod-qty" readonly>
-            <button onclick="const i = this.previousElementSibling; i.value = parseInt(i.value)+1; document.querySelectorAll('.js-add-this-product').forEach(b => b.dataset.qty = i.value);">+</button>
+            <button aria-label="Quitar uno" onclick="const i = this.nextElementSibling; i.value = Math.max(1, (parseInt(i.value)||1) - 1); i.dispatchEvent(new Event('input'));">−</button>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" value="1" id="prod-qty" aria-label="Cantidad"
+              oninput="this.value = Math.max(1, parseInt(this.value.replace(/\D/g,''))||1); document.querySelectorAll('.js-add-this-product').forEach(b => b.dataset.qty = this.value);">
+            <button aria-label="Agregar uno" onclick="const i = this.previousElementSibling; i.value = (parseInt(i.value)||1) + 1; i.dispatchEvent(new Event('input'));">+</button>
           </div>
         </div>
 
@@ -83,9 +84,9 @@
 
   <div class="js-shell-bottom"></div>
 
-  <script src="js/products.js?v=20260514e"></script>
-  <script src="js/shell.js?v=20260514e"></script>
-  <script src="js/cart.js?v=20260514e"></script>
-  <script src="js/render.js?v=20260514e"></script>
+  <script src="js/products.js?v=20260514f"></script>
+  <script src="js/shell.js?v=20260514f"></script>
+  <script src="js/cart.js?v=20260514f"></script>
+  <script src="js/render.js?v=20260514f"></script>
 </body>
 </html>

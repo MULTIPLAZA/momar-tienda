@@ -56,11 +56,17 @@
 
   // ---- UI helpers ----
 
-  function updateBadge() {
+  function updateBadge(animate) {
     const count = window.cart.count();
     document.querySelectorAll('.js-cart-count').forEach(el => {
       el.textContent = count;
-      el.style.display = count > 0 ? 'inline-block' : 'none';
+      el.classList.toggle('is-visible', count > 0);
+      if (animate && count > 0) {
+        el.classList.remove('is-bumping');
+        // force reflow para reiniciar la animación
+        void el.offsetWidth;
+        el.classList.add('is-bumping');
+      }
     });
   }
 
@@ -159,7 +165,7 @@
         const qty = parseInt(add.dataset.qty || '1', 10);
         const variante = add.dataset.variante || null;
         window.cart.add(sku, qty, variante);
-        updateBadge();
+        updateBadge(true); // animado
         const p = window.MOMAR_findProduct(sku);
         toast((p ? p.nombre : 'Producto') + ' agregado al carrito');
         // Si está en una página que no es carrito.html, abrir drawer
@@ -201,7 +207,61 @@
 
     // Si esta página es carrito.html, renderizar items dinámicos
     renderCartPage();
+
+    // Toast persistente: "Tenés piezas guardadas" si visita siguiente con items en carrito (#12)
+    if (window.cart.items.length > 0
+        && !location.pathname.includes('carrito')
+        && !location.pathname.includes('checkout')) {
+      const lastShown = sessionStorage.getItem('momar_cart_toast_shown');
+      if (!lastShown) {
+        setTimeout(() => showPersistentToast(), 2000);
+        sessionStorage.setItem('momar_cart_toast_shown', '1');
+      }
+    }
   });
+
+  function showPersistentToast() {
+    const items = window.cart.enriched();
+    if (items.length === 0) return;
+    const first = items[0];
+    const count = window.cart.count();
+
+    let t = document.querySelector('.toast-persistente');
+    if (!t) {
+      t = document.createElement('div');
+      t.className = 'toast-persistente';
+      document.body.appendChild(t);
+    }
+    t.innerHTML = `
+      <div class="toast-persistente__img">
+        <img src="${first.imagen}" alt="${first.nombre}" onerror="this.style.opacity=0;">
+      </div>
+      <div class="toast-persistente__body">
+        <strong>Tenés ${count} pieza${count > 1 ? 's' : ''} guardada${count > 1 ? 's' : ''}</strong>
+        <span>Seguí donde te quedaste — tu carrito te espera.</span>
+      </div>
+      <button class="toast-persistente__close" aria-label="Cerrar">×</button>
+    `;
+    setTimeout(() => t.classList.add('is-visible'), 50);
+    t.addEventListener('click', (e) => {
+      if (e.target.closest('.toast-persistente__close')) {
+        t.classList.remove('is-visible');
+        setTimeout(() => t.remove(), 400);
+      } else {
+        // click en cuerpo → abre drawer
+        openDrawer();
+        t.classList.remove('is-visible');
+        setTimeout(() => t.remove(), 400);
+      }
+    });
+    // Auto-hide a los 8 segundos
+    setTimeout(() => {
+      if (t && t.classList.contains('is-visible')) {
+        t.classList.remove('is-visible');
+        setTimeout(() => t.remove(), 400);
+      }
+    }, 8000);
+  }
 
   // ---- Página de carrito completa ----
   function renderCartPage() {

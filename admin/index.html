@@ -32,9 +32,14 @@
         <!-- Notificaciones rápidas -->
         <div class="admin-card" style="background: #FFF8E8; border-color: #E8D998;">
           <div class="admin-card__head">
-            <div>
-              <h3 style="color: #6E5418;">⚠ Atención hoy</h3>
-              <p class="admin-card__sub">3 pendientes que requieren tu acción.</p>
+            <div style="display:flex; align-items:flex-start; gap:12px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6E5418" stroke-width="1.5" style="flex-shrink:0; margin-top:2px;">
+                <circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16v.5"/>
+              </svg>
+              <div>
+                <h3 style="color: #6E5418;">Atención hoy</h3>
+                <p class="admin-card__sub">3 pendientes que requieren tu acción.</p>
+              </div>
             </div>
           </div>
           <ul style="margin: 0; padding-left: var(--space-3);">
@@ -75,8 +80,13 @@
             </div>
 
             <div class="admin-card" style="background: var(--color-dark); color: var(--color-bg); border-color: var(--color-dark);">
-              <h3 style="color: var(--color-nude);">💡 Sugerencia</h3>
-              <p style="font-size: 13px; opacity: 0.85; line-height: 1.6;">El banner principal no se cambia hace 18 días. Las visitas que repiten ven la misma imagen. Refrescar puede mejorar la conversión 8-12%.</p>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom: var(--space-3);">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--color-nude)" stroke-width="1.5">
+                  <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c1 1 1 2 1 4h6c0-2 0-3 1-4a7 7 0 0 0-4-12Z"/>
+                </svg>
+                <h3 style="color: var(--color-nude); margin: 0;">Sugerencia</h3>
+              </div>
+              <p style="font-size: 13px; opacity: 0.85; line-height: 1.6; margin-top: 0;">El banner principal no se cambia hace 18 días. Las visitas que repiten ven la misma imagen. Refrescar puede mejorar la conversión 8-12%.</p>
               <a href="banners.html" class="btn-sm" style="background: var(--color-bg); color: var(--color-dark); border-color: var(--color-bg); margin-top: 8px;">Ir a banners →</a>
             </div>
           </div>
