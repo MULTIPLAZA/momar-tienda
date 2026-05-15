@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=4">
+  <link rel="stylesheet" href="css/admin.css?v=5">
 </head>
 <body>
   <div class="admin-shell">
@@ -18,7 +18,7 @@
 
         <div class="admin-main__head">
           <div>
-            <h1>Buen día, Martina<span style="font-weight: 400; color: var(--color-text-soft); font-size: 13px; margin-left: 10px;">Hoy es <span id="js-fecha">14 de mayo</span></span></h1>
+            <h1>Buen día, Martina<span class="u-fw-400 u-text-soft u-text-md u-ml-2">Hoy es <span id="js-fecha">15 de mayo</span></span></h1>
           </div>
           <div class="actions">
             <a href="productos.html" class="btn-sm">+ Cargar producto</a>
@@ -31,16 +31,16 @@
 
         <!-- Notificaciones rápidas -->
         <div class="admin-card admin-card--alerta">
-          <div style="display:flex; align-items:flex-start; gap:10px;">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6E5418" stroke-width="1.5" style="flex-shrink:0; margin-top:1px;">
+          <div class="u-flex u-items-start u-gap-3">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6E5418" stroke-width="1.5" class="u-flex-shrink-0 u-mt-1">
               <circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16v.5"/>
             </svg>
-            <div style="flex:1;">
-              <h3 style="margin-bottom: 4px;">Atención hoy · 3 pendientes</h3>
-              <ul style="margin: 0; padding-left: 16px; font-size: 13px; line-height: 1.7;">
-                <li><strong>3 pedidos esperan envío</strong> · <a href="pedidos.html" style="color: var(--color-text); border-bottom: 1px solid var(--color-line);">Ir a pedidos</a></li>
+            <div class="u-flex-1">
+              <h3 class="u-mb-1">Atención hoy · 3 pendientes</h3>
+              <ul class="u-text-md u-line-loose" style="padding-left: 16px; margin: 0;">
+                <li><strong>3 pedidos esperan envío</strong> · <a href="pedidos.html" class="u-link">Ir a pedidos</a></li>
                 <li><strong>Pago transferencia #1245 a confirmar</strong> · Laura Cáceres envió comprobante por WhatsApp</li>
-                <li><strong>7 productos con stock bajo</strong> · <a href="productos.html?stock=bajo" style="color: var(--color-text); border-bottom: 1px solid var(--color-line);">Ver listado</a></li>
+                <li><strong>7 productos con stock bajo</strong> · <a href="productos.html?stock=bajo" class="u-link">Ver listado</a></li>
               </ul>
             </div>
           </div>
@@ -49,13 +49,13 @@
         <div class="admin-grid-2">
 
           <!-- Pedidos recientes -->
-          <div class="admin-card" style="padding: 0;">
-            <div class="admin-card__head" style="padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-line); margin: 0;">
+          <div class="admin-card u-card-flush">
+            <div class="admin-card__head">
               <h3>Pedidos recientes</h3>
-              <a href="pedidos.html" style="font-size: 12px; color: var(--color-text-soft);">Ver todos →</a>
+              <a href="pedidos.html" class="u-link-soft">Ver todos →</a>
             </div>
             <div class="admin-table-wrap">
-              <table class="admin-table" style="border: none;">
+              <table class="admin-table">
                 <thead>
                   <tr><th>Pedido</th><th>Clienta</th><th class="col-num">Total</th><th class="col-hide-sm">Pago</th><th>Envío</th></tr>
                 </thead>
@@ -64,20 +64,20 @@
             </div>
           </div>
 
-          <!-- Acciones rápidas -->
+          <!-- Acciones rápidas + Sugerencia -->
           <div>
             <div class="admin-card">
-              <h3 style="margin-bottom: var(--space-3);">Acciones rápidas</h3>
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                <a href="productos.html" class="btn-sm" style="display: block; text-align: center;">+ Cargar producto nuevo</a>
-                <a href="banners.html" class="btn-sm" style="display: block; text-align: center;">Cambiar banner home</a>
-                <a href="ofertas.html" class="btn-sm" style="display: block; text-align: center;">Crear oferta del día</a>
-                <a href="productos.html?import=1" class="btn-sm" style="display: block; text-align: center;">Importar lote (Excel)</a>
+              <h3 class="u-mb-3">Acciones rápidas</h3>
+              <div class="u-flex-col u-gap-2">
+                <a href="productos.html" class="btn-sm u-text-center">+ Cargar producto nuevo</a>
+                <a href="banners.html" class="btn-sm u-text-center">Cambiar banner home</a>
+                <a href="ofertas.html" class="btn-sm u-text-center">Crear oferta del día</a>
+                <a href="productos.html?import=1" class="btn-sm u-text-center">Importar lote (Excel)</a>
               </div>
             </div>
 
             <div class="admin-card admin-card--tip">
-              <div style="display:flex; align-items:center; gap:8px;">
+              <div class="u-flex u-items-center u-gap-2">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--color-text)" stroke-width="1.5">
                   <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c1 1 1 2 1 4h6c0-2 0-3 1-4a7 7 0 0 0-4-12Z"/>
                 </svg>
@@ -91,12 +91,12 @@
 
         <div class="admin-grid-2">
           <!-- Más vendidos -->
-          <div class="admin-card" style="padding: 0;">
-            <div class="admin-card__head" style="padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-line); margin: 0;">
+          <div class="admin-card u-card-flush">
+            <div class="admin-card__head">
               <h3>Más vendidos del mes</h3>
             </div>
             <div class="admin-table-wrap">
-              <table class="admin-table" style="border: none;">
+              <table class="admin-table">
                 <thead><tr><th>Producto</th><th class="col-num">Vendidos</th><th class="col-num">Ingreso</th><th>Stock</th></tr></thead>
                 <tbody class="js-top-productos"></tbody>
               </table>
@@ -105,8 +105,8 @@
 
           <!-- Notificaciones -->
           <div class="admin-card">
-            <h3 style="margin-bottom: var(--space-3);">Últimas notificaciones</h3>
-            <ul class="js-notifs" style="list-style: none; padding: 0; margin: 0;"></ul>
+            <h3 class="u-mb-3">Últimas notificaciones</h3>
+            <ul class="js-notifs u-list-none"></ul>
           </div>
         </div>
 
@@ -121,7 +121,6 @@
     MOMAR_renderAdminShell('index.html', 'Inicio');
     const fmt = window.MOMAR_fmtGs;
 
-    // KPIs
     const k = window.MOMAR_KPIS;
     document.querySelector('.js-kpis').innerHTML = `
       <div class="kpi">
@@ -146,10 +145,9 @@
       </div>
     `;
 
-    // Pedidos recientes (4)
     document.querySelector('.js-pedidos-recientes').innerHTML = window.MOMAR_PEDIDOS.slice(0, 5).map(p => `
       <tr>
-        <td><a href="pedido.html?n=${p.num.replace('#','')}">${p.num}</a><br><span style="font-size:11px; color:var(--color-text-soft);">${p.fecha}</span></td>
+        <td><a href="pedido.html?n=${p.num.replace('#','')}">${p.num}</a><br><span class="u-text-sm u-text-soft">${p.fecha}</span></td>
         <td>${p.cliente}</td>
         <td class="col-num">${fmt(p.total)}</td>
         <td class="col-hide-sm">${window.MOMAR_pillPago(p.pagoEstado)}</td>
@@ -157,22 +155,20 @@
       </tr>
     `).join('');
 
-    // Top productos (4)
     const top = window.MOMAR_PRODUCTS.slice(0, 4).map((p, i) => ({...p, vendidos: 8 - i*2, ingreso: p.precio * (8 - i*2), stockTxt: i === 0 ? 'OK' : i === 1 ? 'Quedan 2' : i === 2 ? 'OK' : 'Sin stock'}));
     document.querySelector('.js-top-productos').innerHTML = top.map(p => `
       <tr>
-        <td><div style="display:flex; align-items:center; gap:10px;"><img src="${p.imagen}" style="width:36px; height:36px; object-fit:cover;" onerror="this.style.opacity=0;">${p.nombre}</div></td>
+        <td><div class="u-flex u-items-center u-gap-2"><img src="${p.imagen}" class="u-img-thumb" onerror="this.style.opacity=0;">${p.nombre}</div></td>
         <td class="col-num">${p.vendidos}</td>
         <td class="col-num">${fmt(p.ingreso)}</td>
         <td><span class="pill ${p.stockTxt === 'OK' ? 'pill--green' : p.stockTxt === 'Sin stock' ? 'pill--red' : 'pill--amber'}">${p.stockTxt}</span></td>
       </tr>
     `).join('');
 
-    // Notificaciones
     document.querySelector('.js-notifs').innerHTML = window.MOMAR_NOTIFS.map(n => `
-      <li style="padding: 10px 0; border-bottom: 1px solid var(--color-line); font-size: 13px;">
-        <div>${n.texto}</div>
-        <div style="font-size: 11px; color: var(--color-text-soft); margin-top: 2px;">${n.tiempo}</div>
+      <li style="padding: 10px 0; border-bottom: 1px solid var(--color-line);">
+        <div class="u-text-md">${n.texto}</div>
+        <div class="u-text-sm u-text-soft u-mt-1">${n.tiempo}</div>
       </li>
     `).join('');
   </script>
