@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=5">
+  <link rel="stylesheet" href="css/admin.css?v=6">
 </head>
 <body>
   <div class="admin-shell">
@@ -16,12 +16,12 @@
       <div class="admin-topbar"></div>
       <main class="admin-main">
 
-        <div style="margin-bottom: var(--space-2);"><a href="productos.html" style="font-size:12px; color: var(--color-text-soft); letter-spacing: 1px; text-transform: uppercase;">← Productos</a></div>
+        <div class="u-mb-2"><a href="productos.html" class="u-text-base u-text-soft u-uppercase">← Productos</a></div>
 
         <div class="admin-main__head">
           <div>
             <h1 class="js-nombre">Producto</h1>
-            <p style="color: var(--color-text-soft); font-size: 13px; margin: 4px 0 0;"><span class="js-sku">—</span> · <span class="js-stock">—</span></p>
+            <p class="u-text-md u-text-soft u-mt-1 u-mb-0"><span class="js-sku">—</span> · <span class="js-stock">—</span></p>
           </div>
           <div class="actions">
             <a class="btn-sm js-ver-tienda" target="_blank">Ver en tienda ↗</a>
@@ -42,7 +42,7 @@
         <div class="admin-grid-2">
           <div>
             <div class="admin-card">
-              <h3 style="margin-bottom: var(--space-3);">Información básica</h3>
+              <h3 class="u-mb-3">Información básica</h3>
               <div class="admin-form">
                 <div class="admin-form__group">
                   <label>Nombre del producto</label>
@@ -72,7 +72,7 @@
             </div>
 
             <div class="admin-card">
-              <h3 style="margin-bottom: var(--space-3);">Fotos</h3>
+              <h3 class="u-mb-3">Fotos</h3>
               <div class="uploader">
                 <svg class="uploader__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M12 4v12m0-12 4 4m-4-4-4 4M4 20h16"/>
@@ -84,7 +84,7 @@
             </div>
 
             <div class="admin-card">
-              <h3 style="margin-bottom: var(--space-3);">Atributos específicos</h3>
+              <h3 class="u-mb-3">Atributos específicos</h3>
               <div class="admin-form__row">
                 <div class="admin-form__group"><label>Material</label><input type="text" placeholder="Oro 18k"></div>
                 <div class="admin-form__group"><label>Peso (gr)</label><input type="text" placeholder="3.8"></div>
@@ -102,7 +102,7 @@
 
           <div>
             <div class="admin-card">
-              <h3 style="margin-bottom: var(--space-3);">Visibilidad</h3>
+              <h3 class="u-mb-3">Visibilidad</h3>
               <div class="admin-form__group">
                 <label>Estado</label>
                 <select>
@@ -115,12 +115,12 @@
                 <label>Visibilidad</label>
                 <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text); margin-bottom: 6px;"><input type="checkbox" checked> Mostrar en catálogo público</label>
                 <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text); margin-bottom: 6px;"><input type="checkbox" checked> Aparecer en búsquedas</label>
-                <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text);"><input type="checkbox"> Destacar en home</label>
+                <label class="u-flex u-items-center u-gap-2 u-text-md u-text-dark" style="text-transform: none; letter-spacing: 0;"><input type="checkbox"> Destacar en home</label>
               </div>
             </div>
 
             <div class="admin-card">
-              <h3 style="margin-bottom: var(--space-3);">Precio</h3>
+              <h3 class="u-mb-3">Precio</h3>
               <div class="admin-form__group">
                 <label>Precio venta (Gs)</label>
                 <input type="text" class="js-input-precio">
@@ -138,21 +138,21 @@
             </div>
 
             <div class="admin-card">
-              <h3 style="margin-bottom: var(--space-3);">Stock</h3>
+              <h3 class="u-mb-3">Stock</h3>
               <div class="admin-form__group">
                 <label>Cantidad disponible</label>
                 <input type="text" class="js-input-stock">
               </div>
               <div class="admin-form__group" style="margin-top: var(--space-2);">
-                <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text);"><input type="checkbox" class="js-input-unica"> Es pieza única (no se repone)</label>
+                <label class="u-flex u-items-center u-gap-2 u-text-md u-text-dark" style="text-transform: none; letter-spacing: 0;"><input type="checkbox" class="js-input-unica"> Es pieza única (no se repone)</label>
               </div>
               <div class="admin-form__group" style="margin-top: var(--space-2);">
-                <label style="display:flex; align-items:center; gap:8px; font-size:13px; text-transform: none; letter-spacing: 0; color: var(--color-text);"><input type="checkbox"> Avisar cuando queden menos de 2</label>
+                <label class="u-flex u-items-center u-gap-2 u-text-md u-text-dark" style="text-transform: none; letter-spacing: 0;"><input type="checkbox"> Avisar cuando queden menos de 2</label>
               </div>
             </div>
 
             <div class="admin-card">
-              <h3 style="margin-bottom: var(--space-3);">Categoría</h3>
+              <h3 class="u-mb-3">Categoría</h3>
               <div class="admin-form__group">
                 <label>Categoría principal</label>
                 <select><option>Anillos</option><option>Collares</option><option>Aros</option><option>Pulseras</option><option>Hogar · Decoración</option></select>
@@ -171,8 +171,8 @@
   </div>
 
   <script src="../js/products.js?v=1"></script>
-  <script src="js/admin-data.js?v=2"></script>
-  <script src="js/admin-shell.js?v=2"></script>
+  <script src="js/admin-data.js?v=3"></script>
+  <script src="js/admin-shell.js?v=3"></script>
   <script>
     MOMAR_renderAdminShell('productos.html', 'Editar producto');
     const params = new URLSearchParams(location.search);

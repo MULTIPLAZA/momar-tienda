@@ -623,6 +623,11 @@ body:has(.admin-shell) {
 .u-items-center { align-items: center; }
 .u-items-start { align-items: flex-start; }
 .u-justify-between { justify-content: space-between; }
+.u-justify-center { justify-content: center; }
+.u-justify-end { justify-content: flex-end; }
+.u-mr-1 { margin-right: 4px; }
+.u-mr-2 { margin-right: 8px; }
+.u-py-1 { padding-top: 4px; padding-bottom: 4px; }
 .u-gap-1 { gap: 4px; }
 .u-gap-2 { gap: 8px; }
 .u-gap-3 { gap: 12px; }

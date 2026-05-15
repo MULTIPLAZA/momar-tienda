@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=5">
+  <link rel="stylesheet" href="css/admin.css?v=6">
 </head>
 <body>
   <div class="admin-shell">
@@ -16,99 +16,95 @@
       <div class="admin-topbar"></div>
       <main class="admin-main">
 
-        <div style="margin-bottom: var(--space-2);"><a href="pedidos.html" style="font-size:12px; color: var(--color-text-soft); letter-spacing: 1px; text-transform: uppercase;">← Pedidos</a></div>
+        <div class="u-mb-2"><a href="pedidos.html" class="u-text-base u-text-soft u-uppercase">← Pedidos</a></div>
 
         <div class="admin-main__head">
           <div>
-            <h1>Pedido <span class="js-num">#____</span> <span class="js-pago-pill" style="margin-left: 8px;"></span></h1>
-            <p style="color: var(--color-text-soft); font-size: 13px; margin: 4px 0 0;"><span class="js-fecha">—</span> · <span class="js-cliente">—</span></p>
+            <h1>Pedido <span class="js-num">#____</span> <span class="js-pago-pill u-ml-2"></span></h1>
+            <p class="u-text-md u-text-soft u-mt-1 u-mb-0"><span class="js-fecha">—</span> · <span class="js-cliente">—</span></p>
           </div>
           <div class="actions">
-            <button class="btn-sm">📄 KUDE PDF</button>
-            <button class="btn-sm">📧 Reenviar email</button>
-            <a class="btn-sm btn-sm--primary js-whatsapp" target="_blank">💬 Escribir por WhatsApp</a>
+            <button class="btn-sm">KUDE PDF</button>
+            <button class="btn-sm">Reenviar email</button>
+            <a class="btn-sm btn-sm--primary js-whatsapp" target="_blank">Escribir por WhatsApp</a>
           </div>
         </div>
 
-        <!-- Timeline -->
         <div class="admin-card">
-          <h3 style="margin-bottom: var(--space-3);">Estado del pedido</h3>
+          <h3 class="u-mb-3">Estado del pedido</h3>
           <div class="pedido-timeline js-timeline"></div>
-          <div style="display: flex; gap: 8px; margin-top: var(--space-3);">
+          <div class="u-flex u-gap-2 u-mt-3">
             <button class="btn-sm">Marcar como preparado</button>
             <button class="btn-sm btn-sm--primary">Marcar como enviado</button>
             <button class="btn-sm btn-sm--ghost">Marcar como entregado</button>
-            <button class="btn-sm btn-sm--danger" style="margin-left: auto;">Cancelar pedido</button>
+            <button class="btn-sm btn-sm--danger u-mt-auto" style="margin-left: auto;">Cancelar pedido</button>
           </div>
         </div>
 
         <div class="pedido-detalle">
           <div>
-            <!-- Items -->
-            <div class="admin-card" style="padding: 0;">
-              <div class="admin-card__head" style="padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-line); margin: 0;"><h3>Productos</h3></div>
-              <table class="admin-table" style="border:none;">
+            <div class="admin-card u-card-flush">
+              <div class="admin-card__head"><h3>Productos</h3></div>
+              <table class="admin-table">
                 <thead><tr><th></th><th>Producto</th><th class="col-num">Cant.</th><th class="col-num">Precio</th><th class="col-num">Total</th></tr></thead>
                 <tbody class="js-items"></tbody>
               </table>
-              <div style="padding: var(--space-3) var(--space-4); border-top: 1px solid var(--color-line);">
-                <div class="resumen__linea" style="display:flex; justify-content:space-between; padding: 4px 0; font-size: 13px;"><span>Subtotal</span><span class="js-subtotal">—</span></div>
-                <div class="resumen__linea" style="display:flex; justify-content:space-between; padding: 4px 0; font-size: 13px;"><span>Envío</span><span style="color: var(--color-success);">GRATIS</span></div>
-                <div class="resumen__linea" style="display:flex; justify-content:space-between; padding: 8px 0 0; font-size: 18px; font-weight: 600; border-top: 1px solid var(--color-line); margin-top: 4px;"><span>Total</span><span class="js-total">—</span></div>
+              <div style="padding: 12px 16px; border-top: 1px solid var(--color-line);">
+                <div class="u-flex u-justify-between u-text-md u-py-1"><span>Subtotal</span><span class="js-subtotal">—</span></div>
+                <div class="u-flex u-justify-between u-text-md u-py-1"><span>Envío</span><span class="u-text-success">GRATIS</span></div>
+                <div class="u-flex u-justify-between u-fw-600 u-text-xl u-mt-2" style="padding-top: 8px; border-top: 1px solid var(--color-line);"><span>Total</span><span class="js-total u-tabular">—</span></div>
               </div>
             </div>
 
-            <!-- Notas internas -->
             <div class="admin-card">
               <h3>Notas internas</h3>
-              <p class="admin-card__sub" style="margin-bottom: var(--space-3);">Sólo visibles para el equipo. No las ve la clienta.</p>
-              <textarea class="js-notas" placeholder="Ej: clienta pidió packaging extra, llamar antes de enviar, etc." style="width:100%; border: 1px solid var(--color-line); padding: 10px; font: inherit; font-size: 14px; min-height: 80px; outline: none; line-height: 1.5;"></textarea>
-              <div style="display:flex; justify-content: flex-end; margin-top: 8px;">
+              <p class="admin-card__sub u-mb-3">Sólo visibles para el equipo. No las ve la clienta.</p>
+              <textarea class="js-notas u-w-full" placeholder="Ej: clienta pidió packaging extra, llamar antes de enviar, etc." style="border: 1px solid var(--color-line); padding: 10px; font: inherit; font-size: 14px; min-height: 80px; outline: none; line-height: 1.5;"></textarea>
+              <div class="u-flex u-mt-2" style="justify-content: flex-end;">
                 <button class="btn-sm btn-sm--primary">Guardar nota</button>
               </div>
             </div>
           </div>
 
-          <!-- Sidebar derecho -->
           <div>
             <div class="admin-card">
               <h3>Cliente</h3>
-              <div style="font-size: 14px; line-height: 1.6;">
+              <div class="u-text-lg u-line-loose">
                 <div><strong class="js-cliente-2">—</strong></div>
-                <div class="js-email">—</div>
-                <div class="js-whatsapp-txt">—</div>
+                <div class="js-email"></div>
+                <div class="js-whatsapp-txt"></div>
               </div>
-              <a href="cliente.html" class="btn-sm" style="margin-top: var(--space-3); display: inline-block;">Ver perfil →</a>
+              <a href="cliente.html" class="btn-sm u-mt-3" style="display: inline-block;">Ver perfil →</a>
             </div>
 
             <div class="admin-card">
               <h3>Pago</h3>
-              <div style="font-size: 14px;">
+              <div class="u-text-lg">
                 <div><span class="js-pago-metodo">—</span></div>
-                <div style="margin: 6px 0;" class="js-pago-pill-2"></div>
-                <div style="font-size: 12px; color: var(--color-text-soft); margin-top: 8px;" class="js-pago-extra"></div>
+                <div class="js-pago-pill-2 u-mt-1 u-mb-2"></div>
+                <div class="js-pago-extra u-text-base u-text-soft u-mt-2"></div>
               </div>
             </div>
 
             <div class="admin-card">
               <h3>Envío</h3>
-              <div style="font-size: 14px;">
+              <div class="u-text-lg">
                 <div><strong class="js-envio-tipo">—</strong></div>
-                <div style="font-size: 12px; color: var(--color-text-soft); margin: 4px 0 8px;" class="js-direccion">—</div>
+                <div class="js-direccion u-text-base u-text-soft u-mt-1 u-mb-2">—</div>
                 <div class="js-envio-pill"></div>
               </div>
-              <button class="btn-sm" style="margin-top: var(--space-3); width: 100%;">Generar etiqueta</button>
+              <button class="btn-sm u-w-full u-mt-3">Generar etiqueta</button>
             </div>
 
             <div class="admin-card">
               <h3>Facturación SIFEN</h3>
-              <div style="font-size: 13px;">
+              <div class="u-text-md">
                 <div>Factura: <strong class="js-factura">—</strong></div>
-                <div style="font-size: 11px; color: var(--color-text-soft); margin-top: 6px; font-family: monospace; word-break: break-all;" class="js-cdc">—</div>
+                <div class="js-cdc u-text-sm u-text-soft u-mt-1" style="font-family: monospace; word-break: break-all;">—</div>
               </div>
-              <div style="display: flex; gap: 6px; margin-top: var(--space-3);">
-                <button class="btn-sm" style="flex: 1;">Ver XML</button>
-                <button class="btn-sm" style="flex: 1;">KUDE</button>
+              <div class="u-flex u-gap-1 u-mt-3">
+                <button class="btn-sm u-flex-1">Ver XML</button>
+                <button class="btn-sm u-flex-1">KUDE</button>
               </div>
             </div>
           </div>
@@ -119,8 +115,8 @@
   </div>
 
   <script src="../js/products.js?v=1"></script>
-  <script src="js/admin-data.js?v=2"></script>
-  <script src="js/admin-shell.js?v=2"></script>
+  <script src="js/admin-data.js?v=3"></script>
+  <script src="js/admin-shell.js?v=3"></script>
   <script>
     const params = new URLSearchParams(location.search);
     const n = params.get('n') || '1247';
@@ -129,7 +125,6 @@
     MOMAR_renderAdminShell('pedidos.html', `Pedido ${p.num}`);
     const fmt = window.MOMAR_fmtGs;
 
-    // Head
     document.querySelector('.js-num').textContent = p.num;
     document.querySelector('.js-pago-pill').innerHTML = window.MOMAR_pillPago(p.pagoEstado);
     document.querySelector('.js-pago-pill-2').innerHTML = window.MOMAR_pillPago(p.pagoEstado);
@@ -139,12 +134,11 @@
     document.querySelector('.js-whatsapp-txt').textContent = p.whatsapp;
     document.querySelector('.js-whatsapp').href = 'https://wa.me/' + p.whatsapp.replace(/\D/g, '') + '?text=Hola%20' + encodeURIComponent(p.cliente.split(' ')[0]) + '%2C%20pas%C3%A1ndote%20info%20sobre%20tu%20pedido%20' + encodeURIComponent(p.num) + '%20de%20MOMAR.';
 
-    // Items mock (2 random productos del catálogo)
     const items = window.MOMAR_PRODUCTS.slice(0, p.items);
     document.querySelector('.js-items').innerHTML = items.map(it => `
       <tr>
         <td class="col-mini-img"><img src="${it.imagen}" onerror="this.style.opacity=0;"></td>
-        <td><strong>${it.nombre}</strong><br><span style="font-size: 11px; color: var(--color-text-soft);">${it.material}${it.variantes ? ' · ' + it.variantes.tipo + ' ' + it.variantes.default : ''}</span></td>
+        <td><strong>${it.nombre}</strong><br><span class="u-text-sm u-text-soft">${it.material}${it.variantes ? ' · ' + it.variantes.tipo + ' ' + it.variantes.default : ''}</span></td>
         <td class="col-num">1</td>
         <td class="col-num">${fmt(it.precio)}</td>
         <td class="col-num"><strong>${fmt(it.precio)}</strong></td>
@@ -153,25 +147,20 @@
     document.querySelector('.js-subtotal').textContent = fmt(p.total);
     document.querySelector('.js-total').textContent = fmt(p.total);
 
-    // Pago
     document.querySelector('.js-pago-metodo').textContent = p.pago;
     if (p.pagoEstado === 'a_confirmar') {
-      document.querySelector('.js-pago-extra').innerHTML = 'La clienta envió comprobante por WhatsApp.<br><button class="btn-sm btn-sm--primary" style="margin-top: 8px;">Confirmar pago</button>';
+      document.querySelector('.js-pago-extra').innerHTML = 'La clienta envió comprobante por WhatsApp.<br><button class="btn-sm btn-sm--primary u-mt-2">Confirmar pago</button>';
     }
 
-    // Envío
     document.querySelector('.js-envio-tipo').textContent = p.envio;
     document.querySelector('.js-direccion').textContent = p.direccion;
     document.querySelector('.js-envio-pill').innerHTML = window.MOMAR_pillEnvio(p.envioEstado);
 
-    // SIFEN
     document.querySelector('.js-factura').textContent = p.factura || 'No emitida aún';
     document.querySelector('.js-cdc').textContent = p.cdc || '—';
 
-    // Notas
     document.querySelector('.js-notas').value = p.notas || '';
 
-    // Timeline
     const states = ['Recibido', 'Pago confirmado', 'Preparado', 'Enviado', 'Entregado'];
     const stateIdx = {
       pendiente: p.pagoEstado === 'pagado' ? 1 : 0,

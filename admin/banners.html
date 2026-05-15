@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=5">
+  <link rel="stylesheet" href="css/admin.css?v=6">
 </head>
 <body>
   <div class="admin-shell">
@@ -19,7 +19,7 @@
         <div class="admin-main__head">
           <div>
             <h1>Banners de la tienda</h1>
-            <p style="color: var(--color-text-soft); font-size: 13px; margin: 4px 0 0;">Hero principal, banners promocionales y home secundarios. Arrastrá para reordenar.</p>
+            <p class="u-text-md u-text-soft u-mt-1 u-mb-0">Hero principal, banners promocionales y home secundarios. Arrastrá para reordenar.</p>
           </div>
           <div class="actions">
             <button class="btn-sm">📐 Plantillas Canva</button>
@@ -28,12 +28,12 @@
         </div>
 
         <div class="admin-card">
-          <h3 style="margin-bottom: var(--space-3);">Hero principal de la home</h3>
-          <p class="admin-card__sub" style="margin-bottom: var(--space-3);">Solo uno activo a la vez. Cambia automáticamente cuando programás otro.</p>
+          <h3 class="u-mb-3">Hero principal de la home</h3>
+          <p class="admin-card__sub u-mb-3">Solo uno activo a la vez. Cambia automáticamente cuando programás otro.</p>
 
           <div class="js-banners-hero"></div>
 
-          <div class="uploader" style="margin-top: var(--space-3);">
+          <div class="uploader u-mt-3">
             <svg class="uploader__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4v12m0-12 4 4m-4-4-4 4M4 20h16"/></svg>
             <div class="uploader__title">Subir nuevo banner</div>
             <div class="uploader__sub">JPG o PNG · proporción 21:9 · mín. 1920×820 px · máx. 800 KB</div>
@@ -43,7 +43,7 @@
         <div class="admin-grid-2">
 
           <div class="admin-card">
-            <h3 style="margin-bottom: var(--space-3);">Plantilla del banner</h3>
+            <h3 class="u-mb-3">Plantilla del banner</h3>
             <div class="admin-form">
               <div class="admin-form__group">
                 <label>Título (titular del banner)</label>
@@ -82,16 +82,16 @@
           </div>
 
           <div class="admin-card">
-            <h3 style="margin-bottom: var(--space-3);">Banner promo del home</h3>
-            <p class="admin-card__sub" style="margin-bottom: var(--space-3);">El banner ancho oscuro que aparece después de productos destacados.</p>
+            <h3 class="u-mb-3">Banner promo del home</h3>
+            <p class="admin-card__sub u-mb-3">El banner ancho oscuro que aparece después de productos destacados.</p>
             <div class="js-banner-promo"></div>
-            <button class="btn-sm" style="width: 100%; margin-top: var(--space-3);">Editar banner promo</button>
+            <button class="btn-sm u-w-full u-mt-3">Editar banner promo</button>
           </div>
 
         </div>
 
         <div class="admin-card">
-          <h3 style="margin-bottom: var(--space-3);">Banners programados / inactivos</h3>
+          <h3 class="u-mb-3">Banners programados / inactivos</h3>
           <div class="js-banners-inactivos"></div>
         </div>
 
@@ -100,8 +100,8 @@
   </div>
 
   <script src="../js/products.js?v=1"></script>
-  <script src="js/admin-data.js?v=2"></script>
-  <script src="js/admin-shell.js?v=2"></script>
+  <script src="js/admin-data.js?v=3"></script>
+  <script src="js/admin-shell.js?v=3"></script>
   <script>
     MOMAR_renderAdminShell('banners.html', 'Banners');
     const bs = window.MOMAR_BANNERS;

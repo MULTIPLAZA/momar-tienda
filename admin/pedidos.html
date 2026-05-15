@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=5">
+  <link rel="stylesheet" href="css/admin.css?v=6">
 </head>
 <body>
   <div class="admin-shell">
@@ -17,7 +17,7 @@
       <main class="admin-main">
 
         <div class="admin-main__head">
-          <h1>Pedidos <span style="color: var(--color-text-soft); font-weight: 400; font-size: 14px;" class="js-total-count">cargando…</span></h1>
+          <h1>Pedidos <span class="js-total-count u-text-soft u-fw-400 u-text-lg">cargando…</span></h1>
           <div class="actions">
             <button class="btn-sm">Exportar CSV</button>
             <button class="btn-sm btn-sm--primary">+ Pedido manual</button>
@@ -48,7 +48,7 @@
               <option>Este mes</option>
               <option>Personalizado</option>
             </select>
-            <input type="text" placeholder="Buscar #, cliente, CDC…" style="width: 260px;">
+            <input type="text" placeholder="Buscar #, cliente, CDC…" class="u-w-full" style="max-width: 260px;">
           </div>
           <div>
             <select>
@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <div class="admin-table-wrap" style="background: var(--color-bg);">
+        <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
               <tr>
@@ -79,9 +79,9 @@
           </table>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: var(--space-3); font-size: 12px; color: var(--color-text-soft);">
+        <div class="u-flex u-justify-between u-items-center u-mt-3 u-text-base u-text-soft">
           <div>Mostrando 1-8 de 8 pedidos</div>
-          <div style="display:flex; gap: 4px;">
+          <div class="u-flex u-gap-1">
             <button class="btn-sm btn-sm--ghost" disabled>← Anterior</button>
             <button class="btn-sm btn-sm--ghost" disabled>Siguiente →</button>
           </div>
@@ -92,8 +92,8 @@
   </div>
 
   <script src="../js/products.js?v=1"></script>
-  <script src="js/admin-data.js?v=2"></script>
-  <script src="js/admin-shell.js?v=2"></script>
+  <script src="js/admin-data.js?v=3"></script>
+  <script src="js/admin-shell.js?v=3"></script>
   <script>
     MOMAR_renderAdminShell('pedidos.html', 'Pedidos');
     const fmt = window.MOMAR_fmtGs;
@@ -104,12 +104,12 @@
         <td><input type="checkbox"></td>
         <td><a href="pedido.html?n=${p.num.replace('#','')}"><strong>${p.num}</strong></a></td>
         <td>${p.fecha}</td>
-        <td><strong>${p.cliente}</strong><br><span style="font-size: 11px; color: var(--color-text-soft);">${p.whatsapp}</span></td>
+        <td><strong>${p.cliente}</strong><br><span class="u-text-sm u-text-soft">${p.whatsapp}</span></td>
         <td class="col-hide-sm">${p.items}</td>
         <td class="col-num"><strong>${fmt(p.total)}</strong></td>
-        <td>${window.MOMAR_pillPago(p.pagoEstado)}<br><span style="font-size: 11px; color: var(--color-text-soft);">${p.pago}</span></td>
-        <td>${window.MOMAR_pillEnvio(p.envioEstado)}<br><span style="font-size: 11px; color: var(--color-text-soft);">${p.envio}</span></td>
-        <td class="col-hide-sm"><span style="font-size: 11px; font-family: monospace; color: var(--color-text-soft);">${p.cdc ? p.cdc.substring(0, 16) + '…' : '—'}</span></td>
+        <td>${window.MOMAR_pillPago(p.pagoEstado)}<br><span class="u-text-sm u-text-soft">${p.pago}</span></td>
+        <td>${window.MOMAR_pillEnvio(p.envioEstado)}<br><span class="u-text-sm u-text-soft">${p.envio}</span></td>
+        <td class="col-hide-sm"><span class="u-text-sm u-text-soft" style="font-family: monospace;">${p.cdc ? p.cdc.substring(0, 16) + '…' : '—'}</span></td>
         <td class="col-actions">
           <a href="pedido.html?n=${p.num.replace('#','')}" class="btn-sm btn-sm--ghost">Ver →</a>
         </td>
