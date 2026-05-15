@@ -61,17 +61,48 @@ const supa = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false }
 });
 
-async function subirFoto(filePath, sku) {
+async function subirFoto(filePath, sku, slot = 'main') {
   const buffer = fs.readFileSync(filePath);
   const ext = path.extname(filePath).toLowerCase().slice(1) || 'jpg';
-  const key = `${sku}/main.${ext}`;
+  const key = `${sku}/${slot}.${ext}`;
   const contentType = ext === 'png' ? 'image/png' : 'image/jpeg';
   const { data, error } = await supa.storage
     .from(BUCKET)
     .upload(key, buffer, { contentType, upsert: true });
-  if (error) throw new Error(`Upload falló para ${sku}: ${error.message}`);
+  if (error) throw new Error(`Upload falló para ${sku}/${slot}: ${error.message}`);
   const { data: pub } = supa.storage.from(BUCKET).getPublicUrl(key);
   return pub.publicUrl;
+}
+
+async function subirFotosExtras(extras, sku, productoId, fotosDir, nombre) {
+  // extras: array de nombres de archivo relativos a fotosDir
+  for (let i = 0; i < extras.length; i++) {
+    const fname = extras[i];
+    const fpath = path.join(fotosDir, fname);
+    if (!fs.existsSync(fpath)) {
+      console.warn(`    ⚠ extra no encontrada: ${fname}`);
+      continue;
+    }
+    const orden = i + 2;
+    const slot = `foto-${orden}`;
+    process.stdout.write(`    extra ${orden}: ${fname}...`);
+    try {
+      const url = await subirFoto(fpath, sku, slot);
+      // DELETE + INSERT (mismo patrón que la principal por las unique constraints)
+      await supa.from('producto_fotos').delete().eq('producto_id', productoId).eq('orden', orden);
+      const { error: fErr } = await supa.from('producto_fotos').insert({
+        producto_id: productoId,
+        url,
+        orden,
+        es_principal: false,
+        alt: nombre,
+      });
+      if (fErr) console.warn(` ⚠ ${fErr.message}`);
+      else process.stdout.write(' ✓\n');
+    } catch (e) {
+      console.warn(` ❌ ${e.message}`);
+    }
+  }
 }
 
 async function upsertProducto(p, fotoUrl) {
@@ -152,15 +183,22 @@ async function main() {
     try {
       let fotoUrl = null;
       if (p.foto_path && fs.existsSync(p.foto_path)) {
-        process.stdout.write(`  ${sku}: subiendo foto...`);
-        fotoUrl = await subirFoto(p.foto_path, sku);
+        process.stdout.write(`  ${sku}: subiendo foto principal...`);
+        fotoUrl = await subirFoto(p.foto_path, sku, 'main');
         process.stdout.write(' ✓\n');
       } else if (p.foto_path) {
         console.warn(`  ${sku}: foto no encontrada en ${p.foto_path}, sigo sin imagen`);
       }
       process.stdout.write(`  ${sku}: upsert producto...`);
-      await upsertProducto(p, fotoUrl);
+      const prod = await upsertProducto(p, fotoUrl);
       process.stdout.write(' ✓\n');
+
+      // Subir fotos extras si vienen en _meta.fotos_extra
+      const extras = p._meta && Array.isArray(p._meta.fotos_extra) ? p._meta.fotos_extra : [];
+      if (extras.length && prod && p.foto_path) {
+        const fotosDir = path.dirname(p.foto_path);
+        await subirFotosExtras(extras, sku, prod.id, fotosDir, p.nombre);
+      }
       okList.push(sku);
     } catch (e) {
       console.error(`  ${sku}: ❌ ${e.message}`);

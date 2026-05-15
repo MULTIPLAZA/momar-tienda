@@ -116,6 +116,21 @@
     `;
   }
 
+  function buildSearchModal() {
+    return `
+      <div class="search-modal" role="dialog" aria-label="Buscar">
+        <div class="search-modal__head">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:20px; height:20px; margin-right:12px; flex-shrink:0;"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" class="search-modal__input js-search-input" placeholder="Buscá por nombre, código o material…" autocomplete="off" autofocus>
+          <button class="search-modal__close js-search-close" aria-label="Cerrar">Cerrar ×</button>
+        </div>
+        <div class="search-modal__results js-search-results">
+          <p class="search-modal__hint">Escribí para buscar entre las piezas. Tip: probá "anillo", "plata", "oro 18k".</p>
+        </div>
+      </div>
+    `;
+  }
+
   function buildCartDrawer() {
     return `
       <div class="drawer-overlay"></div>
@@ -152,7 +167,7 @@
     const bottomMount = document.querySelector('.js-shell-bottom');
     const headerHtml = buildHeader(opts);
     const footerHtml = buildFooter(opts);
-    const overlaysHtml = (opts.minimal ? '' : buildMobileMenu()) + buildCartDrawer() + (opts.minimal ? '' : buildWaFloat());
+    const overlaysHtml = (opts.minimal ? '' : buildMobileMenu()) + (opts.minimal ? '' : buildSearchModal()) + buildCartDrawer() + (opts.minimal ? '' : buildWaFloat());
 
     if (topMount) {
       topMount.outerHTML = headerHtml;
@@ -173,5 +188,70 @@
       const mode = meta.getAttribute('content');
       window.MOMAR_renderShell({ minimal: mode === 'minimal' });
     }
+    // Wirear el buscador (después del render del shell)
+    wireSearch();
   });
+
+  function wireSearch() {
+    function open() {
+      document.body.classList.add('search-open');
+      setTimeout(() => document.querySelector('.js-search-input')?.focus(), 50);
+    }
+    function close() {
+      document.body.classList.remove('search-open');
+      const input = document.querySelector('.js-search-input');
+      if (input) input.value = '';
+      const res = document.querySelector('.js-search-results');
+      if (res) res.innerHTML = '<p class="search-modal__hint">Escribí para buscar entre las piezas. Tip: probá "anillo", "plata", "oro 18k".</p>';
+    }
+
+    // Lupa del header
+    document.querySelectorAll('.header__action-search').forEach(b => b.addEventListener('click', open));
+    document.querySelectorAll('.js-search-close').forEach(b => b.addEventListener('click', close));
+    // ESC para cerrar
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.body.classList.contains('search-open')) close();
+    });
+
+    // Input → busca en vivo
+    document.addEventListener('input', async (e) => {
+      if (!e.target.matches('.js-search-input')) return;
+      // Esperar a que MOMAR_PRODUCTS esté listo (puede tardar al primer abrir)
+      if (window.MOMAR_READY) { try { await window.MOMAR_READY; } catch (_) {} }
+      const q = e.target.value.trim().toLowerCase();
+      const res = document.querySelector('.js-search-results');
+      if (!res) return;
+      if (!q || q.length < 2) {
+        res.innerHTML = '<p class="search-modal__hint">Escribí para buscar entre las piezas. Tip: probá "anillo", "plata", "oro 18k".</p>';
+        return;
+      }
+      const fmt = window.MOMAR_fmtGs;
+      const matches = (window.MOMAR_PRODUCTS || []).filter(p =>
+        (p.nombre || '').toLowerCase().includes(q) ||
+        (p.sku || '').toLowerCase().includes(q) ||
+        (p.material || '').toLowerCase().includes(q) ||
+        (p.cat || '').toLowerCase().includes(q) ||
+        (p.descripcion_corta || '').toLowerCase().includes(q)
+      ).slice(0, 8);
+
+      if (!matches.length) {
+        res.innerHTML = `<p class="search-modal__hint">No encontramos nada para "<strong>${q}</strong>". Probá con otra palabra.</p>`;
+        return;
+      }
+      res.innerHTML = matches.map(p => `
+        <a href="producto.html?sku=${encodeURIComponent(p.sku)}" class="search-modal__item">
+          <div class="search-modal__item-img">
+            <img src="${p.imagen}" alt="${p.nombre}" loading="lazy" onerror="this.style.opacity=0;">
+          </div>
+          <div class="search-modal__item-body">
+            <div class="search-modal__item-cat">${p.cat || ''} · ${p.material || ''}</div>
+            <div class="search-modal__item-nombre">${p.nombre}</div>
+            <div class="search-modal__item-precio">${fmt ? fmt(p.precio) : 'Gs ' + p.precio}</div>
+          </div>
+        </a>
+      `).join('') + `
+        <a href="catalogo.html?q=${encodeURIComponent(q)}" class="search-modal__see-all">Ver todos los resultados de "${q}" →</a>
+      `;
+    });
+  }
 })();

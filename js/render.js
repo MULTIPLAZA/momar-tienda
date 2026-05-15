@@ -94,18 +94,69 @@
       cats.innerHTML = window.MOMAR_CATEGORIAS.map(categoriaCard).join('');
     }
 
-    // Catálogo completo
+    // Catálogo completo (con filtros + ordenamiento reactivos)
     const catalogo = document.querySelector('.js-grid-catalogo');
     if (catalogo) {
-      const params = new URLSearchParams(location.search);
-      const filterCat = params.get('cat');
-      let list = window.MOMAR_PRODUCTS;
-      if (filterCat) {
-        list = list.filter(p => p.cat_slug === filterCat || p.cat.toLowerCase() === filterCat.toLowerCase());
-      }
-      catalogo.innerHTML = list.map(productCard).join('');
-      const countEl = document.querySelector('.js-catalogo-count');
-      if (countEl) countEl.textContent = list.length + ' productos';
+      window.MOMAR_renderCatalogo = function() {
+        const params = new URLSearchParams(location.search);
+        const filterCatUrl = params.get('cat');
+        const q = (params.get('q') || '').toLowerCase().trim();
+
+        // Estado de filtros desde checkboxes laterales
+        const checks = (group) => Array.from(document.querySelectorAll(`.filtros .filtro-grupo[data-group="${group}"] input[type=checkbox]:checked`)).map(c => c.value);
+        const catsSel = checks('categoria');
+        const matsSel = checks('material');
+        const preciosSel = checks('precio');
+        const dispSel = checks('disponibilidad');
+
+        let list = (window.MOMAR_PRODUCTS || []).slice();
+
+        // Filtro por URL ?cat=
+        if (filterCatUrl) {
+          list = list.filter(p => p.cat_slug === filterCatUrl || (p.cat || '').toLowerCase() === filterCatUrl.toLowerCase());
+        }
+        // Filtro búsqueda libre ?q=
+        if (q) {
+          list = list.filter(p =>
+            (p.nombre || '').toLowerCase().includes(q) ||
+            (p.sku || '').toLowerCase().includes(q) ||
+            (p.material || '').toLowerCase().includes(q) ||
+            (p.descripcion_corta || '').toLowerCase().includes(q)
+          );
+        }
+        // Categorías checkbox
+        if (catsSel.length) {
+          list = list.filter(p => catsSel.includes(p.cat_slug) || catsSel.some(s => (p.cat || '').toLowerCase() === s.toLowerCase()));
+        }
+        // Material checkbox (contains, case-insensitive)
+        if (matsSel.length) {
+          list = list.filter(p => matsSel.some(m => (p.material || '').toLowerCase().includes(m.toLowerCase())));
+        }
+        // Precio rangos
+        if (preciosSel.length) {
+          list = list.filter(p => preciosSel.some(rng => {
+            const [min, max] = rng.split('-').map(Number);
+            return p.precio >= min && (isNaN(max) || p.precio <= max);
+          }));
+        }
+        // Disponibilidad
+        if (dispSel.includes('stock'))    list = list.filter(p => p.stock > 0);
+        if (dispSel.includes('unica'))    list = list.filter(p => p.es_unica);
+        if (dispSel.includes('oferta'))   list = list.filter(p => p.precio_antes);
+
+        // Ordenamiento
+        const orden = document.querySelector('.js-orden')?.value || 'destacados';
+        if (orden === 'precio-asc') list.sort((a, b) => a.precio - b.precio);
+        else if (orden === 'precio-desc') list.sort((a, b) => b.precio - a.precio);
+        else if (orden === 'nuevos') list.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+
+        catalogo.innerHTML = list.length
+          ? list.map(productCard).join('')
+          : '<p style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--color-text-soft); font-family: var(--font-display); font-style: italic; font-size: 22px;">No encontramos piezas que coincidan con tu búsqueda.</p>';
+        const countEl = document.querySelector('.js-catalogo-count');
+        if (countEl) countEl.textContent = list.length + (list.length === 1 ? ' producto' : ' productos');
+      };
+      window.MOMAR_renderCatalogo();
     }
 
     // Hero image
