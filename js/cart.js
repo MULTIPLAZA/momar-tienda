@@ -54,6 +54,9 @@
 
   window.cart = new Cart();
 
+  // Esperar a que los datos remotos estén antes de wirear delegación que usa MOMAR_findProduct
+  const ready = window.MOMAR_READY || Promise.resolve();
+
   // ---- UI helpers ----
 
   function updateBadge(animate) {

@@ -73,7 +73,15 @@
     `;
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Esperar a que Supabase termine de cargar (o fallback inmediato si flag off)
+    if (window.MOMAR_READY) {
+      try { await window.MOMAR_READY; } catch (e) { console.warn('[MOMAR] datos no listos:', e); }
+    }
+
+    // Mostrar mensaje suave si el catálogo viene vacío
+    const noData = !window.MOMAR_PRODUCTS || window.MOMAR_PRODUCTS.length === 0;
+
     // Grid de destacados (primeros 8 de la lista)
     const destacados = document.querySelector('.js-grid-destacados');
     if (destacados) {

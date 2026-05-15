@@ -108,16 +108,19 @@ async function upsertProducto(p, fotoUrl) {
   if (error) throw new Error(`Upsert productos falló para ${p.sku}: ${error.message}`);
 
   // Asociar foto principal en producto_fotos
+  // (DELETE + INSERT en vez de upsert porque la tabla solo tiene partial unique
+  //  para es_principal=true, no compuesto producto_id+orden)
   if (fotoUrl) {
+    await supa.from('producto_fotos').delete().eq('producto_id', data.id).eq('orden', 1);
     const { error: fotoErr } = await supa
       .from('producto_fotos')
-      .upsert({
+      .insert({
         producto_id: data.id,
         url: fotoUrl,
         orden: 1,
         es_principal: true,
         alt: p.nombre
-      }, { onConflict: 'producto_id,orden' });
+      });
     if (fotoErr) console.warn(`  ⚠ foto no asociada para ${p.sku}: ${fotoErr.message}`);
   }
   return data;

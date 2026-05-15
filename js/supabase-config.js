@@ -12,4 +12,4 @@ window.MOMAR_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiO
 
 // Flag: si true, el frontend consume datos de Supabase. Si false, usa mocks de products.js
 // Activamos esto recién cuando las migrations + ingesta inicial estén OK.
-window.MOMAR_USE_SUPABASE = false;
+window.MOMAR_USE_SUPABASE = true;
