@@ -5,3 +5,9 @@ Thumbs.db
 *.log
 .vscode/
 .idea/
+
+# Secrets (jamás commitear)
+.env
+.env.local
+*.key
+*.pem
