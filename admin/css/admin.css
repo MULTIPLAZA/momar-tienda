@@ -31,24 +31,31 @@ body:has(.admin-shell) {
 .admin-shell h2 { font-size: 16px; }
 .admin-shell h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--color-text-soft); font-weight: 600; }
 
-/* Shell */
+/* Shell — sin overflow-x:hidden para no romper position:sticky (BUG #1) */
 .admin-shell {
   display: grid;
   grid-template-columns: var(--side-w) 1fr;
   min-height: 100vh;
-  overflow-x: hidden;
+}
+/* Grid item de la derecha: min-width:0 evita que tablas anchas empujen el layout (BUG #2) */
+.admin-shell > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* SIDEBAR */
 .admin-side {
   background: var(--color-dark);
   color: var(--color-bg);
-  padding: 0 0 var(--space-3);
+  padding: 0;
   display: flex;
   flex-direction: column;
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100dvh; /* BUG #3 — respeta barra Safari iOS retráctil */
+  z-index: 60; /* BUG #6 — encima del topbar (z:50) */
 }
 .admin-side__logo {
   padding: var(--space-3) var(--space-4);
@@ -59,30 +66,49 @@ body:has(.admin-shell) {
 }
 .admin-side__logo .logo-svg { height: 26px; color: var(--color-bg); }
 
+/* User card — ahora al PIE del sidebar (BUG #4 — ya no desalinea con topbar) */
 .admin-side__user {
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-line-dark);
+  padding: 12px var(--space-4);
+  border-top: 1px solid var(--color-line-dark);
+  border-bottom: none;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 10px;
+  margin-top: auto; /* lo empuja al fondo */
 }
 .admin-side__avatar {
-  width: 34px; height: 34px;
+  width: 30px; height: 30px;
   background: var(--color-nude);
   color: var(--color-dark);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 500;
+  flex-shrink: 0;
 }
 .admin-side__user-name { font-size: 13px; font-weight: 500; }
 .admin-side__user-role { font-size: 11px; opacity: 0.55; letter-spacing: 1px; text-transform: uppercase; }
 
 .admin-side__menu {
-  list-style: none; padding: var(--space-2) 0; margin: 0; flex: 1;
+  list-style: none;
+  padding: var(--space-2) 0;
+  margin: 0;
+  flex: 1;
   overflow-y: auto;
+  /* BUG #8 — scrollbar custom dentro del sidebar dark */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(232, 223, 211, 0.2) transparent;
+}
+.admin-side__menu::-webkit-scrollbar { width: 6px; }
+.admin-side__menu::-webkit-scrollbar-track { background: transparent; }
+.admin-side__menu::-webkit-scrollbar-thumb {
+  background: rgba(232, 223, 211, 0.18);
+  border-radius: 3px;
+}
+.admin-side__menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(232, 223, 211, 0.3);
 }
 .admin-side__menu li a {
   display: flex;
@@ -135,11 +161,14 @@ body:has(.admin-shell) {
 }
 
 .admin-side__foot {
-  padding: var(--space-2) var(--space-4);
+  /* BUG #9 — ya no depende de flex:1 del menú, queda al fondo por orden DOM (user con margin-top:auto) */
+  padding: 10px var(--space-4) 12px;
   font-size: 11px;
   opacity: 0.4;
   letter-spacing: 1px;
+  border-top: 1px solid var(--color-line-dark);
 }
+.admin-side__foot a { opacity: 1; }
 
 /* TOPBAR */
 .admin-topbar {
@@ -152,7 +181,8 @@ body:has(.admin-shell) {
   padding: 0 var(--space-4);
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 40; /* menor que sidebar (60) — BUG #6 */
+  gap: var(--space-2);
 }
 .admin-topbar__left { display: flex; align-items: center; gap: var(--space-3); }
 .admin-topbar__title { font-size: 18px; font-weight: 600; margin: 0; }
@@ -160,6 +190,9 @@ body:has(.admin-shell) {
 
 .admin-search {
   position: relative;
+  flex: 1;
+  max-width: 320px;
+  min-width: 0;
 }
 .admin-search input {
   border: 1px solid var(--color-line);
@@ -169,9 +202,10 @@ body:has(.admin-shell) {
   font-size: 13px;
   border-radius: 0;
   outline: none;
-  min-width: 280px;
+  width: 100%; /* BUG #7 — antes min-width: 280px empujaba en tablets */
   transition: border-color 0.2s;
 }
+.admin-topbar__right { flex-shrink: 0; }
 .admin-search input:focus { border-color: var(--color-text); background: var(--color-bg); }
 .admin-search svg {
   position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
@@ -584,12 +618,32 @@ body:has(.admin-shell) {
   .admin-shell { grid-template-columns: 1fr; }
   .admin-side {
     position: fixed; top: 0; left: 0;
-    width: 280px; height: 100vh;
+    width: 280px;
+    height: 100vh;
+    height: 100dvh;
     z-index: 200;
     transform: translateX(-100%);
     transition: transform 0.3s var(--ease);
+    box-shadow: 0 0 0 transparent;
   }
-  body.admin-menu-open .admin-side { transform: translateX(0); }
+  body.admin-menu-open .admin-side {
+    transform: translateX(0);
+    box-shadow: 4px 0 30px rgba(0,0,0,0.3);
+  }
+  /* BUG #5 — overlay oscuro al abrir menú en mobile */
+  body.admin-menu-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 15, 15, 0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 150;
+    animation: overlay-in 0.25s var(--ease);
+  }
+  @keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+  body.admin-menu-open { overflow: hidden; }
+
   .admin-hamburger {
     display: flex;
     width: 22px; height: 14px;
@@ -597,7 +651,8 @@ body:has(.admin-shell) {
     cursor: pointer;
   }
   .admin-hamburger span { display: block; width: 100%; height: 1.5px; background: currentColor; }
-  .admin-search input { min-width: 0; width: 130px; }
+  .admin-search { max-width: 200px; }
+  .admin-search input { font-size: 12px; }
 
   .kpis { grid-template-columns: repeat(2, 1fr); }
   .admin-grid-2, .admin-grid-3 { grid-template-columns: 1fr; }

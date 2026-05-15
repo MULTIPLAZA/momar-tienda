@@ -19,15 +19,8 @@
     return `
       <div class="admin-side__logo">
         <a href="index.html" aria-label="MOMAR">
-          <svg class="logo-svg" viewBox="0 0 200 50"><text x="100" y="38" text-anchor="middle" font-size="38" font-family="Cormorant Garamond, serif" font-weight="500" font-style="italic" fill="currentColor" letter-spacing="-0.5">MoMar</text></svg>
+          <svg class="logo-svg" viewBox="0 0 200 50"><text x="100" y="38" text-anchor="middle" font-size="38" font-family="Cormorant Garamond, serif" font-weight="500" font-style="italic" fill="currentColor" letter-spacing="0.5">MoMar</text></svg>
         </a>
-      </div>
-      <div class="admin-side__user">
-        <div class="admin-side__avatar">${u.inicial}</div>
-        <div>
-          <div class="admin-side__user-name">${u.nombre} ${u.apellido}</div>
-          <div class="admin-side__user-role">${u.rol}</div>
-        </div>
       </div>
       <ul class="admin-side__menu">
         ${PAGES.map(p => {
@@ -37,10 +30,15 @@
           return `<li class="${active}"><a href="${p.href}">${p.icon}<span>${p.label}</span>${badge}</a></li>`;
         }).join('')}
       </ul>
+      <div class="admin-side__user">
+        <div class="admin-side__avatar">${u.inicial}</div>
+        <div style="min-width:0; flex:1;">
+          <div class="admin-side__user-name">${u.nombre} ${u.apellido}</div>
+          <div class="admin-side__user-role">${u.rol}</div>
+        </div>
+      </div>
       <div class="admin-side__foot">
-        v1.0 · mockup<br>
-        <a href="../index.html" style="opacity:0.7;">← Ver tienda pública</a> ·
-        <a href="login.html" style="opacity:0.7;">Salir</a>
+        <a href="../index.html">← Tienda pública</a> · <a href="login.html">Salir</a>
       </div>
     `;
   }
