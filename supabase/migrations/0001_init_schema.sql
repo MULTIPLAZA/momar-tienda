@@ -330,11 +330,14 @@ CREATE TABLE IF NOT EXISTS ofertas (
   created_at         timestamptz NOT NULL DEFAULT now(),
   updated_at         timestamptz NOT NULL DEFAULT now(),
 
-  CONSTRAINT ofertas_codigo_unique UNIQUE (UPPER(codigo)),
   CONSTRAINT ofertas_porcentaje_check CHECK (
     tipo != 'porcentaje' OR (valor > 0 AND valor <= 100)
   )
 );
+
+-- Índice único sobre UPPER(codigo) — no se puede inline en CONSTRAINT UNIQUE
+CREATE UNIQUE INDEX IF NOT EXISTS ofertas_codigo_unique
+  ON ofertas (UPPER(codigo));
 
 -- ---------------------------------------------------------------------------
 -- 11. USUARIOS_ADMIN (extiende auth.users de Supabase)
