@@ -155,8 +155,8 @@
       </tr>
     `).join('');
 
-    const top = window.MOMAR_PRODUCTS.slice(0, 4).map((p, i) => ({...p, vendidos: 8 - i*2, ingreso: p.precio * (8 - i*2), stockTxt: i === 0 ? 'OK' : i === 1 ? 'Quedan 2' : i === 2 ? 'OK' : 'Sin stock'}));
-    document.querySelector('.js-top-productos').innerHTML = top.map(p => `
+    const topProds = window.MOMAR_PRODUCTS.slice(0, 4).map((p, i) => ({...p, vendidos: 8 - i*2, ingreso: p.precio * (8 - i*2), stockTxt: i === 0 ? 'OK' : i === 1 ? 'Quedan 2' : i === 2 ? 'OK' : 'Sin stock'}));
+    document.querySelector('.js-top-productos').innerHTML = topProds.map(p => `
       <tr>
         <td><div class="u-flex u-items-center u-gap-2"><img src="${p.imagen}" class="u-img-thumb" onerror="this.style.opacity=0;">${p.nombre}</div></td>
         <td class="col-num">${p.vendidos}</td>
