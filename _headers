@@ -1,0 +1,17 @@
+/admin/manifest.webmanifest
+  Content-Type: application/manifest+json
+  Cache-Control: public, max-age=0, must-revalidate
+
+/admin/sw.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /admin/
+
+/admin/icons/*
+  Cache-Control: public, max-age=604800
+
+/admin/css/*
+  Cache-Control: public, max-age=86400
+
+/admin/js/*
+  Cache-Control: public, max-age=86400
