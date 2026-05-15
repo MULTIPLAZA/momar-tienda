@@ -1,0 +1,177 @@
+#!/usr/bin/env node
+/**
+ * MoMar · Ingesta de catálogo
+ *
+ * Uso: node ingest.js productos.json
+ *
+ * Donde productos.json es un array de:
+ * [
+ *   {
+ *     "sku": "AN-001",
+ *     "codigo_barras": "7791234567890",
+ *     "nombre": "Solitario Luna",
+ *     "descripcion": "Anillo oro 18k con diamante...",
+ *     "precio_gs": 2850000,
+ *     "categoria_slug": "anillos",
+ *     "material": "Oro 18k",
+ *     "stock": 1,
+ *     "foto_path": "C:/.../fotos-con-codigo/7791234567890.jpg"
+ *   },
+ *   ...
+ * ]
+ *
+ * Variables de entorno requeridas en .env (de la carpeta padre):
+ *   SUPABASE_URL
+ *   SUPABASE_SERVICE_ROLE_KEY
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+// Cargar .env de la carpeta padre o de la raíz del repo
+const envPath = path.resolve(__dirname, '../../.env');
+if (fs.existsSync(envPath)) {
+  fs.readFileSync(envPath, 'utf-8').split('\n').forEach(line => {
+    const m = line.match(/^([A-Z_]+)=(.*)$/);
+    if (m) process.env[m[1]] = m[2].trim().replace(/^["']|["']$/g, '');
+  });
+}
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const BUCKET = 'productos';
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error('❌ Falta SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY en .env');
+  console.error('   Esperaba el archivo en:', envPath);
+  process.exit(1);
+}
+
+// Lazy-import del SDK (instala si falta)
+let createClient;
+try {
+  ({ createClient } = require('@supabase/supabase-js'));
+} catch (e) {
+  console.error('⚠ @supabase/supabase-js no instalado. Ejecutá:');
+  console.error('   npm install @supabase/supabase-js');
+  process.exit(1);
+}
+
+const supa = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: false }
+});
+
+async function subirFoto(filePath, sku) {
+  const buffer = fs.readFileSync(filePath);
+  const ext = path.extname(filePath).toLowerCase().slice(1) || 'jpg';
+  const key = `${sku}/main.${ext}`;
+  const contentType = ext === 'png' ? 'image/png' : 'image/jpeg';
+  const { data, error } = await supa.storage
+    .from(BUCKET)
+    .upload(key, buffer, { contentType, upsert: true });
+  if (error) throw new Error(`Upload falló para ${sku}: ${error.message}`);
+  const { data: pub } = supa.storage.from(BUCKET).getPublicUrl(key);
+  return pub.publicUrl;
+}
+
+async function upsertProducto(p, fotoUrl) {
+  const payload = {
+    sku: p.sku,
+    codigo_barras: p.codigo_barras,
+    nombre: p.nombre,
+    slug: (p.slug || p.nombre).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+    descripcion_corta: p.descripcion_corta || p.nombre,
+    descripcion_larga: p.descripcion || p.descripcion_larga || '',
+    precio_gs: p.precio_gs,
+    precio_antes_gs: p.precio_antes_gs || null,
+    costo_gs: p.costo_gs || null,
+    stock: p.stock ?? 1,
+    es_unica: p.es_unica ?? (p.stock === 1),
+    estado: p.estado || 'publicado',
+    material: p.material || null,
+    peso_gr: p.peso_gr || null,
+    origen: p.origen || null,
+    certificado: p.certificado || false
+  };
+
+  // Resolver categoria_id desde slug si vino
+  if (p.categoria_slug) {
+    const { data: cat } = await supa.from('categorias').select('id').eq('slug', p.categoria_slug).maybeSingle();
+    if (cat) payload.categoria_id = cat.id;
+  }
+
+  const { data, error } = await supa
+    .from('productos')
+    .upsert(payload, { onConflict: 'sku' })
+    .select()
+    .single();
+  if (error) throw new Error(`Upsert productos falló para ${p.sku}: ${error.message}`);
+
+  // Asociar foto principal en producto_fotos
+  if (fotoUrl) {
+    const { error: fotoErr } = await supa
+      .from('producto_fotos')
+      .upsert({
+        producto_id: data.id,
+        url: fotoUrl,
+        orden: 1,
+        es_principal: true,
+        alt: p.nombre
+      }, { onConflict: 'producto_id,orden' });
+    if (fotoErr) console.warn(`  ⚠ foto no asociada para ${p.sku}: ${fotoErr.message}`);
+  }
+  return data;
+}
+
+async function main() {
+  const inputArg = process.argv[2];
+  if (!inputArg) {
+    console.error('Uso: node ingest.js productos.json');
+    process.exit(1);
+  }
+  const inputPath = path.resolve(inputArg);
+  if (!fs.existsSync(inputPath)) {
+    console.error(`❌ No existe el archivo: ${inputPath}`);
+    process.exit(1);
+  }
+  const items = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
+  if (!Array.isArray(items)) {
+    console.error('❌ El JSON debe ser un array.');
+    process.exit(1);
+  }
+
+  console.log(`📦 Procesando ${items.length} productos...\n`);
+  const okList = [];
+  const errList = [];
+
+  for (const p of items) {
+    const sku = p.sku || p.codigo_barras;
+    try {
+      let fotoUrl = null;
+      if (p.foto_path && fs.existsSync(p.foto_path)) {
+        process.stdout.write(`  ${sku}: subiendo foto...`);
+        fotoUrl = await subirFoto(p.foto_path, sku);
+        process.stdout.write(' ✓\n');
+      } else if (p.foto_path) {
+        console.warn(`  ${sku}: foto no encontrada en ${p.foto_path}, sigo sin imagen`);
+      }
+      process.stdout.write(`  ${sku}: upsert producto...`);
+      await upsertProducto(p, fotoUrl);
+      process.stdout.write(' ✓\n');
+      okList.push(sku);
+    } catch (e) {
+      console.error(`  ${sku}: ❌ ${e.message}`);
+      errList.push({ sku, error: e.message });
+    }
+  }
+
+  console.log(`\n=== Resumen ===`);
+  console.log(`✅ OK: ${okList.length}`);
+  console.log(`❌ Errores: ${errList.length}`);
+  if (errList.length) {
+    console.log('\nDetalle errores:');
+    errList.forEach(e => console.log(`  - ${e.sku}: ${e.error}`));
+  }
+}
+
+main().catch(e => { console.error('Fatal:', e); process.exit(1); });
