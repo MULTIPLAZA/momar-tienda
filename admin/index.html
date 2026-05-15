@@ -6,7 +6,7 @@
   <title>Inicio · MoMar Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin-2026-05-15.css">
 </head>
 <body>
@@ -122,10 +122,11 @@
     const fmt = window.MOMAR_fmtGs;
 
     const k = window.MOMAR_KPIS;
+    const gs = window.MOMAR_kpiGs;
     document.querySelector('.js-kpis').innerHTML = `
       <div class="kpi">
         <div class="kpi__label">Ventas hoy</div>
-        <div class="kpi__value">${fmt(k.ventas_hoy)}</div>
+        <div class="kpi__value">${gs(k.ventas_hoy)}</div>
         <div class="kpi__delta">↑ ${k.ventas_hoy_delta}% vs ayer</div>
       </div>
       <div class="kpi">
@@ -135,7 +136,7 @@
       </div>
       <div class="kpi">
         <div class="kpi__label">Ventas del mes</div>
-        <div class="kpi__value">${fmt(k.ventas_mes)}</div>
+        <div class="kpi__value">${gs(k.ventas_mes)}</div>
         <div class="kpi__delta">↑ ${k.ventas_mes_delta}% vs mes pasado</div>
       </div>
       <div class="kpi">

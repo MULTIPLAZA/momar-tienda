@@ -110,6 +110,12 @@ window.MOMAR_KPIS = {
 };
 
 // Helpers reutilizables
+// Helper KPI: separa "Gs" visualmente del número para mejor legibilidad
+window.MOMAR_kpiGs = function(n) {
+  const num = n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return '<span class="kpi__currency">Gs</span>' + num;
+};
+
 window.MOMAR_pillPago = function(estado) {
   const map = {
     pagado: '<span class="pill pill--green">Pagado</span>',

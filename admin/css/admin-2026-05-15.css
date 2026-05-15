@@ -319,10 +319,25 @@ body:has(.admin-shell) {
   gap: 10px;
   margin-bottom: var(--space-3);
 }
-.kpi { background: var(--color-bg); padding: 12px 14px; border: 1px solid var(--color-line); }
-.kpi__label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-text-soft); margin-bottom: 4px; font-weight: 500; }
-.kpi__value { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; line-height: 1.15; font-variant-numeric: tabular-nums; }
-.kpi__delta { font-size: 11px; color: var(--color-success); margin-top: 4px; letter-spacing: 0; font-weight: 500; }
+.kpi { background: var(--color-bg); padding: 14px 16px; border: 1px solid var(--color-line); }
+.kpi__label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--color-text-soft); margin-bottom: 6px; font-weight: 500; }
+.kpi__value {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  color: var(--color-text);
+}
+.kpi__value .kpi__currency {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-soft);
+  margin-right: 4px;
+  letter-spacing: 0.5px;
+}
+.kpi__delta { font-size: 11px; color: var(--color-success); margin-top: 6px; letter-spacing: 0; font-weight: 500; }
 .kpi__delta--warn { color: #B07A2E; }
 .kpi__delta--bad { color: var(--color-sale); }
 
