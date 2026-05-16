@@ -102,6 +102,15 @@ const TARGETS = [
     desc: 'Lifestyle aperol · joyería en uso',
   },
   {
+    name: 'earrings',
+    src: 'SaveClip.App_552220180_17903026578256396_2913894922128505738_n.jpg',
+    width: 1200,
+    height: 1500,
+    fit: 'cover',
+    quality: 84,
+    desc: 'Categoría aros · aretes flor dorada con perla',
+  },
+  {
     name: 'bracelet',
     src: 'SaveClip.App_645887747_17928754638211051_4327558085659302903_n.jpg',
     width: 1200,
