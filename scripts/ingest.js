@@ -106,13 +106,33 @@ async function subirFotosExtras(extras, sku, productoId, fotosDir, nombre) {
 }
 
 async function upsertProducto(p, fotoUrl) {
+  // Defensa: NO pisar descripcion_corta/larga editoriales con el nombre.
+  // Si el producto ya existe en DB y tiene descripción rica (distinta del nombre),
+  // y el JSON fuente no trae una descripción explícita, conservamos la de DB.
+  let preserveDescCorta = null;
+  let preserveDescLarga = null;
+  if (!p.descripcion_corta || !p.descripcion_larga) {
+    const { data: existing } = await supa
+      .from('productos')
+      .select('descripcion_corta, descripcion_larga, nombre')
+      .eq('sku', p.sku)
+      .maybeSingle();
+    if (existing) {
+      const dc = (existing.descripcion_corta || '').trim();
+      const dl = (existing.descripcion_larga || '').trim();
+      const nm = (existing.nombre || '').trim();
+      if (!p.descripcion_corta && dc && dc !== nm) preserveDescCorta = dc;
+      if (!p.descripcion_larga && dl && dl !== nm) preserveDescLarga = dl;
+    }
+  }
+
   const payload = {
     sku: p.sku,
     codigo_barras: p.codigo_barras,
     nombre: p.nombre,
     slug: (p.slug || p.nombre).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-    descripcion_corta: p.descripcion_corta || p.nombre,
-    descripcion_larga: p.descripcion || p.descripcion_larga || '',
+    descripcion_corta: p.descripcion_corta || preserveDescCorta || p.nombre,
+    descripcion_larga: p.descripcion || p.descripcion_larga || preserveDescLarga || '',
     precio_gs: p.precio_gs,
     precio_antes_gs: p.precio_antes_gs || null,
     costo_gs: p.costo_gs || null,
