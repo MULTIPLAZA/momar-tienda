@@ -125,7 +125,7 @@
           <button class="search-modal__close js-search-close" aria-label="Cerrar">Cerrar ×</button>
         </div>
         <div class="search-modal__results js-search-results">
-          <p class="search-modal__hint">Escribí para buscar entre las piezas. Tip: probá "anillo", "plata", "oro 18k".</p>
+          <p class="search-modal__hint">Escribí para buscar entre las piezas. Tip: probá "anillo", "collar", "choker".</p>
         </div>
       </div>
     `;
@@ -202,7 +202,7 @@
       const input = document.querySelector('.js-search-input');
       if (input) input.value = '';
       const res = document.querySelector('.js-search-results');
-      if (res) res.innerHTML = '<p class="search-modal__hint">Escribí para buscar entre las piezas. Tip: probá "anillo", "plata", "oro 18k".</p>';
+      if (res) res.innerHTML = '<p class="search-modal__hint">Escribí para buscar entre las piezas. Tip: probá "anillo", "collar", "choker".</p>';
     }
 
     // Lupa del header
@@ -222,7 +222,7 @@
       const res = document.querySelector('.js-search-results');
       if (!res) return;
       if (!q || q.length < 2) {
-        res.innerHTML = '<p class="search-modal__hint">Escribí para buscar entre las piezas. Tip: probá "anillo", "plata", "oro 18k".</p>';
+        res.innerHTML = '<p class="search-modal__hint">Escribí para buscar entre las piezas. Tip: probá "anillo", "collar", "choker".</p>';
         return;
       }
       const fmt = window.MOMAR_fmtGs;
