@@ -580,6 +580,13 @@ body.menu-open .mobile-menu { transform: translateX(0); }
 .promo-banner__copy .eyebrow { color: var(--color-nude); }
 .promo-banner__copy h2 { color: var(--color-bg); margin-bottom: var(--space-4); font-style: italic; }
 .promo-banner__copy p { color: rgba(255,255,255,0.7); margin-bottom: var(--space-4); }
+/* Variante invertida (foto a la derecha, copy a la izquierda) */
+.promo-banner--reverse { background: var(--color-bg-alt); }
+.promo-banner--reverse .promo-banner__media { order: 2; aspect-ratio: 5/4; }
+.promo-banner--reverse .promo-banner__copy { order: 1; }
+.promo-banner__copy--light .eyebrow { color: var(--color-text-soft); }
+.promo-banner__copy--light h2 { color: var(--color-text); }
+.promo-banner__copy--light p { color: var(--color-text-soft); }
 
 /* ============================================
    NEWSLETTER

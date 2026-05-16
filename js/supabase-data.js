@@ -103,11 +103,18 @@
     };
   }
 
+  // Override de imágenes lifestyle por slug (fotos editoriales propias de IG)
+  const CATEGORIA_IMG_OVERRIDE = {
+    anillos:  'img/lifestyle/rings.jpg?v=20260516h',
+    collares: 'img/lifestyle/necklaces.jpg?v=20260516h',
+    aros:     'img/lifestyle/lifestyle.jpg?v=20260516h'
+  };
+
   function mapCategoria(c) {
     return {
       slug: c.slug,
       nombre: c.nombre,
-      img: c.imagen_url || PLACEHOLDER_IMG
+      img: CATEGORIA_IMG_OVERRIDE[c.slug] || c.imagen_url || PLACEHOLDER_IMG
     };
   }
 
