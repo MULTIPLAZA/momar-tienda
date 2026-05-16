@@ -290,6 +290,13 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   justify-content: flex-start;
   text-align: left;
 }
+.hero.hero--compact {
+  height: 48vh;
+  min-height: 340px;
+  justify-content: center;
+  text-align: center;
+}
+.hero.hero--compact.has-image .hero__content { padding-left: 0; max-width: 720px; }
 .hero.has-image::after {
   content: "";
   position: absolute; inset: 0;

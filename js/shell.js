@@ -13,7 +13,7 @@
     { label: 'Anillos',  href: 'catalogo.html?cat=anillos' },
     { label: 'Collares', href: 'catalogo.html?cat=collares' },
     { label: 'Catálogo', href: 'catalogo.html' },
-    { label: 'Nuestra historia', href: '#' }
+    { label: 'Nuestra historia', href: 'nuestra-historia.html' }
   ];
 
   const SOCIAL = {
@@ -99,7 +99,7 @@
             <div>
               <h4>MoMar</h4>
               <ul>
-                <li><a href="#">Nuestra historia</a></li>
+                <li><a href="nuestra-historia.html">Nuestra historia</a></li>
                 <li><a href="${SOCIAL.instagram}" target="_blank" rel="noopener">Instagram @momar.py</a></li>
                 <li><a href="#">Términos y condiciones</a></li>
                 <li><a href="#">Privacidad</a></li>
