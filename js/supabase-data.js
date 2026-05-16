@@ -105,9 +105,9 @@
 
   // Override de imágenes lifestyle por slug (fotos editoriales propias de IG)
   const CATEGORIA_IMG_OVERRIDE = {
-    anillos:  'img/lifestyle/rings.jpg?v=20260517c',
-    collares: 'img/lifestyle/necklaces.jpg?v=20260517c',
-    aros:     'img/lifestyle/lifestyle.jpg?v=20260517c'
+    anillos:  'img/lifestyle/rings.jpg?v=20260517d',
+    collares: 'img/lifestyle/necklaces.jpg?v=20260517d',
+    aros:     'img/lifestyle/lifestyle.jpg?v=20260517d'
   };
 
   function mapCategoria(c) {
