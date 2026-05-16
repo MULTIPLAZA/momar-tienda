@@ -92,10 +92,10 @@
               <h4>Atención</h4>
               <ul>
                 <li><a href="${SOCIAL.whatsapp}" target="_blank" rel="noopener">Contacto · WhatsApp</a></li>
-                <li><a href="#">Envíos</a></li>
-                <li><a href="#">Cambios y devoluciones</a></li>
-                <li><a href="#">Garantía</a></li>
-                <li><a href="#">Preguntas frecuentes</a></li>
+                <li><a href="info.html#envios">Envíos</a></li>
+                <li><a href="info.html#cambios">Cambios y devoluciones</a></li>
+                <li><a href="info.html#garantia">Garantía</a></li>
+                <li><a href="info.html#faq">Preguntas frecuentes</a></li>
               </ul>
             </div>
             <div>
@@ -103,8 +103,8 @@
               <ul>
                 <li><a href="nuestra-historia.html">Nuestra historia</a></li>
                 <li><a href="${SOCIAL.instagram}" target="_blank" rel="noopener">Instagram @momar.py</a></li>
-                <li><a href="#">Términos y condiciones</a></li>
-                <li><a href="#">Privacidad</a></li>
+                <li><a href="info.html#terminos">Términos y condiciones</a></li>
+                <li><a href="info.html#privacidad">Privacidad</a></li>
               </ul>
             </div>
           </div>
@@ -129,8 +129,8 @@
         </div>
         <ul class="mobile-menu__list">
           ${NAV_ITEMS.map(n => `<li><a href="${n.href}">${n.label}</a></li>`).join('')}
-          <li><a href="#" style="font-size: 14px; opacity: 0.7; font-style: normal;">Mi cuenta</a></li>
-          <li><a href="#" style="font-size: 14px; opacity: 0.7; font-style: normal;">Atención</a></li>
+          <li><a href="info.html" style="font-size: 14px; opacity: 0.7; font-style: normal;">Envíos y cambios</a></li>
+          <li><a href="info.html#faq" style="font-size: 14px; opacity: 0.7; font-style: normal;">Preguntas frecuentes</a></li>
         </ul>
         <div class="mobile-menu__foot">
           Asunción · Atención por WhatsApp<br>+595 981 412 648

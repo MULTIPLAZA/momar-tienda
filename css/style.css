@@ -397,6 +397,92 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   .carrusel__nav { width: 38px; height: 38px; font-size: 18px; }
 }
 
+/* Página INFO (Envíos, cambios, FAQ, términos, privacidad) */
+.info-toc {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  margin-bottom: var(--space-6);
+}
+.info-toc a {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+  padding: 6px 0;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.info-toc a:hover {
+  color: var(--color-text);
+  border-bottom-color: var(--color-text);
+}
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+.info-block { scroll-margin-top: calc(var(--header-h) + 24px); }
+.info-block h2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 36px;
+  margin-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+  padding-bottom: var(--space-3);
+}
+.info-card {
+  padding: var(--space-3) 0;
+}
+.info-card + .info-card { border-top: 1px solid var(--color-line); }
+.info-card h3 {
+  font-size: 16px;
+  letter-spacing: 0.3px;
+  margin-bottom: var(--space-2);
+}
+.info-card p {
+  color: var(--color-text-soft);
+  line-height: 1.7;
+}
+.info-faq {
+  border-top: 1px solid var(--color-line);
+  padding: var(--space-3) 0;
+}
+.info-faq:last-of-type { border-bottom: 1px solid var(--color-line); }
+.info-faq summary {
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  font-size: 16px;
+}
+.info-faq summary::-webkit-details-marker { display: none; }
+.info-faq summary::after {
+  content: '+';
+  font-size: 22px;
+  font-weight: 300;
+  transition: transform 0.2s;
+}
+.info-faq[open] summary::after {
+  content: '−';
+}
+.info-faq p {
+  color: var(--color-text-soft);
+  line-height: 1.7;
+  margin-top: var(--space-3);
+}
+@media (max-width: 640px) {
+  .info-block h2 { font-size: 28px; }
+  .info-toc { padding: var(--space-3) 0; gap: var(--space-2); }
+  .info-toc a { font-size: 11px; letter-spacing: 1px; }
+}
+
 /* Contact grid en Nuestra Historia */
 .contact-grid {
   display: grid;
@@ -1624,31 +1710,47 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   animation: none;
 }
 
-/* WhatsApp asomado contextual (#17) */
+/* WhatsApp flotante sticky (visible en todas las páginas) */
 .wa-float {
   position: fixed;
-  bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
-  right: var(--space-3);
-  width: 52px; height: 52px;
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  right: var(--space-4);
+  width: 60px; height: 60px;
   background: #25D366;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 20px rgba(15,15,15,0.2);
-  z-index: 40;
-  transition: transform 0.2s var(--ease);
+  box-shadow: 0 6px 24px rgba(37, 211, 102, 0.4), 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 90;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
   color: white;
+  animation: waPulse 2.5s ease-in-out infinite;
 }
-.wa-float:hover { transform: scale(1.06); }
-.wa-float svg { width: 26px; height: 26px; fill: currentColor; }
-/* Si hay sticky-add-bar visible, subir el WA */
+.wa-float:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 28px rgba(37, 211, 102, 0.55), 0 2px 8px rgba(0,0,0,0.2);
+  animation: none;
+}
+.wa-float svg { width: 30px; height: 30px; fill: currentColor; }
+@keyframes waPulse {
+  0%, 100% { box-shadow: 0 6px 24px rgba(37, 211, 102, 0.4), 0 2px 8px rgba(0,0,0,0.15); }
+  50%      { box-shadow: 0 6px 28px rgba(37, 211, 102, 0.65), 0 2px 8px rgba(0,0,0,0.15); }
+}
+/* Si hay sticky-add-bar visible (en ficha de producto mobile), subir el WA */
 body.has-sticky-bar .wa-float {
-  bottom: calc(86px + env(safe-area-inset-bottom));
+  bottom: calc(96px + env(safe-area-inset-bottom));
 }
 @media (max-width: 480px) {
-  .wa-float { width: 48px; height: 48px; }
-  .wa-float svg { width: 22px; height: 22px; }
+  .wa-float {
+    width: 52px; height: 52px;
+    bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+    right: var(--space-3);
+  }
+  .wa-float svg { width: 26px; height: 26px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wa-float { animation: none; }
 }
 
 /* Link sutil de consulta WhatsApp en ficha de producto (#17) */

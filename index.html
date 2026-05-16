@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260517g">
+  <link rel="stylesheet" href="css/style.css?v=20260517h">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -53,7 +53,7 @@
   <div class="js-shell-top"></div>
 
   <!-- HERO -->
-  <section class="hero js-hero has-image" style="background-image: url('img/lifestyle/hero.jpg?v=20260517g');">
+  <section class="hero js-hero has-image" style="background-image: url('img/lifestyle/hero.jpg?v=20260517h');">
     <div class="hero__content">
       <div class="eyebrow">Hogar & Más</div>
       <h1>Cada pieza, hecha a mano</h1>
@@ -85,7 +85,7 @@
 
   <section class="container" style="padding: var(--space-5) 0;">
     <div class="promo-banner">
-      <div class="promo-banner__media js-promo-media has-image" style="background-image: url('img/lifestyle/natural.jpg?v=20260517g'); background-position: center 30%;"></div>
+      <div class="promo-banner__media js-promo-media has-image" style="background-image: url('img/lifestyle/natural.jpg?v=20260517h'); background-position: center 30%;"></div>
       <div class="promo-banner__copy">
         <span class="eyebrow">Origen Colombia</span>
         <h2>Colección Natural</h2>
@@ -137,7 +137,7 @@
         <p>Somos Moni & Marga. Viajamos a Colombia, seleccionamos a mano cada pieza y la traemos cuidada a Asunción. Lo que recibís llega en su bolsa MoMar lista para regalar — o regalarte.</p>
         <a href="https://www.instagram.com/momar.py/" target="_blank" rel="noopener" class="btn btn--primary">Conocer en Instagram</a>
       </div>
-      <div class="promo-banner__media has-image" style="background-image: url('img/lifestyle/brand.jpg?v=20260517g'); background-position: center;"></div>
+      <div class="promo-banner__media has-image" style="background-image: url('img/lifestyle/brand.jpg?v=20260517h'); background-position: center;"></div>
     </div>
   </section>
 
@@ -164,26 +164,61 @@
   </section>
 
   <script>
-    // Newsletter sin alert nativo (#21)
-    document.getElementById('js-newsletter').addEventListener('submit', (e) => {
+    // Newsletter: guardar email en Supabase (tabla newsletter_emails con RLS insert público)
+    document.getElementById('js-newsletter').addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
       const input = form.querySelector('input');
-      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+      const btn = form.querySelector('button');
+      const email = input.value.trim();
+      const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
       if (!ok) { input.classList.add('is-error'); input.focus(); return; }
-      const parent = form.parentElement;
-      form.innerHTML = '<p class="newsletter__success">Gracias. Te escribimos pronto con acceso al 10%.</p>';
+      input.classList.remove('is-error');
+      btn.disabled = true;
+      btn.textContent = 'Suscribiendo…';
+      try {
+        // Esperar a que el SDK de Supabase esté listo
+        if (!window.MOMAR_supabase) {
+          await new Promise(r => setTimeout(r, 400));
+        }
+        const supa = window.MOMAR_supabase;
+        if (!supa) throw new Error('Sin conexión');
+        const { error } = await supa.from('newsletter_emails').insert({
+          email,
+          user_agent: navigator.userAgent.slice(0, 200),
+          origen: 'web-index'
+        });
+        if (error) {
+          // 23505 = unique violation → ya estaba suscripto, lo tratamos como éxito amable
+          if (error.code === '23505') {
+            form.innerHTML = '<p class="newsletter__success">Ya estás suscripta. Te escribimos pronto.</p>';
+          } else {
+            throw error;
+          }
+        } else {
+          form.innerHTML = '<p class="newsletter__success">Listo. Te escribimos pronto con acceso al 10%.</p>';
+        }
+      } catch (err) {
+        console.warn('[MOMAR] Newsletter error:', err);
+        btn.disabled = false;
+        btn.textContent = 'Suscribirme →';
+        const errP = document.createElement('p');
+        errP.className = 'newsletter__error';
+        errP.style.cssText = 'color: var(--color-text-soft); font-size: 13px; margin-top: 12px;';
+        errP.textContent = 'No pudimos guardar tu email ahora. Escribinos por WhatsApp y te avisamos directamente.';
+        form.appendChild(errP);
+      }
     });
   </script>
 
   <div class="js-shell-bottom"></div>
 
-  <script src="js/supabase-config.js?v=20260517g"></script>
+  <script src="js/supabase-config.js?v=20260517h"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/products.js?v=20260517g"></script>
-  <script src="js/supabase-data.js?v=20260517g"></script>
-  <script src="js/shell.js?v=20260517g"></script>
-  <script src="js/cart.js?v=20260517g"></script>
-  <script src="js/render.js?v=20260517g"></script>
+  <script src="js/products.js?v=20260517h"></script>
+  <script src="js/supabase-data.js?v=20260517h"></script>
+  <script src="js/shell.js?v=20260517h"></script>
+  <script src="js/cart.js?v=20260517h"></script>
+  <script src="js/render.js?v=20260517h"></script>
 </body>
 </html>

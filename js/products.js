@@ -228,8 +228,8 @@ window.MOMAR_CATEGORIAS = [
 ];
 
 // Fotos lifestyle propias (Instagram MoMar) — no Unsplash mockup
-window.MOMAR_HERO = 'img/lifestyle/hero.jpg?v=20260517g';
-window.MOMAR_PROMO = 'img/lifestyle/natural.jpg?v=20260517g';
+window.MOMAR_HERO = 'img/lifestyle/hero.jpg?v=20260517h';
+window.MOMAR_PROMO = 'img/lifestyle/natural.jpg?v=20260517h';
 
 // Helper para encontrar producto
 window.MOMAR_findProduct = function(sku) {
