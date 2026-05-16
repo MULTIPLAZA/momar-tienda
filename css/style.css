@@ -169,25 +169,25 @@ h4 { font-size: 18px; }
 .header__actions button:hover { opacity: 1; }
 
 .header__icon {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.4;
+  stroke-width: 1.6;
 }
 
 /* Badge carrito — posicionamiento absoluto sobre el botón (#1) */
 .header__actions .js-cart-toggle { position: relative; }
 .cart-count {
   position: absolute;
-  top: -2px;
-  right: -4px;
+  top: -4px;
+  right: -6px;
   background: var(--color-nude);
   color: var(--color-dark);
-  font-size: 9px;
+  font-size: 10px;
   padding: 0 5px;
-  min-width: 16px;
-  height: 16px;
+  min-width: 18px;
+  height: 18px;
   border-radius: 999px;
   font-weight: 600;
   letter-spacing: 0;
@@ -1566,7 +1566,7 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   .header__actions { gap: var(--space-2); }
   .header__actions .header__action-search { display: none; }
   .header__actions button { font-size: 0; padding: 8px; } /* solo icon en mobile */
-  .header__actions .header__icon { width: 22px; height: 22px; }
+  .header__actions .header__icon { width: 24px; height: 24px; }
   .cart-count { font-size: 8px; min-width: 15px; height: 15px; top: 0; right: -2px; }
   .hamburger { display: block; }
   .header__logo .logo-svg, .header__logo .logo-img { height: 30px; }
