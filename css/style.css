@@ -29,8 +29,8 @@
   --space-7: 96px;
 
   --max-w: 1280px;
-  --header-h: 84px;
-  --header-h-mobile: 64px;
+  --header-h: 72px;
+  --header-h-mobile: 56px;
 
   --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -99,9 +99,9 @@ h4 { font-size: 18px; }
   letter-spacing: 0.5px;
 }
 .header__logo { display: flex; align-items: center; justify-content: center; }
-.header__logo .logo-svg, .header__logo .logo-img { height: 56px; }
-.footer__logo .logo-svg, .footer__logo .logo-img { height: 56px; }
-.admin-side__logo .logo-svg, .admin-side__logo .logo-img { height: 28px; }
+.header__logo .logo-svg, .header__logo .logo-img { height: 40px; }
+.footer__logo .logo-svg, .footer__logo .logo-img { height: 48px; }
+.admin-side__logo .logo-svg, .admin-side__logo .logo-img { height: 22px; }
 
 /* ============================================
    TOPBAR + HEADER (DARK)
@@ -1483,7 +1483,7 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   .header__actions .header__icon { width: 22px; height: 22px; }
   .cart-count { font-size: 8px; min-width: 15px; height: 15px; top: 0; right: -2px; }
   .hamburger { display: block; }
-  .header__logo .logo-svg, .header__logo .logo-img { height: 38px; }
+  .header__logo .logo-svg, .header__logo .logo-img { height: 30px; }
 
   .topbar { font-size: 10px; letter-spacing: 1.5px; padding: 8px var(--space-3); }
 
