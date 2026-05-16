@@ -39,7 +39,7 @@
         <header class="header">
           <div class="header__inner">
             <div></div>
-            <a href="index.html" class="header__logo" aria-label="MoMar">${LOGO_IMG({ height: 36 })}</a>
+            <a href="index.html" class="header__logo" aria-label="MoMar">${LOGO_IMG({ height: 56 })}</a>
             <div class="header__actions" style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.7;">Pago seguro · SSL</div>
           </div>
         </header>
@@ -55,7 +55,7 @@
               ${NAV_ITEMS.map(n => `<a href="${n.href}">${n.label}</a>`).join('')}
             </nav>
           </div>
-          <a href="index.html" class="header__logo" aria-label="MoMar">${LOGO_IMG({ height: 36 })}</a>
+          <a href="index.html" class="header__logo" aria-label="MoMar">${LOGO_IMG({ height: 56 })}</a>
           <div class="header__actions">
             <button class="header__action-search" aria-label="Buscar">${ICON.search}</button>
             <button aria-label="Cuenta">${ICON.user}</button>

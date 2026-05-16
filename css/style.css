@@ -29,8 +29,8 @@
   --space-7: 96px;
 
   --max-w: 1280px;
-  --header-h: 72px;
-  --header-h-mobile: 60px;
+  --header-h: 84px;
+  --header-h-mobile: 64px;
 
   --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -99,7 +99,7 @@ h4 { font-size: 18px; }
   letter-spacing: 0.5px;
 }
 .header__logo { display: flex; align-items: center; justify-content: center; }
-.header__logo .logo-svg, .header__logo .logo-img { height: 36px; }
+.header__logo .logo-svg, .header__logo .logo-img { height: 56px; }
 .footer__logo .logo-svg, .footer__logo .logo-img { height: 56px; }
 .admin-side__logo .logo-svg, .admin-side__logo .logo-img { height: 28px; }
 
@@ -272,8 +272,8 @@ body.menu-open .mobile-menu { transform: translateX(0); }
    ============================================ */
 .hero {
   position: relative;
-  height: 80vh;
-  min-height: 520px;
+  height: 82vh;
+  min-height: 560px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -285,8 +285,26 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   overflow: hidden;
   color: var(--color-text);
 }
-.hero.has-image .hero__content { color: var(--color-bg); }
-.hero.has-image .hero__content p { color: rgba(255,255,255,0.85); }
+.hero.has-image {
+  background-position: center right;
+  justify-content: flex-start;
+  text-align: left;
+}
+.hero.has-image::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(15,15,15,0.62) 0%, rgba(15,15,15,0.38) 38%, rgba(15,15,15,0.05) 68%, rgba(15,15,15,0) 100%);
+  pointer-events: none;
+}
+.hero.has-image .hero__content { color: #fff; max-width: 620px; padding-left: clamp(24px, 7vw, 110px); }
+.hero.has-image .hero__content .eyebrow { color: rgba(255,255,255,0.9); }
+.hero.has-image .hero__content p { color: rgba(255,255,255,0.88); }
+.hero.has-image .btn--light {
+  background: #fff; color: var(--color-text); border-color: #fff;
+}
+.hero.has-image .btn--light:hover {
+  background: transparent; color: #fff; border-color: #fff;
+}
 .hero:not(.has-image) .btn--light {
   background: var(--color-text);
   color: var(--color-bg);
@@ -1316,7 +1334,7 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   .header__actions .header__icon { width: 22px; height: 22px; }
   .cart-count { font-size: 8px; min-width: 15px; height: 15px; top: 0; right: -2px; }
   .hamburger { display: block; }
-  .header__logo .logo-svg { height: 26px; }
+  .header__logo .logo-svg, .header__logo .logo-img { height: 38px; }
 
   .topbar { font-size: 10px; letter-spacing: 1.5px; padding: 8px var(--space-3); }
 
