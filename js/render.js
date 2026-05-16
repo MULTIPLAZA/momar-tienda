@@ -124,10 +124,16 @@
       destacados.innerHTML = window.MOMAR_PRODUCTS.slice(0, 8).map(productCard).join('');
     }
 
-    // Grid de categorías
+    // Grid de categorías: sólo las que tienen productos publicados
     const cats = document.querySelector('.js-grid-categorias');
     if (cats) {
-      cats.innerHTML = window.MOMAR_CATEGORIAS.map(categoriaCard).join('');
+      const productCountBySlug = (window.MOMAR_PRODUCTS || []).reduce((acc, p) => {
+        const slug = p.cat_slug;
+        if (slug) acc[slug] = (acc[slug] || 0) + 1;
+        return acc;
+      }, {});
+      const categoriasConStock = window.MOMAR_CATEGORIAS.filter(c => (productCountBySlug[c.slug] || 0) > 0);
+      cats.innerHTML = categoriasConStock.map(categoriaCard).join('');
     }
 
     // Render dinámico de los filtros con counts (#3, #20)

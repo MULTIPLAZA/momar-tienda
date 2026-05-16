@@ -89,8 +89,9 @@ const TARGETS = [
     width: 1400,
     height: 1000,
     fit: 'cover',
-    quality: 82,
-    desc: 'Bolsa MoMar branded · cliente real',
+    position: 'top',
+    quality: 84,
+    desc: 'Bolsa MoMar branded · crop superior para mostrar el logo MoMar',
   },
   {
     name: 'lifestyle',

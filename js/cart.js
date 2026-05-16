@@ -312,5 +312,7 @@
     document.querySelectorAll('.js-cart-page-total').forEach(el => el.textContent = window.MOMAR_fmtGs(subtotal));
     const cuota = Math.round(subtotal / 3);
     document.querySelectorAll('.js-cart-page-cuota').forEach(el => el.textContent = window.MOMAR_fmtGs(cuota));
+    // Ocultar línea de cuotas si total = 0
+    document.querySelectorAll('.js-cart-page-cuota-line').forEach(el => el.style.display = subtotal > 0 ? '' : 'none');
   }
 })();

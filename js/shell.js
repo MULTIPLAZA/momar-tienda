@@ -58,7 +58,6 @@
           <a href="index.html" class="header__logo" aria-label="MoMar">${LOGO_IMG({ height: 40 })}</a>
           <div class="header__actions">
             <button class="header__action-search" aria-label="Buscar">${ICON.search}</button>
-            <button aria-label="Cuenta">${ICON.user}</button>
             <button class="js-cart-toggle" aria-label="Carrito">${ICON.cart}<span class="cart-count js-cart-count">0</span></button>
           </div>
         </div>
