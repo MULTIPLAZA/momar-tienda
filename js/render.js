@@ -82,6 +82,7 @@
         <a href="producto.html?sku=${encodeURIComponent(p.sku)}" class="producto__link">
           <div class="producto__cat">${eyebrowHtml(p)}</div>
           <div class="producto__nombre">${p.nombre}</div>
+          <div class="producto__sku">Ref. ${p.sku}</div>
           <div class="producto__precio">${priceHtml(p)}</div>
         </a>
       </div>
@@ -387,6 +388,8 @@
     // Eyebrow editorial: priorizar material si lo hay; sino solo categoría; sin punto colgando
     const eyebrowText = [p.material || null, p.es_unica ? 'Pieza única' : null].filter(Boolean).join(' · ') || p.cat;
     setText('.js-prod-eyebrow', eyebrowText);
+    // SKU visible para uso administrativo (cruce con sistema de facturación)
+    setText('.js-prod-sku', p.sku ? `Ref. ${p.sku}` : '');
     setHtml('.js-prod-precio', p.precio_antes
       ? `<del style="color:var(--color-text-soft); font-size:18px;">${window.MOMAR_fmtGs(p.precio_antes)}</del> ${window.MOMAR_fmtGs(p.precio)}`
       : window.MOMAR_fmtGs(p.precio));
