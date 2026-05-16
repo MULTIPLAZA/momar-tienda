@@ -11,26 +11,51 @@ if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
 // Map de uso → archivo origen + transform target
 const TARGETS = [
+  // HERO PRINCIPAL — modelo rubia con set completo de joyas (la mejor)
+  // La foto original es vertical, hacemos crop horizontal con la modelo a la derecha
+  // dejando aire a la izquierda para el copy del hero
   {
     name: 'hero',
-    src: 'SaveClip.App_649880412_17929620390211051_3182115237835213770_n.jpg',
+    src: 'SaveClip.App_645867423_17928754629211051_1814072146106467222_n.jpg',
     width: 1920,
     height: 1280,
     fit: 'cover',
-    position: 'top',
-    quality: 78,
-    desc: 'Hero principal · modelo en jardín con collares plateados',
+    position: 'right',
+    quality: 80,
+    desc: 'Hero principal · modelo con set completo de joyas doradas',
   },
   {
     name: 'hero-mobile',
-    src: 'SaveClip.App_649880412_17929620390211051_3182115237835213770_n.jpg',
+    src: 'SaveClip.App_645867423_17928754629211051_1814072146106467222_n.jpg',
     width: 900,
     height: 1200,
     fit: 'cover',
-    position: 'top',
-    quality: 80,
+    position: 'center',
+    quality: 82,
     desc: 'Hero mobile vertical',
   },
+
+  // FUNDADORAS — nuevas a COLOR (la del PDF era B&N)
+  {
+    name: 'founders-color',
+    src: 'SaveClip.App_574498636_18100198303613665_4455269756595184465_n.jpg',
+    width: 1600,
+    height: 2100,
+    fit: 'inside',
+    quality: 84,
+    desc: 'Moni & Marga caminando en Doce 10 (a color, completa)',
+  },
+  {
+    name: 'founders-event',
+    src: 'SaveClip.App_581403730_18121176991523745_5719431296665366553_n.jpg',
+    width: 1400,
+    height: 1900,
+    fit: 'inside',
+    quality: 82,
+    desc: '3 mujeres en local MoMar · evento/inauguracion B&N',
+  },
+
+  // CATEGORÍAS Y SECCIONES
   {
     name: 'natural',
     src: 'SaveClip.App_484907019_17888753721211051_314368674135982268_n.jpg',
@@ -75,6 +100,33 @@ const TARGETS = [
     fit: 'cover',
     quality: 82,
     desc: 'Lifestyle aperol · joyería en uso',
+  },
+  {
+    name: 'bracelet',
+    src: 'SaveClip.App_645887747_17928754638211051_4327558085659302903_n.jpg',
+    width: 1200,
+    height: 1500,
+    fit: 'cover',
+    quality: 84,
+    desc: 'Pulsera dorada esmeralda close-up',
+  },
+  {
+    name: 'hogar-table',
+    src: 'SaveClip.App_520583628_17902871457211051_2489244047387463050_n.jpg',
+    width: 1200,
+    height: 1500,
+    fit: 'cover',
+    quality: 84,
+    desc: 'Mesa con servilletas monstera y posaplatos',
+  },
+  {
+    name: 'hogar-vintage',
+    src: 'SaveClip.App_518264469_17902871448211051_8334233020183933321_n.jpg',
+    width: 1200,
+    height: 1500,
+    fit: 'cover',
+    quality: 84,
+    desc: 'Mesa con muebles vintage · comedor hogar',
   },
 ];
 
