@@ -10,8 +10,9 @@
   const LOGO_SVG = LOGO_IMG({ height: 32 });
 
   const NAV_ITEMS = [
-    { label: 'Joyería', href: 'catalogo.html?cat=joyeria' },
-    { label: 'Novedades', href: 'catalogo.html' },
+    { label: 'Anillos',  href: 'catalogo.html?cat=anillos' },
+    { label: 'Collares', href: 'catalogo.html?cat=collares' },
+    { label: 'Catálogo', href: 'catalogo.html' },
     { label: 'Nuestra historia', href: '#' }
   ];
 
@@ -80,9 +81,9 @@
             <div>
               <h4>Tienda</h4>
               <ul>
-                <li><a href="catalogo.html?cat=joyeria">Joyería</a></li>
+                <li><a href="catalogo.html?cat=anillos">Anillos</a></li>
+                <li><a href="catalogo.html?cat=collares">Collares</a></li>
                 <li><a href="catalogo.html">Catálogo completo</a></li>
-                <li><a href="catalogo.html#nuevos">Novedades</a></li>
               </ul>
             </div>
             <div>
@@ -130,7 +131,7 @@
           <li><a href="#" style="font-size: 14px; opacity: 0.7; font-style: normal;">Atención</a></li>
         </ul>
         <div class="mobile-menu__foot">
-          Asunción · Showroom con cita previa<br>+595 981 412 648
+          Asunción · Atención por WhatsApp<br>+595 981 412 648
         </div>
       </aside>
     `;
@@ -151,7 +152,7 @@
       <div class="search-modal" role="dialog" aria-label="Buscar">
         <div class="search-modal__head">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:20px; height:20px; margin-right:12px; flex-shrink:0;"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input type="search" class="search-modal__input js-search-input" placeholder="Buscá por nombre, código o material…" autocomplete="off" autofocus>
+          <input type="search" class="search-modal__input js-search-input" placeholder="Buscá por nombre o referencia…" autocomplete="off" autofocus>
           <button class="search-modal__close js-search-close" aria-label="Cerrar">Cerrar ×</button>
         </div>
         <div class="search-modal__results js-search-results">

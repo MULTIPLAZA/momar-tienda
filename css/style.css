@@ -272,33 +272,30 @@ body.menu-open .mobile-menu { transform: translateX(0); }
    ============================================ */
 .hero {
   position: relative;
-  height: 88vh;
-  min-height: 560px;
+  height: 80vh;
+  min-height: 520px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-bg-alt);
+  background-image: linear-gradient(135deg, var(--color-bg-alt) 0%, var(--color-nude) 100%);
   background-size: cover;
   background-position: center;
   text-align: center;
   overflow: hidden;
-  color: var(--color-bg);
-}
-.hero:not(.has-image)::before {
-  content: 'FOTO HERO  ·  1920×1080  ·  modelo lifestyle editorial';
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-body);
-  font-size: 11px;
-  letter-spacing: 3px;
-  color: var(--color-text-soft);
-  opacity: 0.4;
+  color: var(--color-text);
 }
 .hero.has-image .hero__content { color: var(--color-bg); }
 .hero.has-image .hero__content p { color: rgba(255,255,255,0.85); }
+.hero:not(.has-image) .btn--light {
+  background: var(--color-text);
+  color: var(--color-bg);
+  border-color: var(--color-text);
+}
+.hero:not(.has-image) .btn--light:hover {
+  background: transparent;
+  color: var(--color-text);
+}
 .hero__content {
   position: relative;
   z-index: 1;

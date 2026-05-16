@@ -401,7 +401,7 @@
         descEl.textContent = p.descripcion;
         descEl.classList.remove('descripcion--placeholder');
       } else {
-        const wa = `https://wa.me/595981234567?text=${encodeURIComponent(`Hola, quisiera consultar por "${p.nombre}" (${p.sku}) de MoMar.`)}`;
+        const wa = `https://wa.me/595981412648?text=${encodeURIComponent(`Hola, quisiera consultar por "${p.nombre}" (${p.sku}) de MoMar.`)}`;
         descEl.innerHTML = `Pieza de la colección actual. Consultanos por características, peso y disponibilidad — <a href="${wa}" target="_blank" rel="noopener" style="color:inherit; border-bottom:1px solid currentColor;">te respondemos por WhatsApp</a>.`;
         descEl.classList.add('descripcion--placeholder');
       }
@@ -468,7 +468,7 @@
     if (attrs) {
       const entries = p.atributos ? Object.entries(p.atributos) : [];
       if (entries.length === 0) {
-        const wa = `https://wa.me/595981234567?text=${encodeURIComponent(`Hola, quisiera ver el detalle técnico de "${p.nombre}" (${p.sku}) de MoMar.`)}`;
+        const wa = `https://wa.me/595981412648?text=${encodeURIComponent(`Hola, quisiera ver el detalle técnico de "${p.nombre}" (${p.sku}) de MoMar.`)}`;
         attrs.innerHTML = `<div class="atributo atributo--placeholder"><span class="atributo__label">Detalles técnicos</span><a href="${wa}" target="_blank" rel="noopener" style="color:var(--color-text); border-bottom: 1px solid var(--color-line);">Consultar por WhatsApp →</a></div>`;
       } else {
         attrs.innerHTML = entries.map(([k, v]) =>
@@ -530,7 +530,7 @@
     if (precio && !document.querySelector('.consulta-wa')) {
       const msg = encodeURIComponent(`Hola, quisiera consultar por "${p.nombre}" (SKU ${p.sku}) de MoMar.`);
       precio.insertAdjacentHTML('afterend', `
-        <a href="https://wa.me/595981234567?text=${msg}" target="_blank" rel="noopener" class="consulta-wa">
+        <a href="https://wa.me/595981412648?text=${msg}" target="_blank" rel="noopener" class="consulta-wa">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
           Consultá por WhatsApp
         </a>
@@ -576,7 +576,7 @@
             </div>
           </div>
 
-          <a href="https://wa.me/595981234567?text=${encodeURIComponent('Hola, quisiera pedir un medidor de talles gratis para mi anillo de MoMar.')}" target="_blank" class="btn btn--primary btn--block" style="margin-top: var(--space-3);">
+          <a href="https://wa.me/595981412648?text=${encodeURIComponent('Hola, quisiera pedir un medidor de talles gratis para mi anillo de MoMar.')}" target="_blank" class="btn btn--primary btn--block" style="margin-top: var(--space-3);">
             Pedir medidor por WhatsApp →
           </a>
         </div>
