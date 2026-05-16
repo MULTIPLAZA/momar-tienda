@@ -17,6 +17,7 @@ const TARGETS = [
     width: 1920,
     height: 1280,
     fit: 'cover',
+    position: 'top',
     quality: 78,
     desc: 'Hero principal · modelo en jardín con collares plateados',
   },
@@ -26,6 +27,7 @@ const TARGETS = [
     width: 900,
     height: 1200,
     fit: 'cover',
+    position: 'top',
     quality: 80,
     desc: 'Hero mobile vertical',
   },
@@ -86,7 +88,7 @@ async function run() {
     }
     const outPath = path.join(OUT_DIR, `${t.name}.jpg`);
     await sharp(inPath)
-      .resize(t.width, t.height, { fit: t.fit, position: 'attention' })
+      .resize(t.width, t.height, { fit: t.fit, position: t.position || 'attention' })
       .jpeg({ quality: t.quality, progressive: true, mozjpeg: true })
       .toFile(outPath);
     const stat = fs.statSync(outPath);
