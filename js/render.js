@@ -109,6 +109,23 @@
     `;
   }
 
+  // Pintar skeletons INMEDIATAMENTE (antes de esperar Supabase) para que no haya flash en blanco
+  function paintInitialSkeletons() {
+    const grids = ['.js-grid-destacados', '.js-grid-catalogo'];
+    grids.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el && !el.innerHTML.trim()) {
+        el.innerHTML = Array(8).fill(0).map(skeletonCard).join('');
+      }
+    });
+    const catGrid = document.querySelector('.js-grid-categorias');
+    if (catGrid && !catGrid.innerHTML.trim()) {
+      catGrid.innerHTML = Array(4).fill(0).map(() => `<div class="categoria skeleton-box" style="aspect-ratio: 3/4;"></div>`).join('');
+    }
+  }
+  if (document.readyState !== 'loading') paintInitialSkeletons();
+  else document.addEventListener('DOMContentLoaded', paintInitialSkeletons);
+
   document.addEventListener('DOMContentLoaded', async () => {
     // Esperar a que Supabase termine de cargar (o fallback inmediato si flag off)
     if (window.MOMAR_READY) {
@@ -313,7 +330,7 @@
         renderFicha(p);
         updateFichaMeta(p);
 
-        // Relacionados con score (#18)
+        // Relacionados con score (#18) + fallback si no hay matches
         const rel = document.querySelector('.js-grid-relacionados');
         if (rel) {
           const minP = p.precio * 0.6, maxP = p.precio * 1.8;
@@ -326,13 +343,25 @@
             if (x.imagenes && x.imagenes.length >= 2) s += 5;
             return s;
           };
-          const relacionados = window.MOMAR_PRODUCTS
-            .filter(x => x.sku !== p.sku)
+          const otros = window.MOMAR_PRODUCTS.filter(x => x.sku !== p.sku);
+          const relacionados = otros
             .map(x => ({ x, s: score(x) }))
             .sort((a, b) => b.s - a.s)
             .slice(0, 4)
             .map(r => r.x);
-          rel.innerHTML = relacionados.map(productCard).join('');
+
+          if (relacionados.length === 0) {
+            // No hay otros productos (catálogo casi vacío): ocultar la sección entera
+            const section = rel.closest('section') || rel.parentElement;
+            if (section) section.style.display = 'none';
+          } else if (relacionados.length < 4) {
+            // Hay pocos, completar con productos top sin scoring
+            const ya = new Set(relacionados.map(r => r.sku));
+            const completar = otros.filter(x => !ya.has(x.sku)).slice(0, 4 - relacionados.length);
+            rel.innerHTML = [...relacionados, ...completar].map(productCard).join('');
+          } else {
+            rel.innerHTML = relacionados.map(productCard).join('');
+          }
         }
       }
     }

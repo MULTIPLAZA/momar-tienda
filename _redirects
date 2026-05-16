@@ -5,3 +5,6 @@
 /pulseras   /catalogo.html?cat=pulseras   301
 /hogar      /catalogo.html?cat=hogar      301
 /catalogo/:cat    /catalogo.html?cat=:cat   301
+
+# Fallback: cualquier otra ruta no existente → 404.html (con código 404 real)
+/*    /404.html    404

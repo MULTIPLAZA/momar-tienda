@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Páginas admin no deben indexarse
+Disallow: /admin/
+
+Sitemap: https://momar-tienda.pages.dev/sitemap.xml
