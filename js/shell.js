@@ -1,17 +1,29 @@
 // MOMAR — Shell común (header, footer, drawers, mobile menu) reutilizable en todas las páginas públicas
 (function() {
-  const LOGO_SVG = `
-    <svg class="logo-svg" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
-      <text x="100" y="38" text-anchor="middle" font-size="38">MoMar</text>
-    </svg>
-  `;
+  // Logo PNG real (transparente). Variantes: white para fondos oscuros, dark para fondos claros.
+  // height en px controla el tamaño visual.
+  function LOGO_IMG({ height = 36, variant = 'white' } = {}) {
+    const src = variant === 'dark' ? 'img/logo-dark.png' : 'img/logo-white.png';
+    return `<img class="logo-img" src="${src}" alt="MoMar" width="${height}" height="${height}" style="height:${height}px; width:auto; display:block;">`;
+  }
+  // Compatibilidad con código viejo que esperaba LOGO_SVG
+  const LOGO_SVG = LOGO_IMG({ height: 32 });
 
   const NAV_ITEMS = [
     { label: 'Joyería', href: 'catalogo.html?cat=joyeria' },
-    { label: 'Hogar',   href: 'catalogo.html?cat=hogar' },
     { label: 'Novedades', href: 'catalogo.html' },
-    { label: 'Outlet', href: 'catalogo.html' }
+    { label: 'Nuestra historia', href: '#' }
   ];
+
+  const SOCIAL = {
+    instagram: 'https://www.instagram.com/momar.py/',
+    whatsapp: 'https://wa.me/595981412648?text=Hola%2C%20estoy%20viendo%20la%20tienda%20de%20MoMar%20y%20quisiera%20consultar.'
+  };
+
+  const SOCIAL_SVG = {
+    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
+    whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>'
+  };
 
   const ICON = {
     search: '<svg class="header__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
@@ -20,13 +32,13 @@
   };
 
   function buildHeader(opts) {
-    const topbar = opts.minimal ? '' : `<div class="topbar">ENVÍO GRATIS EN ASUNCIÓN SOBRE 2.500.000 GS · 3 CUOTAS SIN INTERÉS</div>`;
+    const topbar = opts.minimal ? '' : `<div class="topbar">ENVÍO GRATIS EN ASUNCIÓN SOBRE GS 500.000 · 3 CUOTAS SIN INTERÉS</div>`;
     if (opts.minimal) {
       return `
         <header class="header">
           <div class="header__inner">
             <div></div>
-            <a href="index.html" class="header__logo" aria-label="MoMar">${LOGO_SVG}</a>
+            <a href="index.html" class="header__logo" aria-label="MoMar">${LOGO_IMG({ height: 36 })}</a>
             <div class="header__actions" style="font-size:11px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.7;">Pago seguro · SSL</div>
           </div>
         </header>
@@ -42,7 +54,7 @@
               ${NAV_ITEMS.map(n => `<a href="${n.href}">${n.label}</a>`).join('')}
             </nav>
           </div>
-          <a href="index.html" class="header__logo" aria-label="MoMar">${LOGO_SVG}</a>
+          <a href="index.html" class="header__logo" aria-label="MoMar">${LOGO_IMG({ height: 36 })}</a>
           <div class="header__actions">
             <button class="header__action-search" aria-label="Buscar">${ICON.search}</button>
             <button aria-label="Cuenta">${ICON.user}</button>
@@ -60,27 +72,45 @@
         <div class="container">
           <div class="footer__grid">
             <div>
-              <div class="footer__logo">${LOGO_SVG.replace('class="logo-svg"', 'class="logo-svg" style="height: 56px;"')}</div>
+              <div class="footer__logo">${LOGO_IMG({ height: 56 })}</div>
               <p style="opacity: 0.7; font-size: 13px; max-width: 280px;">
                 Hogar & Más. Curaduría de artesanías hechas a mano de Colombia, traídas a Asunción por Moni & Marga.
               </p>
             </div>
             <div>
               <h4>Tienda</h4>
-              <ul><li>Joyería</li><li>Hogar</li><li>Bolsos &amp; Neceseres</li><li>Servilletas</li><li>Abanicos</li><li>Novedades</li></ul>
+              <ul>
+                <li><a href="catalogo.html?cat=joyeria">Joyería</a></li>
+                <li><a href="catalogo.html">Catálogo completo</a></li>
+                <li><a href="catalogo.html#nuevos">Novedades</a></li>
+              </ul>
             </div>
             <div>
               <h4>Atención</h4>
-              <ul><li>Contacto</li><li>Envíos</li><li>Cambios y devoluciones</li><li>Garantía</li><li>Preguntas frecuentes</li></ul>
+              <ul>
+                <li><a href="${SOCIAL.whatsapp}" target="_blank" rel="noopener">Contacto · WhatsApp</a></li>
+                <li><a href="#">Envíos</a></li>
+                <li><a href="#">Cambios y devoluciones</a></li>
+                <li><a href="#">Garantía</a></li>
+                <li><a href="#">Preguntas frecuentes</a></li>
+              </ul>
             </div>
             <div>
               <h4>MoMar</h4>
-              <ul><li>Nuestra historia</li><li>Showroom Asunción</li><li>Trabajá con nosotras</li><li>Términos y condiciones</li><li>Privacidad</li></ul>
+              <ul>
+                <li><a href="#">Nuestra historia</a></li>
+                <li><a href="${SOCIAL.instagram}" target="_blank" rel="noopener">Instagram @momar.py</a></li>
+                <li><a href="#">Términos y condiciones</a></li>
+                <li><a href="#">Privacidad</a></li>
+              </ul>
             </div>
           </div>
           <div class="footer__bottom">
-            <span>© 2026 MoMar · momar.com.py · RUC 80000000-0</span>
-            <div class="footer__social"><span>Instagram</span><span>WhatsApp</span><span>Facebook</span></div>
+            <span>© 2026 MoMar · Hogar & Más</span>
+            <div class="footer__social">
+              <a href="${SOCIAL.instagram}" target="_blank" rel="noopener" aria-label="Instagram">${SOCIAL_SVG.instagram}</a>
+              <a href="${SOCIAL.whatsapp}" target="_blank" rel="noopener" aria-label="WhatsApp">${SOCIAL_SVG.whatsapp}</a>
+            </div>
           </div>
         </div>
       </footer>
@@ -91,7 +121,7 @@
     return `
       <aside class="mobile-menu">
         <div class="mobile-menu__head">
-          ${LOGO_SVG.replace('class="logo-svg"', 'class="logo-svg" style="height:26px; color: var(--color-bg);"')}
+          ${LOGO_IMG({ height: 30 })}
           <button class="mobile-menu__close js-menu-close">Cerrar ×</button>
         </div>
         <ul class="mobile-menu__list">
