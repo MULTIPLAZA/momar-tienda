@@ -227,8 +227,9 @@ window.MOMAR_CATEGORIAS = [
   { slug: 'hogar', nombre: 'Hogar', img: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=600&h=800&fit=crop&q=80' }
 ];
 
-window.MOMAR_HERO = 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1600&h=1000&fit=crop&q=85';
-window.MOMAR_PROMO = 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1200&h=900&fit=crop&q=85';
+// Fotos lifestyle propias (Instagram MoMar) — no Unsplash mockup
+window.MOMAR_HERO = 'img/lifestyle/hero.jpg?v=20260516j';
+window.MOMAR_PROMO = 'img/lifestyle/natural.jpg?v=20260516j';
 
 // Helper para encontrar producto
 window.MOMAR_findProduct = function(sku) {

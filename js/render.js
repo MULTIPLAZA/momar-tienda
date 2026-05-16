@@ -283,17 +283,17 @@
       window.MOMAR_renderCatalogo();
     }
 
-    // Hero image
+    // Hero image — respetar inline style si el HTML ya define background-image
     const hero = document.querySelector('.js-hero');
-    if (hero && window.MOMAR_HERO) {
-      hero.style.backgroundImage = `linear-gradient(135deg, rgba(15,15,15,0.25), rgba(15,15,15,0.05)), url('${window.MOMAR_HERO}')`;
+    if (hero && window.MOMAR_HERO && !hero.style.backgroundImage) {
+      hero.style.backgroundImage = `url('${window.MOMAR_HERO}')`;
       hero.classList.add('has-image');
     }
 
-    // Promo banner
+    // Promo banner — idem, respetar inline si ya hay
     const promo = document.querySelector('.js-promo-media');
-    if (promo && window.MOMAR_PROMO) {
-      promo.style.backgroundImage = `linear-gradient(135deg, rgba(15,15,15,0.5), rgba(15,15,15,0.7)), url('${window.MOMAR_PROMO}')`;
+    if (promo && window.MOMAR_PROMO && !promo.style.backgroundImage) {
+      promo.style.backgroundImage = `url('${window.MOMAR_PROMO}')`;
       promo.classList.add('has-image');
     }
 
