@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260515t">
+  <link rel="stylesheet" href="css/style.css?v=20260516a">
 </head>
 <body>
   <div class="js-shell-top"></div>
@@ -65,37 +65,36 @@
 
       <div>
         <div class="toolbar">
-          <button class="toolbar__filter-btn" onclick="document.body.classList.add('filters-open')">Filtros</button>
-          <span class="js-catalogo-count">Cargando…</span>
-          <select class="js-orden">
-            <option value="destacados">Ordenar: Destacados</option>
-            <option value="precio-asc">Precio: menor a mayor</option>
-            <option value="precio-desc">Precio: mayor a menor</option>
-            <option value="nuevos">Más nuevos</option>
-          </select>
+          <span class="toolbar__count js-catalogo-count">Cargando…</span>
+          <div class="toolbar__right">
+            <button class="toolbar__filter-btn" onclick="document.body.classList.add('filters-open')">Filtros</button>
+            <select class="js-orden">
+              <option value="destacados">Selección MoMar</option>
+              <option value="unicas">Piezas únicas primero</option>
+              <option value="precio-asc">Precio: menor a mayor</option>
+              <option value="precio-desc">Precio: mayor a menor</option>
+              <option value="nuevos">Más nuevos</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Chips de filtros activos (#19) -->
+        <!-- Chips de filtros activos -->
         <div class="filtros-activos js-filtros-activos"></div>
 
         <div class="productos productos--lista js-grid-catalogo"></div>
-
-        <div style="text-align: center; margin-top: var(--space-6);">
-          <button class="btn btn--outline">Cargar más</button>
-        </div>
       </div>
     </div>
   </div>
 
   <div class="js-shell-bottom"></div>
 
-  <script src="js/supabase-config.js?v=20260515t"></script>
+  <script src="js/supabase-config.js?v=20260516a"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/products.js?v=20260515t"></script>
-  <script src="js/supabase-data.js?v=20260515t"></script>
-  <script src="js/shell.js?v=20260515t"></script>
-  <script src="js/cart.js?v=20260515t"></script>
-  <script src="js/render.js?v=20260515t"></script>
+  <script src="js/products.js?v=20260516a"></script>
+  <script src="js/supabase-data.js?v=20260516a"></script>
+  <script src="js/shell.js?v=20260516a"></script>
+  <script src="js/cart.js?v=20260516a"></script>
+  <script src="js/render.js?v=20260516a"></script>
   <script>
     // Chips de filtros activos (#19)
     function renderChips() {
@@ -120,16 +119,34 @@
       renderChips();
       if (window.MOMAR_renderCatalogo) window.MOMAR_renderCatalogo();
     }
-    document.querySelectorAll('.filtros input[type=checkbox]').forEach(ch => {
-      ch.addEventListener('change', () => {
-        renderChips();
-        if (window.MOMAR_renderCatalogo) window.MOMAR_renderCatalogo();
-      });
-    });
-    document.querySelector('.js-orden')?.addEventListener('change', () => {
+    // Scroll suave a la grilla después de filtrar (#17)
+    function reRender() {
       if (window.MOMAR_renderCatalogo) window.MOMAR_renderCatalogo();
+      renderChips();
+      const grid = document.querySelector('.js-grid-catalogo');
+      if (grid && window.innerWidth <= 768) {
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+    // Delegación para checks que se agregan después (dinámicos)
+    document.querySelector('.filtros')?.addEventListener('change', (e) => {
+      if (e.target.matches('input[type=checkbox]')) reRender();
     });
+    document.querySelector('.js-orden')?.addEventListener('change', reRender);
     document.addEventListener('DOMContentLoaded', renderChips);
+
+    // Scroll-to-top (#17 bonus)
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.createElement('button');
+      btn.className = 'scroll-top js-scroll-top';
+      btn.setAttribute('aria-label', 'Volver arriba');
+      btn.textContent = '↑';
+      document.body.appendChild(btn);
+      btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      window.addEventListener('scroll', () => {
+        btn.classList.toggle('is-visible', window.scrollY > 800);
+      }, { passive: true });
+    });
   </script>
 </body>
 </html>

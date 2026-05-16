@@ -27,10 +27,24 @@
   // Helpers de mapeo
   const PLACEHOLDER_IMG = 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=800&h=800&fit=crop&q=80';
 
+  // Limpia sufijos legacy del nombre del sistema interno (RFF, KPB, C 4889, # 45, etc.)
+  function limpiarNombre(n) {
+    if (!n) return '';
+    return n
+      .replace(/\s*#\s*\d+/g, '')                                  // " # 45", "# 117"
+      .replace(/\s+(RFF|KPB|CXB|FF|UG|Ox2|CM|KPB)\s*\d*\s*$/gi, '') // sufijos serie
+      .replace(/\s+[A-Z]{1,3}\s+\d{3,4}\s*$/g, '')                  // " C 4889", " R 5020"
+      .replace(/\s+\d{3,4}\s*$/g, '')                               // " 4889", " 5043" finales
+      .replace(/\s+\(\d+\)\s*$/g, '')                               // " (1)", " (3)"
+      .replace(/\s{2,}/g, ' ')                                      // dobles espacios
+      .trim();
+  }
+
   function detectBadge(p) {
     if (p.precio_antes_gs && p.precio_antes_gs > p.precio_gs) return 'sale';
     if (p.es_unica) return 'unique';
-    // Producto creado en los últimos 30 días → "new"
+    if (p.stock === 1 && !p.es_unica) return 'last';
+    if (p.stock >= 2 && p.stock <= 3) return 'low';
     if (p.created_at) {
       const dias = (Date.now() - new Date(p.created_at).getTime()) / 86400000;
       if (dias < 30) return 'new';
@@ -47,9 +61,17 @@
     if (p.peso_gr) atributos['Peso'] = p.peso_gr + ' g';
     if (p.origen) atributos['Origen'] = p.origen;
     if (p.dimensiones) atributos['Dimensiones'] = p.dimensiones;
+
+    // Descripción "real": solo si es distinta del nombre (no la duplica)
+    const nombreLimpio = limpiarNombre(p.nombre);
+    const descRica = p.descripcion_larga && p.descripcion_larga.trim() !== p.nombre.trim() && p.descripcion_larga.trim() !== nombreLimpio
+      ? p.descripcion_larga
+      : null;
+
     return {
       sku: p.sku,
-      nombre: p.nombre,
+      nombre: nombreLimpio || p.nombre,
+      nombre_raw: p.nombre,  // por si lo necesitamos
       cat: cat.nombre || 'Producto',
       cat_slug: cat.slug || 'joyeria',
       material: p.material || '',
@@ -57,13 +79,14 @@
       precio_antes: p.precio_antes_gs || null,
       badge: detectBadge(p),
       imagen: principal?.url || PLACEHOLDER_IMG,
-      imagenes: fotos.length ? fotos.map(f => f.url) : [PLACEHOLDER_IMG],
+      imagenes: fotos.length ? fotos.map(f => f.url) : [],
       es_unica: !!p.es_unica,
       stock: p.stock,
-      descripcion_corta: p.descripcion_corta || p.nombre,
-      descripcion: p.descripcion_larga || p.descripcion_corta || p.nombre,
+      created_at: p.created_at,
+      descripcion_corta: descRica ? p.descripcion_corta : null,
+      descripcion: descRica,  // null si no hay descripción rica real
       atributos,
-      variantes: null  // TODO: traer de producto_variantes cuando tengamos
+      variantes: null
     };
   }
 

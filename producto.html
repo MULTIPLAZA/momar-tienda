@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260515t">
+  <link rel="stylesheet" href="css/style.css?v=20260516a">
 </head>
 <body>
   <div class="js-shell-top"></div>
@@ -48,10 +48,18 @@
           <button class="btn btn--outline">♡ Guardar</button>
         </div>
 
-        <div style="margin-top: var(--space-4); padding: var(--space-3); background: var(--color-bg-alt); font-size: 13px;">
-          <strong style="font-family: var(--font-display);">3 cuotas sin interés</strong>
-          de <strong class="js-prod-cuota">…</strong> con tarjetas Bancard · o pagá hasta 12 cuotas.
-        </div>
+        <details class="financiacion">
+          <summary>
+            <span><strong style="font-family: var(--font-display);">3 cuotas sin interés</strong> de <strong class="js-prod-cuota">…</strong> con tarjetas Bancard · o hasta 12 cuotas</span>
+            <span class="financiacion__chevron">▾</span>
+          </summary>
+          <div class="financiacion__detalle">
+            <p><strong>Sin interés:</strong> 3 cuotas con tarjetas Visa, Mastercard, Cabal de Bancard.</p>
+            <p><strong>Con interés:</strong> hasta 12 cuotas (recargo según banco emisor).</p>
+            <p><strong>Contado por transferencia:</strong> consultanos por descuento adicional.</p>
+            <p><strong>Otros medios:</strong> Wally / Personal Pay, transferencia bancaria.</p>
+          </div>
+        </details>
 
         <div style="margin-top: var(--space-5);" class="js-prod-atributos"></div>
 
@@ -84,12 +92,12 @@
 
   <div class="js-shell-bottom"></div>
 
-  <script src="js/supabase-config.js?v=20260515t"></script>
+  <script src="js/supabase-config.js?v=20260516a"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/products.js?v=20260515t"></script>
-  <script src="js/supabase-data.js?v=20260515t"></script>
-  <script src="js/shell.js?v=20260515t"></script>
-  <script src="js/cart.js?v=20260515t"></script>
-  <script src="js/render.js?v=20260515t"></script>
+  <script src="js/products.js?v=20260516a"></script>
+  <script src="js/supabase-data.js?v=20260516a"></script>
+  <script src="js/shell.js?v=20260516a"></script>
+  <script src="js/cart.js?v=20260516a"></script>
+  <script src="js/render.js?v=20260516a"></script>
 </body>
 </html>

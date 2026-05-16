@@ -1,0 +1,7 @@
+# Cloudflare Pages — short URLs friendly para categorías
+/anillos    /catalogo.html?cat=anillos    301
+/collares   /catalogo.html?cat=collares   301
+/aros       /catalogo.html?cat=aros       301
+/pulseras   /catalogo.html?cat=pulseras   301
+/hogar      /catalogo.html?cat=hogar      301
+/catalogo/:cat    /catalogo.html?cat=:cat   301

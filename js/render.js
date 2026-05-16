@@ -1,9 +1,12 @@
 // MOMAR — Render dinámico de grids de productos y categorías
 (function() {
-  function badgeHtml(badge) {
-    if (badge === 'new') return '<span class="producto__badge producto__badge--new">Nuevo</span>';
-    if (badge === 'sale') return '<span class="producto__badge producto__badge--sale">Oferta</span>';
-    if (badge === 'unique') return '<span class="producto__badge">Único</span>';
+  // Badges premium (Mejuri/Catbird style: serif italic claro, no sticker negro)
+  function badgeHtml(p) {
+    if (p.badge === 'sale') return '<span class="producto__badge producto__badge--sale">Oferta</span>';
+    if (p.badge === 'unique' || p.es_unica) return '<span class="producto__badge producto__badge--unique">Pieza única</span>';
+    if (p.badge === 'last' || (p.stock === 1 && !p.es_unica)) return '<span class="producto__badge producto__badge--last">Última</span>';
+    if (p.badge === 'low' || (p.stock >= 2 && p.stock <= 3)) return `<span class="producto__badge producto__badge--low">Quedan ${p.stock}</span>`;
+    if (p.badge === 'new') return '<span class="producto__badge producto__badge--new">Nuevo</span>';
     return '';
   }
 
@@ -12,6 +15,27 @@
       return `<del>${window.MOMAR_fmtGs(p.precio_antes)}</del> ${window.MOMAR_fmtGs(p.precio)}`;
     }
     return window.MOMAR_fmtGs(p.precio);
+  }
+
+  // Eyebrow editorial: si tiene material, mostrarlo; si no, solo categoría (sin punto colgando)
+  function eyebrowHtml(p) {
+    if (p.material && p.material !== p.cat) {
+      return `${p.cat} · ${p.material}`;
+    }
+    return p.cat || '';
+  }
+
+  // Score editorial para "destacados" (#8)
+  function scoreDestacados(p) {
+    let s = 0;
+    if (p.es_unica) s += 100;
+    if (p.imagenes && p.imagenes.length >= 3) s += 30;
+    if (p.precio_antes) s += 50;
+    if (p.stock > 0 && p.stock <= 3) s += 25;
+    if (p.precio > 1000000) s += 20;
+    // Penalizar nombres muy legacy
+    if (/^[A-Z]+\s+\w+\s+\d{3,4}/i.test(p.nombre_raw || '')) s -= 30;
+    return s;
   }
 
   // Helper imágenes con srcset (Unsplash optimization) (#14)
@@ -46,22 +70,33 @@
   function productCard(p) {
     return `
       <div class="producto">
-        <a href="producto.html?sku=${p.sku}" class="producto__media-link">
+        <a href="producto.html?sku=${encodeURIComponent(p.sku)}" class="producto__media-link">
           <div class="producto__media">
             ${imgTag(p.imagen, p.nombre, '(max-width: 768px) 50vw, 25vw')}
-            ${badgeHtml(p.badge)}
+            ${badgeHtml(p)}
             <button class="producto__quick-add js-add-to-cart" data-sku="${p.sku}" data-qty="1" aria-label="Agregar ${p.nombre} al carrito">
               + Agregar
             </button>
           </div>
         </a>
-        <a href="producto.html?sku=${p.sku}" class="producto__link">
-          <div class="producto__cat">${p.cat} · ${p.material}</div>
+        <a href="producto.html?sku=${encodeURIComponent(p.sku)}" class="producto__link">
+          <div class="producto__cat">${eyebrowHtml(p)}</div>
           <div class="producto__nombre">${p.nombre}</div>
           <div class="producto__precio">${priceHtml(p)}</div>
         </a>
       </div>
     `;
+  }
+
+  // Skeleton card mientras carga
+  function skeletonCard() {
+    return `
+      <div class="producto producto--skeleton">
+        <div class="producto__media skeleton-box"></div>
+        <div class="skeleton-line skeleton-line--xs"></div>
+        <div class="skeleton-line skeleton-line--md"></div>
+        <div class="skeleton-line skeleton-line--sm"></div>
+      </div>`;
   }
 
   function categoriaCard(c) {
@@ -94,15 +129,65 @@
       cats.innerHTML = window.MOMAR_CATEGORIAS.map(categoriaCard).join('');
     }
 
-    // Catálogo completo (con filtros + ordenamiento reactivos)
+    // Render dinámico de los filtros con counts (#3, #20)
+    function renderFiltrosConCounts() {
+      const aside = document.querySelector('.filtros');
+      if (!aside) return;
+      const all = window.MOMAR_PRODUCTS || [];
+      const counts = { categoria: {}, material: {}, precio: {}, disponibilidad: { stock: 0, unica: 0, oferta: 0 } };
+      const rangos = { '0-1000000': [0, 1000000], '1000000-3000000': [1000000, 3000000], '3000000-6000000': [3000000, 6000000], '6000000-': [6000000, Infinity] };
+      all.forEach(p => {
+        if (p.cat_slug) counts.categoria[p.cat_slug] = (counts.categoria[p.cat_slug] || 0) + 1;
+        if (p.material) counts.material[p.material.toLowerCase()] = (counts.material[p.material.toLowerCase()] || 0) + 1;
+        Object.entries(rangos).forEach(([k, [min, max]]) => { if (p.precio >= min && p.precio <= max) counts.precio[k] = (counts.precio[k] || 0) + 1; });
+        if (p.stock > 0) counts.disponibilidad.stock++;
+        if (p.es_unica) counts.disponibilidad.unica++;
+        if (p.precio_antes) counts.disponibilidad.oferta++;
+      });
+      // Aplicar counts a cada label + ocultar opciones con 0
+      aside.querySelectorAll('.filtro-grupo').forEach(group => {
+        const g = group.dataset.group;
+        let visibles = 0;
+        group.querySelectorAll('label').forEach(lbl => {
+          const input = lbl.querySelector('input[type=checkbox]');
+          if (!input) return;
+          const v = input.value;
+          let n = 0;
+          if (g === 'categoria') n = counts.categoria[v] || 0;
+          else if (g === 'material') n = counts.material[v.toLowerCase()] || 0;
+          else if (g === 'precio') n = counts.precio[v] || 0;
+          else if (g === 'disponibilidad') n = counts.disponibilidad[v] || 0;
+
+          // Insertar contador (si no existe ya)
+          let cnt = lbl.querySelector('.filtro-count');
+          if (!cnt) {
+            cnt = document.createElement('span');
+            cnt.className = 'filtro-count';
+            lbl.appendChild(cnt);
+          }
+          cnt.textContent = n;
+          lbl.style.display = n === 0 ? 'none' : '';
+          if (n > 0) visibles++;
+        });
+        // Ocultar el grupo entero si NINGUNA opción tiene productos
+        group.style.display = visibles === 0 ? 'none' : '';
+      });
+    }
+
+    // Catálogo completo (con filtros + ordenamiento + scroll + skeleton)
     const catalogo = document.querySelector('.js-grid-catalogo');
     if (catalogo) {
-      window.MOMAR_renderCatalogo = function() {
+      let visibleCount = 24;  // paginación virtual
+      let cachedList = [];
+
+      window.MOMAR_renderCatalogo = function(opts) {
+        opts = opts || {};
+        if (!opts.keepVisible) visibleCount = 24;
+
         const params = new URLSearchParams(location.search);
         const filterCatUrl = params.get('cat');
         const q = (params.get('q') || '').toLowerCase().trim();
 
-        // Estado de filtros desde checkboxes laterales
         const checks = (group) => Array.from(document.querySelectorAll(`.filtros .filtro-grupo[data-group="${group}"] input[type=checkbox]:checked`)).map(c => c.value);
         const catsSel = checks('categoria');
         const matsSel = checks('material');
@@ -111,51 +196,89 @@
 
         let list = (window.MOMAR_PRODUCTS || []).slice();
 
-        // Filtro por URL ?cat=
-        if (filterCatUrl) {
-          list = list.filter(p => p.cat_slug === filterCatUrl || (p.cat || '').toLowerCase() === filterCatUrl.toLowerCase());
-        }
-        // Filtro búsqueda libre ?q=
+        if (filterCatUrl) list = list.filter(p => p.cat_slug === filterCatUrl || (p.cat || '').toLowerCase() === filterCatUrl.toLowerCase());
         if (q) {
           list = list.filter(p =>
             (p.nombre || '').toLowerCase().includes(q) ||
+            (p.nombre_raw || '').toLowerCase().includes(q) ||
             (p.sku || '').toLowerCase().includes(q) ||
             (p.material || '').toLowerCase().includes(q) ||
-            (p.descripcion_corta || '').toLowerCase().includes(q)
+            (p.cat || '').toLowerCase().includes(q)
           );
         }
-        // Categorías checkbox
-        if (catsSel.length) {
-          list = list.filter(p => catsSel.includes(p.cat_slug) || catsSel.some(s => (p.cat || '').toLowerCase() === s.toLowerCase()));
-        }
-        // Material checkbox (contains, case-insensitive)
-        if (matsSel.length) {
-          list = list.filter(p => matsSel.some(m => (p.material || '').toLowerCase().includes(m.toLowerCase())));
-        }
-        // Precio rangos
+        if (catsSel.length) list = list.filter(p => catsSel.includes(p.cat_slug));
+        if (matsSel.length) list = list.filter(p => matsSel.some(m => (p.material || '').toLowerCase().includes(m.toLowerCase())));
         if (preciosSel.length) {
           list = list.filter(p => preciosSel.some(rng => {
-            const [min, max] = rng.split('-').map(Number);
-            return p.precio >= min && (isNaN(max) || p.precio <= max);
+            const [minS, maxS] = rng.split('-');
+            const min = Number(minS), max = maxS === '' ? Infinity : Number(maxS);
+            return p.precio >= min && p.precio <= max;
           }));
         }
-        // Disponibilidad
-        if (dispSel.includes('stock'))    list = list.filter(p => p.stock > 0);
-        if (dispSel.includes('unica'))    list = list.filter(p => p.es_unica);
-        if (dispSel.includes('oferta'))   list = list.filter(p => p.precio_antes);
+        if (dispSel.includes('stock')) list = list.filter(p => p.stock > 0);
+        if (dispSel.includes('unica')) list = list.filter(p => p.es_unica);
+        if (dispSel.includes('oferta')) list = list.filter(p => p.precio_antes);
 
-        // Ordenamiento
         const orden = document.querySelector('.js-orden')?.value || 'destacados';
         if (orden === 'precio-asc') list.sort((a, b) => a.precio - b.precio);
         else if (orden === 'precio-desc') list.sort((a, b) => b.precio - a.precio);
-        else if (orden === 'nuevos') list.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+        else if (orden === 'nuevos') list.sort((a, b) => (new Date(b.created_at) - new Date(a.created_at)));
+        else if (orden === 'unicas') list.sort((a, b) => (b.es_unica ? 1 : 0) - (a.es_unica ? 1 : 0) || scoreDestacados(b) - scoreDestacados(a));
+        else { /* destacados con tie-breaker por categoría */
+          list.sort((a, b) => {
+            if (a.cat_slug !== b.cat_slug) return a.cat_slug.localeCompare(b.cat_slug);
+            return scoreDestacados(b) - scoreDestacados(a);
+          });
+        }
 
-        catalogo.innerHTML = list.length
-          ? list.map(productCard).join('')
-          : '<p style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--color-text-soft); font-family: var(--font-display); font-style: italic; font-size: 22px;">No encontramos piezas que coincidan con tu búsqueda.</p>';
+        cachedList = list;
+        const slice = list.slice(0, visibleCount);
+        catalogo.innerHTML = slice.length
+          ? slice.map(productCard).join('') + (visibleCount < list.length ? '<div class="js-grid-sentinel" style="grid-column: 1 / -1; height: 1px;"></div>' : '')
+          : '<p class="catalogo-empty">No encontramos piezas que coincidan con tu búsqueda.</p>';
+
+        // Stagger animation
+        catalogo.querySelectorAll('.producto').forEach((c, i) => {
+          c.style.animationDelay = `${Math.min(i * 0.03, 0.4)}s`;
+        });
+
         const countEl = document.querySelector('.js-catalogo-count');
-        if (countEl) countEl.textContent = list.length + (list.length === 1 ? ' producto' : ' productos');
+        if (countEl) {
+          if (list.length === 0) countEl.textContent = '0 piezas';
+          else if (visibleCount >= list.length) countEl.textContent = `${list.length} ${list.length === 1 ? 'pieza' : 'piezas'}`;
+          else countEl.textContent = `Mostrando ${slice.length} de ${list.length} piezas`;
+        }
+
+        // IntersectionObserver para cargar más al scroll
+        const sentinel = catalogo.querySelector('.js-grid-sentinel');
+        if (sentinel && !sentinel._observed) {
+          const io = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && visibleCount < cachedList.length) {
+              visibleCount += 24;
+              window.MOMAR_renderCatalogo({ keepVisible: true });
+            }
+          }, { rootMargin: '200px' });
+          io.observe(sentinel);
+          sentinel._observed = true;
+        }
+
+        updateTitle();
       };
+
+      // Título dinámico del catálogo (#14)
+      function updateTitle() {
+        const params = new URLSearchParams(location.search);
+        const cat = params.get('cat');
+        const q = params.get('q');
+        if (q) document.title = `Búsqueda: ${q} · MoMar`;
+        else if (cat) document.title = `${cat.charAt(0).toUpperCase() + cat.slice(1)} · MoMar`;
+        else document.title = 'Catálogo · MoMar';
+      }
+
+      // Skeleton primero
+      catalogo.innerHTML = Array(8).fill(0).map(skeletonCard).join('');
+      // Render real (data ya está)
+      renderFiltrosConCounts();
       window.MOMAR_renderCatalogo();
     }
 
@@ -177,29 +300,110 @@
     const fichaCont = document.querySelector('.js-producto-detalle');
     if (fichaCont) {
       const params = new URLSearchParams(location.search);
-      const sku = params.get('sku') || 'AN-001';
+      const sku = params.get('sku') || (window.MOMAR_PRODUCTS && window.MOMAR_PRODUCTS[0]?.sku);
       const p = window.MOMAR_findProduct(sku) || window.MOMAR_PRODUCTS[0];
-      renderFicha(p);
+      if (p) {
+        renderFicha(p);
+        updateFichaMeta(p);
 
-      // Relacionados (otros 4)
-      const rel = document.querySelector('.js-grid-relacionados');
-      if (rel) {
-        const otros = window.MOMAR_PRODUCTS.filter(x => x.sku !== p.sku).slice(0, 4);
-        rel.innerHTML = otros.map(productCard).join('');
+        // Relacionados con score (#18)
+        const rel = document.querySelector('.js-grid-relacionados');
+        if (rel) {
+          const minP = p.precio * 0.6, maxP = p.precio * 1.8;
+          const score = (x) => {
+            let s = 0;
+            if (x.cat_slug === p.cat_slug) s += 50;
+            if (x.precio >= minP && x.precio <= maxP) s += 20;
+            if (x.es_unica === p.es_unica) s += 10;
+            if (p.material && x.material === p.material) s += 30;
+            if (x.imagenes && x.imagenes.length >= 2) s += 5;
+            return s;
+          };
+          const relacionados = window.MOMAR_PRODUCTS
+            .filter(x => x.sku !== p.sku)
+            .map(x => ({ x, s: score(x) }))
+            .sort((a, b) => b.s - a.s)
+            .slice(0, 4)
+            .map(r => r.x);
+          rel.innerHTML = relacionados.map(productCard).join('');
+        }
       }
     }
   });
+
+  // SEO + Open Graph dinámicos (#14)
+  function setMeta(name, content) {
+    if (!content) return;
+    const sel = name.startsWith('og:') ? `meta[property="${name}"]` : `meta[name="${name}"]`;
+    let m = document.querySelector(sel);
+    if (!m) {
+      m = document.createElement('meta');
+      if (name.startsWith('og:')) m.setAttribute('property', name);
+      else m.setAttribute('name', name);
+      document.head.appendChild(m);
+    }
+    m.setAttribute('content', content);
+  }
+  function updateFichaMeta(p) {
+    document.title = `${p.nombre} · MoMar`;
+    const descrip = p.descripcion || `${p.nombre} de MoMar — ${window.MOMAR_fmtGs(p.precio)}`;
+    setMeta('description', descrip.slice(0, 155));
+    setMeta('og:title', `${p.nombre} · MoMar`);
+    setMeta('og:description', descrip.slice(0, 155));
+    setMeta('og:image', p.imagen);
+    setMeta('og:url', location.href);
+    setMeta('og:type', 'product');
+    setMeta('og:site_name', 'MoMar');
+    // JSON-LD Product schema
+    const old = document.querySelector('script[type="application/ld+json"]');
+    if (old) old.remove();
+    const ld = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": p.nombre,
+      "image": p.imagenes && p.imagenes.length ? p.imagenes : [p.imagen],
+      "sku": p.sku,
+      "description": p.descripcion || `${p.nombre} — ${p.cat} de MoMar`,
+      "brand": { "@type": "Brand", "name": "MoMar" },
+      "offers": {
+        "@type": "Offer",
+        "url": location.href,
+        "priceCurrency": "PYG",
+        "price": p.precio,
+        "availability": p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+      }
+    };
+    const s = document.createElement('script');
+    s.type = 'application/ld+json';
+    s.textContent = JSON.stringify(ld);
+    document.head.appendChild(s);
+  }
 
   function renderFicha(p) {
     const setText = (sel, val) => { const el = document.querySelector(sel); if (el) el.textContent = val; };
     const setHtml = (sel, val) => { const el = document.querySelector(sel); if (el) el.innerHTML = val; };
 
     setText('.js-prod-nombre', p.nombre);
-    setText('.js-prod-eyebrow', p.cat + ' · ' + p.material + (p.es_unica ? ' · Pieza única' : ''));
+    // Eyebrow editorial: priorizar material si lo hay; sino solo categoría; sin punto colgando
+    const eyebrowText = [p.material || null, p.es_unica ? 'Pieza única' : null].filter(Boolean).join(' · ') || p.cat;
+    setText('.js-prod-eyebrow', eyebrowText);
     setHtml('.js-prod-precio', p.precio_antes
       ? `<del style="color:var(--color-text-soft); font-size:18px;">${window.MOMAR_fmtGs(p.precio_antes)}</del> ${window.MOMAR_fmtGs(p.precio)}`
       : window.MOMAR_fmtGs(p.precio));
-    setText('.js-prod-descripcion', p.descripcion);
+
+    // Descripción: si no hay desc rica real, placeholder editorial (#6)
+    const descEl = document.querySelector('.js-prod-descripcion');
+    if (descEl) {
+      if (p.descripcion) {
+        descEl.textContent = p.descripcion;
+        descEl.classList.remove('descripcion--placeholder');
+      } else {
+        const wa = `https://wa.me/595981234567?text=${encodeURIComponent(`Hola, quisiera consultar por "${p.nombre}" (${p.sku}) de MoMar.`)}`;
+        descEl.innerHTML = `Pieza de la colección actual. Consultanos por características, peso y disponibilidad — <a href="${wa}" target="_blank" rel="noopener" style="color:inherit; border-bottom:1px solid currentColor;">te respondemos por WhatsApp</a>.`;
+        descEl.classList.add('descripcion--placeholder');
+      }
+    }
+
     setText('.js-prod-cuota', window.MOMAR_fmtGs(Math.round(p.precio / 3)));
 
     // Stock alert antes del precio (#8) — inserto dinámicamente después del eyebrow
@@ -213,26 +417,25 @@
       }
     }
 
-    // Galería
+    // Galería: si hay solo 1 foto, no mostrar thumbs ni dots (#5)
     const principal = document.querySelector('.js-galeria-principal');
-    const imgs = p.imagenes || [p.imagen, p.imagen, p.imagen, p.imagen];
+    const imgs = (p.imagenes && p.imagenes.length > 0) ? p.imagenes : [p.imagen];
     if (principal) {
       principal.innerHTML = imgTag(p.imagen, p.nombre, '(max-width: 768px) 100vw, 50vw');
     }
     const thumbs = document.querySelector('.js-galeria-thumbs');
-    if (thumbs) {
-      thumbs.innerHTML = imgs.slice(0, 4).map((src, i) => `
+    const oldDots = document.querySelector('.galeria-dots');
+    if (oldDots) oldDots.remove();
+
+    if (thumbs && imgs.length > 1) {
+      thumbs.style.display = '';
+      thumbs.innerHTML = imgs.slice(0, 8).map((src, i) => `
         <div class="${i === 0 ? 'is-active' : ''}" data-src="${src}" data-idx="${i}">
           ${imgTag(src, p.nombre + ' foto ' + (i+1), '(max-width: 768px) 100vw, 25vw')}
         </div>
       `).join('');
-
-      // Agregar dots para indicador en mobile
-      const isInsertedDots = document.querySelector('.galeria-dots');
-      if (!isInsertedDots) {
-        const dotsHtml = `<div class="galeria-dots">${imgs.slice(0, 4).map((_, i) => `<span class="galeria-dots__dot ${i === 0 ? 'is-active' : ''}"></span>`).join('')}</div>`;
-        thumbs.insertAdjacentHTML('afterend', dotsHtml);
-      }
+      const dotsHtml = `<div class="galeria-dots">${imgs.slice(0, 8).map((_, i) => `<span class="galeria-dots__dot ${i === 0 ? 'is-active' : ''}"></span>`).join('')}</div>`;
+      thumbs.insertAdjacentHTML('afterend', dotsHtml);
 
       // Click en thumbs cambia foto (desktop)
       thumbs.addEventListener('click', (e) => {
@@ -244,25 +447,31 @@
           const img = principal.querySelector('img');
           if (img) img.src = t.dataset.src;
         }
-        // En mobile el scroll natural maneja el cambio
       });
 
       // En mobile, actualizar dots con scroll
       thumbs.addEventListener('scroll', () => {
-        const scrollLeft = thumbs.scrollLeft;
         const itemWidth = thumbs.clientWidth;
-        const idx = Math.round(scrollLeft / itemWidth);
-        const dots = document.querySelectorAll('.galeria-dots__dot');
-        dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
+        const idx = Math.round(thumbs.scrollLeft / itemWidth);
+        document.querySelectorAll('.galeria-dots__dot').forEach((d, i) => d.classList.toggle('is-active', i === idx));
       });
+    } else if (thumbs) {
+      thumbs.style.display = 'none';
+      if (principal) principal.classList.add('galeria__principal--solo');
     }
 
-    // Atributos
+    // Atributos: si está vacío, ocultar todo el bloque + mostrar link a WhatsApp (#7)
     const attrs = document.querySelector('.js-prod-atributos');
-    if (attrs && p.atributos) {
-      attrs.innerHTML = Object.entries(p.atributos).map(([k, v]) =>
-        `<div class="atributo"><span class="atributo__label">${k}</span><span>${v}</span></div>`
-      ).join('');
+    if (attrs) {
+      const entries = p.atributos ? Object.entries(p.atributos) : [];
+      if (entries.length === 0) {
+        const wa = `https://wa.me/595981234567?text=${encodeURIComponent(`Hola, quisiera ver el detalle técnico de "${p.nombre}" (${p.sku}) de MoMar.`)}`;
+        attrs.innerHTML = `<div class="atributo atributo--placeholder"><span class="atributo__label">Detalles técnicos</span><a href="${wa}" target="_blank" rel="noopener" style="color:var(--color-text); border-bottom: 1px solid var(--color-line);">Consultar por WhatsApp →</a></div>`;
+      } else {
+        attrs.innerHTML = entries.map(([k, v]) =>
+          `<div class="atributo"><span class="atributo__label">${k}</span><span>${v}</span></div>`
+        ).join('');
+      }
     }
 
     // Variantes
