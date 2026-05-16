@@ -77,6 +77,10 @@
               <p style="opacity: 0.7; font-size: 13px; max-width: 280px;">
                 Hogar & Más. Curaduría de artesanías hechas a mano de Colombia, traídas a Asunción por Moni & Marga.
               </p>
+              <p style="opacity: 0.6; font-size: 12px; line-height: 1.6; max-width: 280px; margin-top: 14px;">
+                <strong style="opacity: 0.9;">Asunción</strong> · Vía Doce, Río Tebicuary 2136<br>
+                <strong style="opacity: 0.9;">San Lorenzo</strong> · San Rafael 451 c/ Agustín Barrios
+              </p>
             </div>
             <div>
               <h4>Tienda</h4>

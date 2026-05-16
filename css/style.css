@@ -291,12 +291,55 @@ body.menu-open .mobile-menu { transform: translateX(0); }
   text-align: left;
 }
 .hero.hero--compact {
-  height: 48vh;
-  min-height: 340px;
+  height: 56vh;
+  min-height: 420px;
   justify-content: center;
   text-align: center;
 }
 .hero.hero--compact.has-image .hero__content { padding-left: 0; max-width: 720px; }
+
+/* Overlay reforzado para foto B&N de fundadoras (más oscuro abajo, donde va texto) */
+.hero.hero--founders::after {
+  background: linear-gradient(180deg, rgba(15,15,15,0.10) 0%, rgba(15,15,15,0.30) 45%, rgba(15,15,15,0.75) 100%);
+}
+.hero.hero--founders { align-items: flex-end; }
+.hero.hero--founders .hero__content { padding: 0 var(--space-4) var(--space-5); }
+
+/* Contact grid en Nuestra Historia */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+.contact-card {
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-line, rgba(0,0,0,0.06));
+}
+.contact-card .eyebrow { color: var(--color-text-soft); }
+.contact-card h3 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 28px;
+  margin: var(--space-2) 0 var(--space-3);
+}
+.contact-card p {
+  color: var(--color-text-soft);
+  line-height: 1.6;
+  margin-bottom: var(--space-3);
+}
+.contact-card__link {
+  display: inline-block;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+}
+@media (max-width: 768px) {
+  .contact-grid { grid-template-columns: 1fr; gap: var(--space-3); }
+}
 .hero.has-image::after {
   content: "";
   position: absolute; inset: 0;
