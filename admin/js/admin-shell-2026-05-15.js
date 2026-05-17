@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="admin-side__foot">
-        <a href="../index.html">← Tienda pública</a> · <a href="login.html">Salir</a>
+        <a href="../index.html">← Tienda pública</a> · <a href="#" class="js-admin-logout">Salir</a>
       </div>
     `;
   }
@@ -69,10 +69,31 @@
     }
   });
 
-  window.MOMAR_renderAdminShell = function(activeHref, pageTitle) {
+  // Si está disponible el flow de auth real, esperamos a que resuelva antes de renderear el sidebar
+  // (así muestra el email/nombre del usuario logueado, no el fallback)
+  async function ensureAuthReady() {
+    if (window.MOMAR_AUTH_READY) {
+      const session = await window.MOMAR_AUTH_READY;
+      if (!session) return false; // admin-auth ya redirige a login
+    }
+    return true;
+  }
+
+  window.MOMAR_renderAdminShell = async function(activeHref, pageTitle) {
+    const ok = await ensureAuthReady();
+    if (!ok) return;
     const side = document.querySelector('.admin-side');
     const top = document.querySelector('.admin-topbar');
     if (side) side.innerHTML = buildSidebar(activeHref);
     if (top) top.innerHTML = buildTopbar(pageTitle);
+    // Wirear logout
+    document.querySelectorAll('.js-admin-logout').forEach(a => {
+      a.addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (!confirm('¿Cerrar sesión?')) return;
+        if (window.MOMAR_logout) await window.MOMAR_logout();
+        else location.replace('login.html');
+      });
+    });
   };
 })();

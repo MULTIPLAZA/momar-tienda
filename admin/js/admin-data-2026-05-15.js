@@ -1,11 +1,15 @@
 // Datos mock del panel admin
-window.MOMAR_ADMIN_USER = {
-  nombre: 'Martina',
-  apellido: 'Recalde',
-  email: 'martina@momar.com.py',
-  rol: 'Dueña',
-  inicial: 'MR'
-};
+// IMPORTANTE: MOMAR_ADMIN_USER ahora lo setea admin-auth.js con el usuario
+// real de Supabase Auth. Solo definimos un fallback si la auth aún no resolvió.
+if (!window.MOMAR_ADMIN_USER) {
+  window.MOMAR_ADMIN_USER = {
+    nombre: 'Admin',
+    apellido: '',
+    email: '—',
+    rol: 'Admin',
+    inicial: 'A'
+  };
+}
 
 window.MOMAR_PEDIDOS = [
   {

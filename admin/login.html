@@ -11,6 +11,28 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin-2026-05-15.css">
+  <style>
+    .login-error {
+      background: #FEE;
+      color: #B33;
+      padding: 12px 16px;
+      border-left: 3px solid #B33;
+      margin-bottom: 16px;
+      font-size: 13px;
+      display: none;
+    }
+    .login-error.is-shown { display: block; }
+    .login-success {
+      background: #EFE;
+      color: #285;
+      padding: 12px 16px;
+      border-left: 3px solid #285;
+      margin-bottom: 16px;
+      font-size: 13px;
+      display: none;
+    }
+    .login-success.is-shown { display: block; }
+  </style>
 </head>
 <body>
   <div class="login-shell">
@@ -23,22 +45,25 @@
       <h1>Panel de administración</h1>
       <p class="sub">Ingresá con tu cuenta MoMar para continuar.</p>
 
-      <form class="admin-form" onsubmit="event.preventDefault(); window.location.href='index.html';">
+      <div class="login-error js-error"></div>
+      <div class="login-success js-success"></div>
+
+      <form class="admin-form" id="js-login-form">
         <div class="admin-form__group">
           <label>Email</label>
-          <input type="email" placeholder="martina@momar.com.py" required autofocus>
+          <input type="email" name="email" placeholder="admin@momar.com.py" required autofocus autocomplete="email">
         </div>
         <div class="admin-form__group">
           <label>Contraseña</label>
-          <input type="password" placeholder="••••••••" required>
+          <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
           <div class="hint" style="display:flex; justify-content:space-between; margin-top:8px;">
             <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
-              <input type="checkbox" style="width:auto;"> Recordarme
+              <input type="checkbox" style="width:auto;" name="remember" checked> Recordarme
             </label>
-            <a href="#" style="color: var(--color-text-soft);">Olvidé mi contraseña</a>
+            <a href="#" class="js-forgot" style="color: var(--color-text-soft);">Olvidé mi contraseña</a>
           </div>
         </div>
-        <button class="btn-sm btn-sm--primary" type="submit" style="width:100%; padding: 14px;">Ingresar</button>
+        <button class="btn-sm btn-sm--primary js-submit" type="submit" style="width:100%; padding: 14px;">Ingresar</button>
       </form>
 
       <p style="text-align:center; font-size:11px; color: var(--color-text-soft); margin-top: var(--space-4); letter-spacing: 1px;">
@@ -46,6 +71,88 @@
       </p>
     </div>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/admin-auth.js"></script>
   <script src="js/pwa.js"></script>
+  <script>
+    (async function() {
+      // Si ya hay sesión, ir directo al panel
+      const session = await window.MOMAR_AUTH_READY;
+      if (session) {
+        const next = sessionStorage.getItem('momar-admin-after-login') || 'index.html';
+        sessionStorage.removeItem('momar-admin-after-login');
+        location.replace(next);
+        return;
+      }
+
+      const form = document.getElementById('js-login-form');
+      const btn = form.querySelector('.js-submit');
+      const errBox = document.querySelector('.js-error');
+      const okBox = document.querySelector('.js-success');
+
+      function showError(msg) {
+        okBox.classList.remove('is-shown');
+        errBox.textContent = msg;
+        errBox.classList.add('is-shown');
+      }
+      function showSuccess(msg) {
+        errBox.classList.remove('is-shown');
+        okBox.textContent = msg;
+        okBox.classList.add('is-shown');
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errBox.classList.remove('is-shown');
+        okBox.classList.remove('is-shown');
+        btn.disabled = true;
+        btn.textContent = 'Verificando…';
+
+        const email = form.email.value.trim();
+        const password = form.password.value;
+
+        try {
+          const { data, error } = await window.MOMAR_supabase.auth.signInWithPassword({ email, password });
+          if (error) {
+            // Mensajes amigables según error de Supabase
+            if (error.message.includes('Invalid login credentials')) {
+              throw new Error('Email o contraseña incorrectos.');
+            }
+            if (error.message.includes('Email not confirmed')) {
+              throw new Error('Email no confirmado. Avisanos por WhatsApp.');
+            }
+            throw error;
+          }
+          showSuccess('Listo. Redirigiendo…');
+          setTimeout(() => {
+            const next = sessionStorage.getItem('momar-admin-after-login') || 'index.html';
+            sessionStorage.removeItem('momar-admin-after-login');
+            location.replace(next);
+          }, 400);
+        } catch (err) {
+          showError(err.message || 'No se pudo iniciar sesión.');
+          btn.disabled = false;
+          btn.textContent = 'Ingresar';
+        }
+      });
+
+      // Olvidé mi contraseña
+      document.querySelector('.js-forgot').addEventListener('click', async (e) => {
+        e.preventDefault();
+        const email = form.email.value.trim();
+        if (!email) {
+          showError('Escribí tu email arriba primero.');
+          form.email.focus();
+          return;
+        }
+        const { error } = await window.MOMAR_supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: location.origin + '/admin/login.html'
+        });
+        if (error) { showError(error.message); return; }
+        showSuccess('Te enviamos un mail con instrucciones. Revisá tu casilla (incluido spam).');
+      });
+    })();
+  </script>
 </body>
 </html>

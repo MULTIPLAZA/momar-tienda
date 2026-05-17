@@ -30,31 +30,24 @@
 
         <div class="admin-toolbar">
           <div class="admin-toolbar__filters">
-            <select>
-              <option>Categoría: Todas</option>
-              <option>Joyería</option>
-              <option>Hogar</option>
+            <select class="js-filtro-cat">
+              <option value="">Categoría: Todas</option>
             </select>
-            <select>
-              <option>Material: Todos</option>
-              <option>Oro 18k</option>
-              <option>Plata 925</option>
-              <option>Mármol</option>
-              <option>Cristal</option>
+            <select class="js-filtro-estado">
+              <option value="">Estado: Todos</option>
+              <option value="publicado">Publicado</option>
+              <option value="borrador">Borrador</option>
+              <option value="oculto">Oculto</option>
             </select>
-            <select>
-              <option>Estado: Todos</option>
-              <option>Publicado</option>
-              <option>Borrador</option>
-              <option>Oculto</option>
-              <option>Sin stock</option>
-            </select>
-            <input type="text" placeholder="Buscar SKU, nombre…" class="u-w-full" style="max-width: 240px;">
+            <input type="search" class="js-buscar u-w-full" placeholder="Buscar SKU o nombre…" style="max-width: 280px;">
           </div>
           <div>
-            <select>
-              <option>Vista: Tabla</option>
-              <option>Vista: Galería</option>
+            <select class="js-orden">
+              <option value="created_at.desc">Más nuevos primero</option>
+              <option value="created_at.asc">Más antiguos primero</option>
+              <option value="precio_gs.desc">Precio: mayor</option>
+              <option value="precio_gs.asc">Precio: menor</option>
+              <option value="nombre.asc">Nombre A-Z</option>
             </select>
           </div>
         </div>
@@ -90,45 +83,142 @@
     </div>
   </div>
 
-  <script src="../js/products.js?v=1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/admin-auth.js"></script>
   <script src="js/admin-data-2026-05-15.js"></script>
   <script src="js/admin-shell-2026-05-15.js"></script>
   <script>
     MOMAR_renderAdminShell('productos.html', 'Productos');
-    const fmt = window.MOMAR_fmtGs;
-    const prods = window.MOMAR_PRODUCTS;
-    document.querySelector('.js-total-count').textContent = `· ${prods.length} productos`;
-    document.querySelector('.js-productos-tbody').innerHTML = prods.map(p => {
-      const stockBadge = p.stock === 0 ? '<span class="pill pill--red">Sin stock</span>' :
-                       p.stock <= 2 ? '<span class="pill pill--amber">Stock bajo · ' + p.stock + '</span>' :
-                       '<span class="pill pill--green">' + p.stock + ' unid.</span>';
-      const estado = p.stock === 0 ? '<span class="pill pill--gray">Oculto</span>' :
-                     p.badge === 'new' ? '<span class="pill pill--purple">Nuevo</span>' :
-                     p.badge === 'sale' ? '<span class="pill pill--amber">En oferta</span>' :
-                     '<span class="pill pill--green">Publicado</span>';
-      return `
-        <tr>
-          <td><input type="checkbox"></td>
-          <td class="col-mini-img"><img src="${p.imagen}" onerror="this.style.opacity=0;"></td>
-          <td>
-            <a href="producto-edit.html?sku=${p.sku}"><strong>${p.nombre}</strong></a>
-            <div class="u-text-sm u-text-soft u-mt-1">${p.material}${p.variantes ? ' · ' + p.variantes.opciones.length + ' ' + p.variantes.tipo.toLowerCase() + 's' : ''}</div>
-          </td>
-          <td class="col-hide-sm"><span class="u-text-base" style="font-family: monospace;">${p.sku}</span></td>
-          <td class="col-hide-sm">${p.cat}</td>
-          <td class="col-num">
-            <strong>${fmt(p.precio)}</strong>
-            ${p.precio_antes ? '<br><del class="u-text-sm u-text-soft">' + fmt(p.precio_antes) + '</del>' : ''}
-          </td>
-          <td class="col-num">${stockBadge}</td>
-          <td>${estado}</td>
-          <td class="col-actions">
-            <a href="producto-edit.html?sku=${p.sku}" class="btn-sm btn-sm--ghost">Editar</a>
-            <a href="../producto.html?sku=${p.sku}" target="_blank" class="btn-sm btn-sm--ghost" title="Ver en la tienda">↗</a>
-          </td>
-        </tr>
-      `;
-    }).join('');
+
+    (async function() {
+      await window.MOMAR_AUTH_READY;
+      const supa = window.MOMAR_supabase;
+      const fmt = window.MOMAR_fmtGs;
+      const tbody = document.querySelector('.js-productos-tbody');
+      const totalCount = document.querySelector('.js-total-count');
+
+      // Cargar categorías para el select
+      const { data: cats } = await supa.from('categorias').select('slug,nombre').order('orden');
+      const catSel = document.querySelector('.js-filtro-cat');
+      (cats || []).forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.slug; o.textContent = c.nombre;
+        catSel.appendChild(o);
+      });
+
+      const filtros = {
+        cat: '', estado: '', buscar: '',
+        orden: 'created_at.desc',
+      };
+
+      const filtroCat = document.querySelector('.js-filtro-cat');
+      const filtroEstado = document.querySelector('.js-filtro-estado');
+      const buscar = document.querySelector('.js-buscar');
+      const orden = document.querySelector('.js-orden');
+
+      [filtroCat, filtroEstado, buscar, orden].forEach(el => {
+        el.addEventListener(el.tagName === 'INPUT' ? 'input' : 'change', () => {
+          filtros.cat = filtroCat.value;
+          filtros.estado = filtroEstado.value;
+          filtros.buscar = buscar.value.trim();
+          filtros.orden = orden.value;
+          cargar();
+        });
+      });
+
+      function skel() {
+        return Array(6).fill(0).map(() => `
+          <tr class="is-skel">
+            <td><input type="checkbox" disabled></td>
+            <td class="col-mini-img"><div style="width:48px;height:48px;background:#EEE;"></div></td>
+            <td><div style="height:14px;width:60%;background:#EEE;margin-bottom:6px;"></div><div style="height:10px;width:40%;background:#F4F4F4;"></div></td>
+            <td class="col-hide-sm"><div style="height:10px;width:50px;background:#EEE;"></div></td>
+            <td class="col-hide-sm"><div style="height:10px;width:60px;background:#EEE;"></div></td>
+            <td class="col-num"><div style="height:12px;width:70px;background:#EEE;margin-left:auto;"></div></td>
+            <td class="col-num"><div style="height:18px;width:60px;background:#EEE;margin-left:auto;"></div></td>
+            <td><div style="height:18px;width:70px;background:#EEE;"></div></td>
+            <td class="col-actions"></td>
+          </tr>
+        `).join('');
+      }
+
+      function pillStock(stock) {
+        if (stock === 0) return '<span class="pill pill--red">Sin stock</span>';
+        if (stock <= 2) return '<span class="pill pill--amber">Stock bajo · ' + stock + '</span>';
+        return '<span class="pill pill--green">' + stock + ' unid.</span>';
+      }
+      function pillEstado(estado, stock) {
+        if (estado === 'borrador') return '<span class="pill pill--gray">Borrador</span>';
+        if (estado === 'oculto') return '<span class="pill pill--gray">Oculto</span>';
+        if (stock === 0) return '<span class="pill pill--red">Sin stock</span>';
+        return '<span class="pill pill--green">Publicado</span>';
+      }
+
+      async function cargar() {
+        tbody.innerHTML = skel();
+        totalCount.textContent = 'cargando…';
+
+        let q = supa
+          .from('productos')
+          .select('id,sku,nombre,precio_gs,precio_antes_gs,stock,estado,material,created_at,categoria:categorias(slug,nombre),fotos:producto_fotos(url,es_principal,orden)', { count: 'exact' });
+
+        if (filtros.cat)    q = q.eq('categoria.slug', filtros.cat);
+        if (filtros.estado) q = q.eq('estado', filtros.estado);
+        if (filtros.buscar) q = q.or('sku.ilike.%' + filtros.buscar + '%,nombre.ilike.%' + filtros.buscar + '%');
+
+        const [col, dir] = filtros.orden.split('.');
+        q = q.order(col, { ascending: dir === 'asc' });
+
+        const { data, error, count } = await q.limit(200);
+        if (error) {
+          tbody.innerHTML = `<tr><td colspan="9" style="padding:32px;text-align:center;color:#B33;">Error: ${error.message}</td></tr>`;
+          totalCount.textContent = '';
+          return;
+        }
+
+        totalCount.textContent = '· ' + (count ?? data.length) + ' productos';
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="9" style="padding:32px;text-align:center;color:#7A736B;">No hay productos que coincidan con los filtros.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = data.map(p => {
+          const cat = p.categoria || {};
+          const fotos = (p.fotos || []).sort((a, b) => (a.orden || 0) - (b.orden || 0));
+          const principal = fotos.find(f => f.es_principal) || fotos[0];
+          const url = principal ? principal.url : '';
+          return `
+            <tr>
+              <td><input type="checkbox"></td>
+              <td class="col-mini-img">${url ? `<img src="${url}" onerror="this.style.opacity=0;">` : '<div style="width:48px;height:48px;background:#F4F4F4;"></div>'}</td>
+              <td>
+                <a href="producto-edit.html?sku=${encodeURIComponent(p.sku)}"><strong>${escapeHTML(p.nombre || '(sin nombre)')}</strong></a>
+                <div class="u-text-sm u-text-soft u-mt-1">${escapeHTML(p.material || '')}</div>
+              </td>
+              <td class="col-hide-sm"><span class="u-text-base" style="font-family: monospace;">${escapeHTML(p.sku)}</span></td>
+              <td class="col-hide-sm">${escapeHTML(cat.nombre || '—')}</td>
+              <td class="col-num">
+                <strong>${fmt(p.precio_gs)}</strong>
+                ${p.precio_antes_gs ? '<br><del class="u-text-sm u-text-soft">' + fmt(p.precio_antes_gs) + '</del>' : ''}
+              </td>
+              <td class="col-num">${pillStock(p.stock || 0)}</td>
+              <td>${pillEstado(p.estado, p.stock || 0)}</td>
+              <td class="col-actions">
+                <a href="producto-edit.html?sku=${encodeURIComponent(p.sku)}" class="btn-sm btn-sm--ghost">Editar</a>
+                <a href="../producto.html?sku=${encodeURIComponent(p.sku)}" target="_blank" class="btn-sm btn-sm--ghost" title="Ver en la tienda">↗</a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function escapeHTML(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+      }
+
+      cargar();
+    })();
   </script>
   <script src="js/pwa.js"></script>
 </body>
