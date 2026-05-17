@@ -11,6 +11,36 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin-2026-05-15.css">
+  <style>
+    .p-feedback { padding: 12px 16px; margin-bottom: 16px; font-size: 13px; display: none; }
+    .p-feedback.is-shown { display: block; }
+    .p-feedback.is-ok { background: #EFE; color: #285; border-left: 3px solid #285; }
+    .p-feedback.is-err { background: #FEE; color: #B33; border-left: 3px solid #B33; }
+
+    .items-table { width: 100%; border-collapse: collapse; }
+    .items-table th, .items-table td { padding: 10px 12px; border-bottom: 1px solid var(--color-line); font-size: 13px; vertical-align: middle; text-align: left; }
+    .items-table th { background: var(--color-bg-alt); font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--color-text-soft); }
+    .items-table tfoot td { border-bottom: 0; }
+    .items-table .col-cant { width: 70px; }
+    .items-table .col-precio, .items-table .col-subtotal { text-align: right; }
+    .items-table .col-del { width: 36px; text-align: center; }
+
+    .add-item-bar { display: grid; grid-template-columns: 1fr 80px 130px auto; gap: 8px; padding: 8px; background: var(--color-bg-alt); border: 1px dashed var(--color-line); margin-top: 8px; align-items: center; }
+    .add-item-bar input, .add-item-bar select { padding: 6px 8px; font-size: 13px; }
+    .product-search-result { position: absolute; background: #fff; border: 1px solid var(--color-line); box-shadow: 0 4px 12px rgba(0,0,0,0.08); max-height: 280px; overflow-y: auto; z-index: 50; display: none; left: 0; right: 0; }
+    .product-search-result.is-open { display: block; }
+    .product-search-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--color-line); display: flex; gap: 10px; align-items: center; }
+    .product-search-item:hover { background: var(--color-bg-alt); }
+    .product-search-item img { width: 36px; height: 36px; object-fit: cover; background: #F4F4F4; }
+    .product-search-item__info { flex: 1; min-width: 0; }
+    .product-search-item__name { font-weight: 500; font-size: 13px; }
+    .product-search-item__meta { font-size: 11px; color: var(--color-text-soft); }
+    .product-search-item__price { font-weight: 600; font-size: 13px; white-space: nowrap; }
+    .log-entry { display: grid; grid-template-columns: 12px 1fr; gap: 12px; padding: 8px 0; font-size: 13px; }
+    .log-entry__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-text); margin-top: 6px; }
+    .log-entry__time { font-size: 11px; color: var(--color-text-soft); }
+    .save-bar { position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--color-line); padding: 16px 24px; margin: 24px -24px -24px; display: flex; gap: 8px; justify-content: flex-end; z-index: 20; }
+  </style>
 </head>
 <body>
   <div class="admin-shell">
@@ -23,163 +53,561 @@
 
         <div class="admin-main__head">
           <div>
-            <h1>Pedido <span class="js-num">#____</span> <span class="js-pago-pill u-ml-2"></span></h1>
-            <p class="u-text-md u-text-soft u-mt-1 u-mb-0"><span class="js-fecha">—</span> · <span class="js-cliente">—</span></p>
+            <h1 class="js-titulo">Pedido</h1>
+            <p class="u-text-md u-text-soft u-mt-1 u-mb-0 js-subtitulo">—</p>
           </div>
           <div class="actions">
-            <button class="btn-sm">KUDE PDF</button>
-            <button class="btn-sm">Reenviar email</button>
-            <a class="btn-sm btn-sm--primary js-whatsapp" target="_blank">Escribir por WhatsApp</a>
+            <button class="btn-sm js-eliminar btn-sm--danger" style="display:none;">Eliminar pedido</button>
+            <button class="btn-sm btn-sm--primary js-guardar">Guardar</button>
           </div>
         </div>
 
-        <div class="admin-card">
-          <h3 class="u-mb-3">Estado del pedido</h3>
-          <div class="pedido-timeline js-timeline"></div>
-          <div class="u-flex u-gap-2 u-mt-3">
-            <button class="btn-sm">Marcar como preparado</button>
-            <button class="btn-sm btn-sm--primary">Marcar como enviado</button>
-            <button class="btn-sm btn-sm--ghost">Marcar como entregado</button>
-            <button class="btn-sm btn-sm--danger u-mt-auto" style="margin-left: auto;">Cancelar pedido</button>
-          </div>
-        </div>
+        <div class="p-feedback js-feedback"></div>
 
-        <div class="pedido-detalle">
+        <div class="admin-grid-2">
+          <!-- Columna izquierda: items + cliente -->
           <div>
-            <div class="admin-card u-card-flush">
-              <div class="admin-card__head"><h3>Productos</h3></div>
-              <table class="admin-table">
-                <thead><tr><th></th><th>Producto</th><th class="col-num">Cant.</th><th class="col-num">Precio</th><th class="col-num">Total</th></tr></thead>
-                <tbody class="js-items"></tbody>
+            <div class="admin-card">
+              <h3 class="u-mb-3">Items</h3>
+              <table class="items-table">
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th class="col-cant">Cant.</th>
+                    <th class="col-precio">Precio</th>
+                    <th class="col-subtotal">Subtotal</th>
+                    <th class="col-del"></th>
+                  </tr>
+                </thead>
+                <tbody class="js-items-tbody"></tbody>
               </table>
-              <div style="padding: 12px 16px; border-top: 1px solid var(--color-line);">
-                <div class="u-flex u-justify-between u-text-md u-py-1"><span>Subtotal</span><span class="js-subtotal">—</span></div>
-                <div class="u-flex u-justify-between u-text-md u-py-1"><span>Envío</span><span class="u-text-success">GRATIS</span></div>
-                <div class="u-flex u-justify-between u-fw-600 u-text-xl u-mt-2" style="padding-top: 8px; border-top: 1px solid var(--color-line);"><span>Total</span><span class="js-total u-tabular">—</span></div>
+
+              <div style="position: relative; margin-top: 12px;">
+                <button class="btn-sm js-add-item">+ Agregar producto</button>
+                <div class="js-product-search-wrap" style="display:none; position:relative; margin-top: 8px;">
+                  <input type="text" class="js-product-search" placeholder="Buscar SKU o nombre…" style="width:100%; padding: 10px;" autocomplete="off">
+                  <div class="product-search-result js-product-search-result"></div>
+                </div>
               </div>
             </div>
 
             <div class="admin-card">
-              <h3>Notas internas</h3>
-              <p class="admin-card__sub u-mb-3">Sólo visibles para el equipo. No las ve la clienta.</p>
-              <textarea class="js-notas u-w-full" placeholder="Ej: clienta pidió packaging extra, llamar antes de enviar, etc." style="border: 1px solid var(--color-line); padding: 10px; font: inherit; font-size: 14px; min-height: 80px; outline: none; line-height: 1.5;"></textarea>
-              <div class="u-flex u-mt-2" style="justify-content: flex-end;">
-                <button class="btn-sm btn-sm--primary">Guardar nota</button>
+              <h3 class="u-mb-3">Cliente y envío</h3>
+              <div class="admin-form">
+                <div class="admin-form__group">
+                  <label>Cliente registrado (opcional)</label>
+                  <select class="js-input-cliente">
+                    <option value="">— Cliente nuevo / a cargar manualmente —</option>
+                  </select>
+                  <div class="hint">Si está registrado, se vincula al pedido. Si no, completá los datos abajo.</div>
+                </div>
+
+                <div class="admin-form__row">
+                  <div class="admin-form__group">
+                    <label>Nombre destinatario</label>
+                    <input type="text" class="js-snap-nombre">
+                  </div>
+                  <div class="admin-form__group">
+                    <label>WhatsApp</label>
+                    <input type="text" class="js-snap-whatsapp" placeholder="+595 981 412648">
+                  </div>
+                </div>
+
+                <div class="admin-form__row">
+                  <div class="admin-form__group">
+                    <label>Tipo de envío</label>
+                    <select class="js-input-envio-tipo">
+                      <option value="asuncion">Asunción</option>
+                      <option value="interior">Interior</option>
+                      <option value="showroom">Retiro en showroom</option>
+                    </select>
+                  </div>
+                  <div class="admin-form__group">
+                    <label>Costo envío (Gs)</label>
+                    <input type="number" min="0" class="js-input-envio-gs" value="0">
+                  </div>
+                </div>
+
+                <div class="admin-form__group">
+                  <label>Calle / dirección</label>
+                  <input type="text" class="js-snap-calle">
+                </div>
+                <div class="admin-form__row">
+                  <div class="admin-form__group">
+                    <label>Ciudad</label>
+                    <input type="text" class="js-snap-ciudad">
+                  </div>
+                  <div class="admin-form__group">
+                    <label>Referencia / Depto</label>
+                    <input type="text" class="js-snap-ref">
+                  </div>
+                </div>
               </div>
+            </div>
+
+            <div class="admin-card">
+              <h3 class="u-mb-3">Notas internas</h3>
+              <textarea class="js-input-notas" rows="3" placeholder="Notas privadas que solo vos ves."></textarea>
+              <div class="admin-form__group" style="margin-top: 12px;">
+                <label><input type="checkbox" class="js-input-regalo" style="width:auto; margin-right:6px;">Es regalo (packaging especial / nota escrita)</label>
+              </div>
+            </div>
+
+            <div class="admin-card js-historial-card" style="display:none;">
+              <h3 class="u-mb-3">Historial de cambios</h3>
+              <div class="js-historial">—</div>
             </div>
           </div>
 
+          <!-- Columna derecha: totales + pago + envío estado -->
           <div>
             <div class="admin-card">
-              <h3>Cliente</h3>
-              <div class="u-text-lg u-line-loose">
-                <div><strong class="js-cliente-2">—</strong></div>
-                <div class="js-email"></div>
-                <div class="js-whatsapp-txt"></div>
-              </div>
-              <a href="cliente.html" class="btn-sm u-mt-3" style="display: inline-block;">Ver perfil →</a>
+              <h3 class="u-mb-3">Totales</h3>
+              <table style="width:100%; font-size: 14px;">
+                <tr><td>Subtotal</td><td style="text-align:right;" class="js-tot-subtotal">Gs 0</td></tr>
+                <tr>
+                  <td>Descuento <input type="text" class="js-input-cupon" placeholder="código cupón" style="width:120px; padding:4px 6px; font-size:12px; margin-left:8px;"></td>
+                  <td style="text-align:right;"><input type="number" min="0" class="js-input-descuento" value="0" style="width:120px; padding:4px; text-align:right;"></td>
+                </tr>
+                <tr><td>Envío</td><td style="text-align:right;" class="js-tot-envio">Gs 0</td></tr>
+                <tr style="border-top: 2px solid var(--color-text); font-size:16px; font-weight:600;">
+                  <td style="padding-top:8px;">Total</td><td style="text-align:right; padding-top:8px;" class="js-tot-total">Gs 0</td>
+                </tr>
+              </table>
             </div>
 
             <div class="admin-card">
-              <h3>Pago</h3>
-              <div class="u-text-lg">
-                <div><span class="js-pago-metodo">—</span></div>
-                <div class="js-pago-pill-2 u-mt-1 u-mb-2"></div>
-                <div class="js-pago-extra u-text-base u-text-soft u-mt-2"></div>
+              <h3 class="u-mb-3">Pago</h3>
+              <div class="admin-form__group">
+                <label>Método</label>
+                <select class="js-input-pago-metodo">
+                  <option value="">— Sin definir —</option>
+                  <option value="bancard">Bancard (1 pago)</option>
+                  <option value="bancard_cuotas">Bancard cuotas</option>
+                  <option value="wally">Wally</option>
+                  <option value="transferencia_bancaria">Transferencia bancaria</option>
+                </select>
+              </div>
+              <div class="admin-form__group js-cuotas-group" style="display:none;">
+                <label>Cuotas</label>
+                <select class="js-input-pago-cuotas">
+                  <option value="">—</option>
+                  <option value="3">3 sin interés</option>
+                  <option value="6">6</option>
+                  <option value="12">12</option>
+                </select>
+              </div>
+              <div class="admin-form__group">
+                <label>Referencia (nro transacción, comprobante…)</label>
+                <input type="text" class="js-input-pago-ref">
+              </div>
+              <div class="admin-form__group">
+                <label>Estado del pago</label>
+                <select class="js-input-pago-estado">
+                  <option value="pendiente">Pendiente</option>
+                  <option value="a_confirmar">A confirmar (esperando comprobante)</option>
+                  <option value="pagado">Pagado</option>
+                  <option value="fallido">Fallido</option>
+                  <option value="reembolsado">Reembolsado</option>
+                </select>
               </div>
             </div>
 
             <div class="admin-card">
-              <h3>Envío</h3>
-              <div class="u-text-lg">
-                <div><strong class="js-envio-tipo">—</strong></div>
-                <div class="js-direccion u-text-base u-text-soft u-mt-1 u-mb-2">—</div>
-                <div class="js-envio-pill"></div>
+              <h3 class="u-mb-3">Estado de envío</h3>
+              <div class="admin-form__group">
+                <label>Estado</label>
+                <select class="js-input-envio-estado">
+                  <option value="pendiente">Pendiente</option>
+                  <option value="pendiente_pago">Esperando pago</option>
+                  <option value="preparado">Preparado para despachar</option>
+                  <option value="enviado">Enviado</option>
+                  <option value="entregado">Entregado</option>
+                  <option value="devuelto">Devuelto</option>
+                </select>
               </div>
-              <button class="btn-sm u-w-full u-mt-3">Generar etiqueta</button>
             </div>
 
             <div class="admin-card">
-              <h3>Facturación SIFEN</h3>
-              <div class="u-text-md">
-                <div>Factura: <strong class="js-factura">—</strong></div>
-                <div class="js-cdc u-text-sm u-text-soft u-mt-1" style="font-family: monospace; word-break: break-all;">—</div>
-              </div>
-              <div class="u-flex u-gap-1 u-mt-3">
-                <button class="btn-sm u-flex-1">Ver XML</button>
-                <button class="btn-sm u-flex-1">KUDE</button>
+              <h3 class="u-mb-3">Acciones rápidas</h3>
+              <div class="u-flex-col u-gap-2">
+                <button class="btn-sm js-quick-pagado">Marcar como Pagado</button>
+                <button class="btn-sm js-quick-enviado">Marcar como Enviado</button>
+                <button class="btn-sm js-quick-entregado">Marcar como Entregado</button>
+                <a class="btn-sm js-whatsapp" target="_blank" style="display:none;">Escribir por WhatsApp ↗</a>
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="save-bar">
+          <a href="pedidos.html" class="btn-sm">Cancelar</a>
+          <button class="btn-sm btn-sm--primary js-guardar-bottom">Guardar</button>
         </div>
 
       </main>
     </div>
   </div>
 
-  <script src="../js/products.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data-2026-05-15.js"></script>
   <script src="js/admin-shell-2026-05-15.js"></script>
   <script>
-    const params = new URLSearchParams(location.search);
-    const n = params.get('n') || '1247';
-    const p = window.MOMAR_PEDIDOS.find(x => x.num === '#' + n) || window.MOMAR_PEDIDOS[0];
+    MOMAR_renderAdminShell('pedidos.html', 'Pedido');
 
-    MOMAR_renderAdminShell('pedidos.html', `Pedido ${p.num}`);
-    const fmt = window.MOMAR_fmtGs;
+    (async function() {
+      await window.MOMAR_AUTH_READY;
+      const supa = window.MOMAR_supabase;
+      const $ = sel => document.querySelector(sel);
+      const fmt = window.MOMAR_fmtGs;
+      function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 
-    document.querySelector('.js-num').textContent = p.num;
-    document.querySelector('.js-pago-pill').innerHTML = window.MOMAR_pillPago(p.pagoEstado);
-    document.querySelector('.js-pago-pill-2').innerHTML = window.MOMAR_pillPago(p.pagoEstado);
-    document.querySelector('.js-fecha').textContent = p.fecha;
-    document.querySelectorAll('.js-cliente, .js-cliente-2').forEach(e => e.textContent = p.cliente);
-    document.querySelector('.js-email').textContent = p.email;
-    document.querySelector('.js-whatsapp-txt').textContent = p.whatsapp;
-    document.querySelector('.js-whatsapp').href = 'https://wa.me/' + p.whatsapp.replace(/\D/g, '') + '?text=Hola%20' + encodeURIComponent(p.cliente.split(' ')[0]) + '%2C%20pas%C3%A1ndote%20info%20sobre%20tu%20pedido%20' + encodeURIComponent(p.num) + '%20de%20MOMAR.';
+      const params = new URLSearchParams(location.search);
+      const pedidoId = params.get('id');
+      const esNuevo = !pedidoId || params.get('nuevo') === '1';
 
-    const items = window.MOMAR_PRODUCTS.slice(0, p.items);
-    document.querySelector('.js-items').innerHTML = items.map(it => `
-      <tr>
-        <td class="col-mini-img"><img src="${it.imagen}" onerror="this.style.opacity=0;"></td>
-        <td><strong>${it.nombre}</strong><br><span class="u-text-sm u-text-soft">${it.material}${it.variantes ? ' · ' + it.variantes.tipo + ' ' + it.variantes.default : ''}</span></td>
-        <td class="col-num">1</td>
-        <td class="col-num">${fmt(it.precio)}</td>
-        <td class="col-num"><strong>${fmt(it.precio)}</strong></td>
-      </tr>
-    `).join('');
-    document.querySelector('.js-subtotal').textContent = fmt(p.total);
-    document.querySelector('.js-total').textContent = fmt(p.total);
+      // Estado en memoria
+      let pedido = null;
+      let items = [];
+      let clientes = [];
+      let productos = [];
 
-    document.querySelector('.js-pago-metodo').textContent = p.pago;
-    if (p.pagoEstado === 'a_confirmar') {
-      document.querySelector('.js-pago-extra').innerHTML = 'La clienta envió comprobante por WhatsApp.<br><button class="btn-sm btn-sm--primary u-mt-2">Confirmar pago</button>';
-    }
+      function feedback(msg, ok) {
+        const el = $('.js-feedback');
+        el.textContent = msg;
+        el.classList.remove('is-ok', 'is-err');
+        el.classList.add(ok ? 'is-ok' : 'is-err', 'is-shown');
+        if (ok) setTimeout(() => el.classList.remove('is-shown'), 3500);
+      }
 
-    document.querySelector('.js-envio-tipo').textContent = p.envio;
-    document.querySelector('.js-direccion').textContent = p.direccion;
-    document.querySelector('.js-envio-pill').innerHTML = window.MOMAR_pillEnvio(p.envioEstado);
+      // ===== Cargar catálogo + clientes (siempre) =====
+      const [pRes, cRes] = await Promise.all([
+        supa.from('productos').select('id, sku, nombre, precio_gs, stock, fotos:producto_fotos(url,es_principal)').eq('estado', 'publicado').order('nombre'),
+        supa.from('clientes').select('id, nombre, apellido, email, whatsapp, dir_calle, dir_ciudad, dir_referencia').order('nombre'),
+      ]);
+      productos = pRes.data || [];
+      clientes = cRes.data || [];
 
-    document.querySelector('.js-factura').textContent = p.factura || 'No emitida aún';
-    document.querySelector('.js-cdc').textContent = p.cdc || '—';
+      const cliSel = $('.js-input-cliente');
+      clientes.forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.id;
+        o.textContent = `${c.nombre} ${c.apellido || ''} (${c.email})`.trim();
+        cliSel.appendChild(o);
+      });
 
-    document.querySelector('.js-notas').value = p.notas || '';
+      // ===== Si es edición, cargar pedido + items =====
+      if (!esNuevo) {
+        const { data, error } = await supa
+          .from('pedidos')
+          .select('*, cliente:clientes(id,nombre,apellido,email,whatsapp,dir_calle,dir_ciudad,dir_referencia), items:pedido_items(*)')
+          .eq('id', pedidoId)
+          .maybeSingle();
+        if (error || !data) {
+          feedback('No se encontró el pedido. Cargando como nuevo.', false);
+        } else {
+          pedido = data;
+          items = (data.items || []).map(it => ({ ...it }));
+          precargar();
+          $('.js-eliminar').style.display = '';
+          $('.js-historial-card').style.display = '';
+          cargarHistorial();
+        }
+      }
 
-    const states = ['Recibido', 'Pago confirmado', 'Preparado', 'Enviado', 'Entregado'];
-    const stateIdx = {
-      pendiente: p.pagoEstado === 'pagado' ? 1 : 0,
-      pendiente_pago: 0,
-      preparado: 2,
-      enviado: 3,
-      entregado: 4,
-      devuelto: 4
-    }[p.envioEstado] ?? 0;
-    document.querySelector('.js-timeline').innerHTML = states.map((s, i) => {
-      const cls = i < stateIdx ? 'is-done' : (i === stateIdx ? 'is-current' : '');
-      const arrow = i < states.length - 1 ? '<span class="pedido-paso__arrow">→</span>' : '';
-      return `<div class="pedido-paso ${cls}"><div class="pedido-paso__dot">${i + 1}</div><span>${s}</span></div>${arrow}`;
-    }).join('');
+      if (esNuevo) {
+        $('.js-titulo').textContent = 'Nuevo pedido manual';
+        $('.js-subtitulo').textContent = 'Para registrar una venta hecha por WhatsApp o personal.';
+      }
+
+      function precargar() {
+        $('.js-titulo').textContent = '#' + pedido.numero;
+        const c = pedido.cliente || {};
+        const snap = pedido.envio_direccion_snapshot || {};
+        $('.js-subtitulo').textContent = `${c.nombre || snap.nombre_destinatario || 'Sin nombre'} · ${new Date(pedido.created_at).toLocaleString('es-PY')}`;
+
+        if (c.id) $('.js-input-cliente').value = c.id;
+        $('.js-snap-nombre').value   = snap.nombre_destinatario || `${c.nombre || ''} ${c.apellido || ''}`.trim();
+        $('.js-snap-whatsapp').value = snap.whatsapp || c.whatsapp || '';
+        $('.js-snap-calle').value    = snap.calle || c.dir_calle || '';
+        $('.js-snap-ciudad').value   = snap.ciudad || c.dir_ciudad || '';
+        $('.js-snap-ref').value      = snap.referencia || c.dir_referencia || '';
+
+        $('.js-input-envio-tipo').value   = pedido.envio_tipo || 'asuncion';
+        $('.js-input-envio-gs').value     = pedido.envio_gs || 0;
+        $('.js-input-descuento').value    = pedido.descuento_gs || 0;
+        $('.js-input-cupon').value        = pedido.cupon_codigo || '';
+        $('.js-input-pago-metodo').value  = pedido.pago_metodo || '';
+        $('.js-input-pago-cuotas').value  = pedido.pago_cuotas || '';
+        $('.js-input-pago-ref').value     = pedido.pago_referencia || '';
+        $('.js-input-pago-estado').value  = pedido.pago_estado || 'pendiente';
+        $('.js-input-envio-estado').value = pedido.envio_estado || 'pendiente';
+        $('.js-input-notas').value        = pedido.notas_internas || '';
+        $('.js-input-regalo').checked     = !!pedido.es_regalo;
+
+        toggleCuotas();
+        renderItems();
+
+        const wsp = snap.whatsapp || c.whatsapp;
+        if (wsp) {
+          const link = $('.js-whatsapp');
+          link.href = 'https://wa.me/' + wsp.replace(/[^0-9]/g, '') + '?text=' + encodeURIComponent('Hola, te escribo por tu pedido #' + pedido.numero + ' en MoMar.');
+          link.style.display = '';
+        }
+      }
+
+      async function cargarHistorial() {
+        const { data } = await supa
+          .from('pedido_estado_log')
+          .select('*')
+          .eq('pedido_id', pedido.id)
+          .order('created_at', { ascending: false })
+          .limit(20);
+        const el = $('.js-historial');
+        if (!data || data.length === 0) {
+          el.innerHTML = '<div class="u-text-soft" style="font-size:12px;">Sin cambios registrados todavía.</div>';
+          return;
+        }
+        el.innerHTML = data.map(l => `
+          <div class="log-entry">
+            <div class="log-entry__dot"></div>
+            <div>
+              <strong>${esc(l.campo === 'pago_estado' ? 'Pago' : 'Envío')}</strong>:
+              ${l.estado_anterior ? esc(l.estado_anterior) + ' → ' : ''}<strong>${esc(l.estado_nuevo)}</strong>
+              ${l.motivo ? '<div class="u-text-soft" style="font-size:12px;">' + esc(l.motivo) + '</div>' : ''}
+              <div class="log-entry__time">${new Date(l.created_at).toLocaleString('es-PY')}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // ===== Items =====
+      function renderItems() {
+        const tbody = $('.js-items-tbody');
+        if (items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px; color:#7A736B;">Sin items todavía. Agregá productos con el botón abajo.</td></tr>';
+        } else {
+          tbody.innerHTML = items.map((it, i) => `
+            <tr data-idx="${i}">
+              <td>
+                <strong>${esc(it.nombre_snapshot || '')}</strong>
+                ${it.sku_snapshot ? '<div class="u-text-sm u-text-soft" style="font-family:monospace;">' + esc(it.sku_snapshot) + '</div>' : ''}
+              </td>
+              <td class="col-cant"><input type="number" min="1" value="${it.cantidad || 1}" class="js-item-cant" style="width:60px; padding:4px; text-align:center;"></td>
+              <td class="col-precio"><input type="number" min="0" value="${it.precio_unit_snapshot || 0}" class="js-item-precio" style="width:110px; padding:4px; text-align:right;"></td>
+              <td class="col-subtotal"><strong>${fmt((it.cantidad || 1) * (it.precio_unit_snapshot || 0))}</strong></td>
+              <td class="col-del"><button class="js-item-del" style="background:none; border:0; color:#B33; cursor:pointer; font-size:18px;">×</button></td>
+            </tr>
+          `).join('');
+          // Wirear
+          tbody.querySelectorAll('tr').forEach(tr => {
+            const idx = parseInt(tr.dataset.idx);
+            tr.querySelector('.js-item-cant').addEventListener('input', e => {
+              items[idx].cantidad = parseInt(e.target.value) || 1;
+              actualizarTotales();
+              tr.querySelector('.col-subtotal strong').textContent = fmt(items[idx].cantidad * items[idx].precio_unit_snapshot);
+            });
+            tr.querySelector('.js-item-precio').addEventListener('input', e => {
+              items[idx].precio_unit_snapshot = parseFloat(e.target.value) || 0;
+              actualizarTotales();
+              tr.querySelector('.col-subtotal strong').textContent = fmt(items[idx].cantidad * items[idx].precio_unit_snapshot);
+            });
+            tr.querySelector('.js-item-del').addEventListener('click', () => {
+              items.splice(idx, 1);
+              renderItems();
+              actualizarTotales();
+            });
+          });
+        }
+        actualizarTotales();
+      }
+
+      function actualizarTotales() {
+        const subtotal = items.reduce((s, it) => s + (it.cantidad || 1) * (it.precio_unit_snapshot || 0), 0);
+        const desc = parseFloat($('.js-input-descuento').value) || 0;
+        const env = parseFloat($('.js-input-envio-gs').value) || 0;
+        const total = subtotal - desc + env;
+        $('.js-tot-subtotal').textContent = fmt(subtotal);
+        $('.js-tot-envio').textContent = fmt(env);
+        $('.js-tot-total').textContent = fmt(total);
+      }
+
+      // Agregar item con buscador
+      const addBtn = $('.js-add-item');
+      const searchWrap = $('.js-product-search-wrap');
+      const searchInput = $('.js-product-search');
+      const searchResults = $('.js-product-search-result');
+      addBtn.addEventListener('click', () => {
+        searchWrap.style.display = '';
+        searchInput.focus();
+      });
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.toLowerCase().trim();
+        if (q.length < 2) { searchResults.classList.remove('is-open'); return; }
+        const matches = productos.filter(p => (p.sku || '').toLowerCase().includes(q) || (p.nombre || '').toLowerCase().includes(q)).slice(0, 10);
+        if (matches.length === 0) {
+          searchResults.innerHTML = '<div class="product-search-item">Sin resultados.</div>';
+        } else {
+          searchResults.innerHTML = matches.map(p => {
+            const foto = (p.fotos || []).find(f => f.es_principal) || (p.fotos || [])[0];
+            return `
+              <div class="product-search-item" data-id="${p.id}">
+                ${foto ? `<img src="${esc(foto.url)}">` : '<div style="width:36px;height:36px;background:#F4F4F4;"></div>'}
+                <div class="product-search-item__info">
+                  <div class="product-search-item__name">${esc(p.nombre)}</div>
+                  <div class="product-search-item__meta">${esc(p.sku)} · stock ${p.stock || 0}</div>
+                </div>
+                <div class="product-search-item__price">${fmt(p.precio_gs)}</div>
+              </div>
+            `;
+          }).join('');
+          searchResults.querySelectorAll('.product-search-item[data-id]').forEach(el => {
+            el.addEventListener('click', () => {
+              const p = productos.find(x => x.id === el.dataset.id);
+              if (!p) return;
+              items.push({
+                producto_id: p.id,
+                nombre_snapshot: p.nombre,
+                sku_snapshot: p.sku,
+                precio_unit_snapshot: p.precio_gs,
+                cantidad: 1,
+              });
+              searchInput.value = '';
+              searchResults.classList.remove('is-open');
+              searchWrap.style.display = 'none';
+              renderItems();
+            });
+          });
+        }
+        searchResults.classList.add('is-open');
+      });
+      document.addEventListener('click', e => {
+        if (!searchWrap.contains(e.target) && !addBtn.contains(e.target)) {
+          searchResults.classList.remove('is-open');
+        }
+      });
+
+      // ===== Cliente registrado autocompleta snapshot =====
+      cliSel.addEventListener('change', () => {
+        const c = clientes.find(x => x.id === cliSel.value);
+        if (!c) return;
+        if (!$('.js-snap-nombre').value) $('.js-snap-nombre').value = `${c.nombre} ${c.apellido || ''}`.trim();
+        if (!$('.js-snap-whatsapp').value) $('.js-snap-whatsapp').value = c.whatsapp || '';
+        if (!$('.js-snap-calle').value)  $('.js-snap-calle').value  = c.dir_calle || '';
+        if (!$('.js-snap-ciudad').value) $('.js-snap-ciudad').value = c.dir_ciudad || '';
+        if (!$('.js-snap-ref').value)    $('.js-snap-ref').value    = c.dir_referencia || '';
+      });
+
+      // ===== Pago: toggle cuotas =====
+      function toggleCuotas() {
+        $('.js-cuotas-group').style.display = $('.js-input-pago-metodo').value === 'bancard_cuotas' ? '' : 'none';
+      }
+      $('.js-input-pago-metodo').addEventListener('change', toggleCuotas);
+
+      // ===== Totales reactivos =====
+      $('.js-input-descuento').addEventListener('input', actualizarTotales);
+      $('.js-input-envio-gs').addEventListener('input', actualizarTotales);
+
+      // ===== Guardar =====
+      async function guardar() {
+        if (items.length === 0) { feedback('Agregá al menos un producto.', false); return; }
+
+        const subtotal = items.reduce((s, it) => s + (it.cantidad || 1) * (it.precio_unit_snapshot || 0), 0);
+        const desc = parseInt($('.js-input-descuento').value) || 0;
+        const env = parseInt($('.js-input-envio-gs').value) || 0;
+        const total = subtotal - desc + env;
+
+        const snap = {
+          nombre_destinatario: $('.js-snap-nombre').value.trim() || null,
+          whatsapp: $('.js-snap-whatsapp').value.trim() || null,
+          calle: $('.js-snap-calle').value.trim() || null,
+          ciudad: $('.js-snap-ciudad').value.trim() || null,
+          referencia: $('.js-snap-ref').value.trim() || null,
+        };
+
+        const payload = {
+          cliente_id: $('.js-input-cliente').value || null,
+          subtotal_gs: subtotal,
+          descuento_gs: desc,
+          envio_gs: env,
+          total_gs: total,
+          cupon_codigo: $('.js-input-cupon').value.trim() || null,
+          pago_metodo: $('.js-input-pago-metodo').value || null,
+          pago_estado: $('.js-input-pago-estado').value,
+          pago_referencia: $('.js-input-pago-ref').value.trim() || null,
+          pago_cuotas: $('.js-input-pago-metodo').value === 'bancard_cuotas' ? (parseInt($('.js-input-pago-cuotas').value) || null) : null,
+          envio_tipo: $('.js-input-envio-tipo').value,
+          envio_estado: $('.js-input-envio-estado').value,
+          envio_direccion_snapshot: snap,
+          notas_internas: $('.js-input-notas').value.trim() || null,
+          es_regalo: $('.js-input-regalo').checked,
+        };
+
+        const btn = $('.js-guardar');
+        btn.disabled = true; btn.textContent = 'Guardando…';
+        try {
+          let nuevoId;
+          if (pedido && pedido.id) {
+            const { error } = await supa.from('pedidos').update(payload).eq('id', pedido.id);
+            if (error) throw error;
+            nuevoId = pedido.id;
+            await supa.from('pedido_items').delete().eq('pedido_id', pedido.id);
+          } else {
+            const { data, error } = await supa.from('pedidos').insert(payload).select().single();
+            if (error) throw error;
+            nuevoId = data.id;
+            pedido = data;
+          }
+
+          // Insertar items
+          const itemRows = items.map(it => ({
+            pedido_id: nuevoId,
+            producto_id: it.producto_id || null,
+            nombre_snapshot: it.nombre_snapshot,
+            sku_snapshot: it.sku_snapshot || null,
+            precio_unit_snapshot: it.precio_unit_snapshot,
+            cantidad: it.cantidad,
+            subtotal_gs: it.cantidad * it.precio_unit_snapshot,
+          }));
+          if (itemRows.length > 0) {
+            const { error: iErr } = await supa.from('pedido_items').insert(itemRows);
+            if (iErr) throw iErr;
+          }
+
+          feedback('Pedido guardado.', true);
+          if (!params.get('id')) {
+            setTimeout(() => location.replace('pedido.html?id=' + nuevoId), 600);
+          }
+        } catch (err) {
+          feedback('Error: ' + (err.message || err), false);
+        } finally {
+          btn.disabled = false; btn.textContent = 'Guardar';
+        }
+      }
+      $('.js-guardar').addEventListener('click', guardar);
+      $('.js-guardar-bottom').addEventListener('click', guardar);
+
+      // ===== Acciones rápidas =====
+      $('.js-quick-pagado').addEventListener('click', () => { $('.js-input-pago-estado').value = 'pagado'; guardar(); });
+      $('.js-quick-enviado').addEventListener('click', () => { $('.js-input-envio-estado').value = 'enviado'; guardar(); });
+      $('.js-quick-entregado').addEventListener('click', () => { $('.js-input-envio-estado').value = 'entregado'; guardar(); });
+
+      // ===== Eliminar =====
+      $('.js-eliminar').addEventListener('click', async () => {
+        if (!pedido || !pedido.id) return;
+        if (!confirm(`¿Eliminar el pedido #${pedido.numero}? Los items se borran también. Esta acción no se puede deshacer.`)) return;
+        const { error } = await supa.from('pedidos').delete().eq('id', pedido.id);
+        if (error) { feedback('No se pudo eliminar: ' + error.message, false); return; }
+        location.replace('pedidos.html');
+      });
+
+      // Si es nuevo, mostrar tabla vacía con CTA
+      if (esNuevo) {
+        renderItems();
+        actualizarTotales();
+      }
+    })();
   </script>
   <script src="js/pwa.js"></script>
 </body>

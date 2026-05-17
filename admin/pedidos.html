@@ -11,6 +11,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin-2026-05-15.css">
+  <style>
+    .empty-state { padding: 60px 20px; text-align: center; }
+    .empty-state__icon { font-size: 40px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state h3 { margin: 0 0 8px; font-size: 18px; }
+    .empty-state p { color: var(--color-text-soft); max-width: 520px; margin: 0 auto 16px; line-height: 1.6; }
+    .empty-state__actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  </style>
 </head>
 <body>
   <div class="admin-shell">
@@ -20,106 +27,262 @@
       <main class="admin-main">
 
         <div class="admin-main__head">
-          <h1>Pedidos <span class="js-total-count u-text-soft u-fw-400 u-text-lg">cargando…</span></h1>
-          <div class="actions">
-            <button class="btn-sm">Exportar CSV</button>
-            <button class="btn-sm btn-sm--primary">+ Pedido manual</button>
+          <div>
+            <h1>Pedidos <span class="js-total-count u-text-soft u-fw-400 u-text-lg">cargando…</span></h1>
+            <p class="u-text-md u-text-soft u-mt-1 u-mb-0">Pedidos recibidos por el sitio web o cargados manualmente (ventas por WhatsApp).</p>
           </div>
+          <div class="actions">
+            <button class="btn-sm js-export-csv">Exportar CSV</button>
+            <a href="pedido.html?nuevo=1" class="btn-sm btn-sm--primary">+ Pedido manual</a>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><div class="kpi__label">Pedidos hoy</div><div class="kpi__value js-k-hoy">—</div><div class="kpi__delta js-k-hoy-sub">—</div></div>
+          <div class="kpi"><div class="kpi__label">Pago a confirmar</div><div class="kpi__value js-k-conf">—</div><div class="kpi__delta">transferencias pendientes</div></div>
+          <div class="kpi"><div class="kpi__label">Esperan envío</div><div class="kpi__value js-k-env">—</div><div class="kpi__delta">pagados sin despachar</div></div>
+          <div class="kpi"><div class="kpi__label">Ingresos este mes</div><div class="kpi__value js-k-ing" style="font-size: 22px;">—</div><div class="kpi__delta js-k-ing-sub">de pedidos pagados</div></div>
         </div>
 
         <div class="admin-toolbar">
           <div class="admin-toolbar__filters">
-            <select>
-              <option>Estado pago: Todos</option>
-              <option>Pagado</option>
-              <option>A confirmar</option>
-              <option>Pendiente</option>
-              <option>Reembolsado</option>
+            <select class="js-filtro-pago">
+              <option value="">Pago: Todos</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="a_confirmar">A confirmar</option>
+              <option value="pagado">Pagado</option>
+              <option value="fallido">Fallido</option>
+              <option value="reembolsado">Reembolsado</option>
             </select>
-            <select>
-              <option>Estado envío: Todos</option>
-              <option>Pendiente</option>
-              <option>Preparado</option>
-              <option>Enviado</option>
-              <option>Entregado</option>
-              <option>Devuelto</option>
+            <select class="js-filtro-envio">
+              <option value="">Envío: Todos</option>
+              <option value="pendiente_pago">Pendiente pago</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="preparado">Preparado</option>
+              <option value="enviado">Enviado</option>
+              <option value="entregado">Entregado</option>
+              <option value="devuelto">Devuelto</option>
             </select>
-            <select>
-              <option>Período: Últimos 30 días</option>
-              <option>Hoy</option>
-              <option>Esta semana</option>
-              <option>Este mes</option>
-              <option>Personalizado</option>
+            <select class="js-filtro-tipo-envio">
+              <option value="">Tipo envío: Todos</option>
+              <option value="asuncion">Asunción</option>
+              <option value="interior">Interior</option>
+              <option value="showroom">Retiro</option>
             </select>
-            <input type="text" placeholder="Buscar #, cliente, CDC…" class="u-w-full" style="max-width: 260px;">
+            <input type="search" class="js-buscar" placeholder="Buscar #pedido, cliente, email…" style="max-width: 280px;">
           </div>
-          <div>
-            <select>
-              <option>Ordenar: Más recientes</option>
-              <option>Total: mayor a menor</option>
-              <option>Total: menor a mayor</option>
-            </select>
-          </div>
+          <select class="js-orden">
+            <option value="created_at.desc">Más nuevos primero</option>
+            <option value="created_at.asc">Más antiguos primero</option>
+            <option value="total_gs.desc">Mayor total</option>
+            <option value="total_gs.asc">Menor total</option>
+          </select>
         </div>
 
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
               <tr>
-                <th style="width: 30px;"><input type="checkbox"></th>
                 <th>Pedido</th>
-                <th>Fecha</th>
                 <th>Clienta</th>
                 <th class="col-hide-sm">Items</th>
                 <th class="col-num">Total</th>
                 <th>Pago</th>
                 <th>Envío</th>
-                <th class="col-hide-sm">CDC SIFEN</th>
-                <th class="col-actions">Acciones</th>
+                <th class="col-hide-sm">Fecha</th>
+                <th class="col-actions"></th>
               </tr>
             </thead>
-            <tbody class="js-pedidos-tbody"></tbody>
+            <tbody class="js-pedidos-tbody"><tr><td colspan="8" style="padding:32px; text-align:center; color:#7A736B;">Cargando…</td></tr></tbody>
           </table>
-        </div>
-
-        <div class="u-flex u-justify-between u-items-center u-mt-3 u-text-base u-text-soft">
-          <div>Mostrando 1-8 de 8 pedidos</div>
-          <div class="u-flex u-gap-1">
-            <button class="btn-sm btn-sm--ghost" disabled>← Anterior</button>
-            <button class="btn-sm btn-sm--ghost" disabled>Siguiente →</button>
-          </div>
         </div>
 
       </main>
     </div>
   </div>
 
-  <script src="../js/products.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data-2026-05-15.js"></script>
   <script src="js/admin-shell-2026-05-15.js"></script>
   <script>
     MOMAR_renderAdminShell('pedidos.html', 'Pedidos');
-    const fmt = window.MOMAR_fmtGs;
-    const peds = window.MOMAR_PEDIDOS;
-    document.querySelector('.js-total-count').textContent = `· ${peds.length} en total`;
-    document.querySelector('.js-pedidos-tbody').innerHTML = peds.map(p => `
-      <tr>
-        <td><input type="checkbox"></td>
-        <td><a href="pedido.html?n=${p.num.replace('#','')}"><strong>${p.num}</strong></a></td>
-        <td>${p.fecha}</td>
-        <td><strong>${p.cliente}</strong><br><span class="u-text-sm u-text-soft">${p.whatsapp}</span></td>
-        <td class="col-hide-sm">${p.items}</td>
-        <td class="col-num"><strong>${fmt(p.total)}</strong></td>
-        <td>${window.MOMAR_pillPago(p.pagoEstado)}<br><span class="u-text-sm u-text-soft">${p.pago}</span></td>
-        <td>${window.MOMAR_pillEnvio(p.envioEstado)}<br><span class="u-text-sm u-text-soft">${p.envio}</span></td>
-        <td class="col-hide-sm"><span class="u-text-sm u-text-soft" style="font-family: monospace;">${p.cdc ? p.cdc.substring(0, 16) + '…' : '—'}</span></td>
-        <td class="col-actions">
-          <a href="pedido.html?n=${p.num.replace('#','')}" class="btn-sm btn-sm--ghost">Ver →</a>
-        </td>
-      </tr>
-    `).join('');
+
+    (async function() {
+      await window.MOMAR_AUTH_READY;
+      const supa = window.MOMAR_supabase;
+      const $ = sel => document.querySelector(sel);
+      const fmt = window.MOMAR_fmtGs;
+      function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+      let pedidos = [];
+
+      async function cargar() {
+        const { data, error } = await supa
+          .from('pedidos')
+          .select('*, cliente:clientes(nombre,apellido,email,whatsapp), items:pedido_items(id)')
+          .order('created_at', { ascending: false });
+        if (error) { alert('Error: ' + error.message); return; }
+        pedidos = data || [];
+        renderKPIs();
+        renderTabla();
+      }
+
+      function isToday(iso) {
+        const d = new Date(iso); const t = new Date();
+        return d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth() && d.getDate() === t.getDate();
+      }
+      function isMesActual(iso) {
+        const d = new Date(iso); const t = new Date();
+        return d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth();
+      }
+
+      function renderKPIs() {
+        const hoy = pedidos.filter(p => isToday(p.created_at));
+        const pagadosHoy = hoy.filter(p => p.pago_estado === 'pagado').length;
+        const aConfirmar = pedidos.filter(p => p.pago_estado === 'a_confirmar').length;
+        const esperanEnvio = pedidos.filter(p => p.pago_estado === 'pagado' && (p.envio_estado === 'pendiente' || p.envio_estado === 'preparado')).length;
+        const pagadosMes = pedidos.filter(p => p.pago_estado === 'pagado' && isMesActual(p.created_at));
+        const ingresoMes = pagadosMes.reduce((s, p) => s + Number(p.total_gs || 0), 0);
+
+        $('.js-k-hoy').textContent = hoy.length;
+        $('.js-k-hoy-sub').textContent = pagadosHoy > 0 ? pagadosHoy + ' pagados' : 'aún sin pagados';
+        $('.js-k-conf').textContent = aConfirmar;
+        $('.js-k-env').textContent = esperanEnvio;
+        $('.js-k-ing').textContent = ingresoMes > 0 ? fmt(ingresoMes) : '—';
+        $('.js-k-ing-sub').textContent = pagadosMes.length > 0 ? pagadosMes.length + ' pedidos' : 'sin pedidos pagados';
+        $('.js-total-count').textContent = '(' + pedidos.length + ')';
+      }
+
+      function pillPago(estado) {
+        return ({
+          pendiente:    '<span class="pill pill--amber">Pendiente</span>',
+          a_confirmar:  '<span class="pill pill--amber">A confirmar</span>',
+          pagado:       '<span class="pill pill--green">Pagado</span>',
+          fallido:      '<span class="pill pill--red">Fallido</span>',
+          reembolsado:  '<span class="pill pill--gray">Reembolsado</span>',
+        }[estado]) || '<span class="pill pill--gray">' + esc(estado || '—') + '</span>';
+      }
+      function pillEnvio(estado) {
+        return ({
+          pendiente:       '<span class="pill pill--gray">Pendiente</span>',
+          pendiente_pago:  '<span class="pill pill--gray">Esperando pago</span>',
+          preparado:       '<span class="pill pill--amber">Preparado</span>',
+          enviado:         '<span class="pill pill--purple">Enviado</span>',
+          entregado:       '<span class="pill pill--green">Entregado</span>',
+          devuelto:        '<span class="pill pill--red">Devuelto</span>',
+        }[estado]) || '<span class="pill pill--gray">' + esc(estado || '—') + '</span>';
+      }
+
+      function emptyState() {
+        return `
+          <tr><td colspan="8">
+            <div class="empty-state">
+              <div class="empty-state__icon">📦</div>
+              <h3>Todavía no tenés pedidos</h3>
+              <p>
+                Cuando tengas el checkout real conectado (Bancard), los pedidos llegan automáticamente acá.<br>
+                Mientras tanto, podés cargar manualmente las ventas que hacés por WhatsApp con
+                <strong>+ Pedido manual</strong>.
+              </p>
+              <div class="empty-state__actions">
+                <a href="pedido.html?nuevo=1" class="btn-sm btn-sm--primary">+ Pedido manual</a>
+              </div>
+            </div>
+          </td></tr>
+        `;
+      }
+
+      function renderTabla() {
+        const fp = $('.js-filtro-pago').value;
+        const fe = $('.js-filtro-envio').value;
+        const ft = $('.js-filtro-tipo-envio').value;
+        const buscar = $('.js-buscar').value.trim().toLowerCase();
+        const orden = $('.js-orden').value;
+
+        let lista = pedidos.filter(p => {
+          if (fp && p.pago_estado !== fp) return false;
+          if (fe && p.envio_estado !== fe) return false;
+          if (ft && p.envio_tipo !== ft) return false;
+          if (buscar) {
+            const c = p.cliente || {};
+            const snap = p.envio_direccion_snapshot || {};
+            const blob = ('#' + p.numero + ' ' + (c.nombre || snap.nombre_destinatario || '') + ' ' + (c.apellido || '') + ' ' + (c.email || '') + ' ' + (c.whatsapp || snap.whatsapp || '')).toLowerCase();
+            if (!blob.includes(buscar)) return false;
+          }
+          return true;
+        });
+
+        const [col, dir] = orden.split('.');
+        lista.sort((a, b) => {
+          const va = col === 'created_at' ? new Date(a[col]).getTime() : Number(a[col] || 0);
+          const vb = col === 'created_at' ? new Date(b[col]).getTime() : Number(b[col] || 0);
+          return dir === 'asc' ? va - vb : vb - va;
+        });
+
+        if (lista.length === 0) {
+          $('.js-pedidos-tbody').innerHTML = pedidos.length === 0 ? emptyState() :
+            `<tr><td colspan="8" style="padding:32px; text-align:center; color:#7A736B;">No hay pedidos que coincidan con los filtros.</td></tr>`;
+          return;
+        }
+
+        $('.js-pedidos-tbody').innerHTML = lista.map(p => {
+          const c = p.cliente || {};
+          const snap = p.envio_direccion_snapshot || {};
+          const nombre = c.nombre || snap.nombre_destinatario || 'Cliente sin nombre';
+          const apellido = c.apellido || '';
+          const fecha = new Date(p.created_at);
+          const fechaTxt = fecha.toLocaleDateString('es-PY', { day: '2-digit', month: 'short' }) + ' · ' + fecha.toLocaleTimeString('es-PY', { hour: '2-digit', minute: '2-digit' });
+          const items = (p.items || []).length;
+          return `
+            <tr data-id="${p.id}">
+              <td>
+                <a href="pedido.html?id=${p.id}"><strong>#${p.numero}</strong></a>
+                ${p.es_regalo ? '<br><span class="pill pill--purple" style="font-size:9px;">REGALO</span>' : ''}
+              </td>
+              <td>
+                <strong>${esc(nombre)} ${esc(apellido)}</strong>
+                <div class="u-text-sm u-text-soft u-mt-1">${esc(c.email || '—')}</div>
+              </td>
+              <td class="col-hide-sm">${items} ${items === 1 ? 'pieza' : 'piezas'}</td>
+              <td class="col-num"><strong>${fmt(p.total_gs)}</strong></td>
+              <td>${pillPago(p.pago_estado)}<div class="u-text-sm u-text-soft u-mt-1">${esc(p.pago_metodo || '—')}</div></td>
+              <td>${pillEnvio(p.envio_estado)}<div class="u-text-sm u-text-soft u-mt-1">${esc(p.envio_tipo || '—')}</div></td>
+              <td class="col-hide-sm">${fechaTxt}</td>
+              <td class="col-actions">
+                <a href="pedido.html?id=${p.id}" class="btn-sm btn-sm--ghost">Abrir →</a>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      $('.js-filtro-pago').addEventListener('change', renderTabla);
+      $('.js-filtro-envio').addEventListener('change', renderTabla);
+      $('.js-filtro-tipo-envio').addEventListener('change', renderTabla);
+      $('.js-orden').addEventListener('change', renderTabla);
+      $('.js-buscar').addEventListener('input', renderTabla);
+
+      $('.js-export-csv').addEventListener('click', () => {
+        if (pedidos.length === 0) { alert('No hay pedidos para exportar.'); return; }
+        const cols = ['numero', 'created_at', 'pago_estado', 'pago_metodo', 'envio_estado', 'envio_tipo', 'subtotal_gs', 'descuento_gs', 'envio_gs', 'total_gs', 'cupon_codigo'];
+        const filas = pedidos.map(p => {
+          const c = p.cliente || {};
+          const obj = { ...p, cliente_nombre: c.nombre, cliente_email: c.email };
+          return cols.concat(['cliente_nombre', 'cliente_email']).map(k => `"${String(obj[k] == null ? '' : obj[k]).replace(/"/g, '""')}"`).join(',');
+        });
+        const csv = [cols.concat(['cliente_nombre', 'cliente_email']).join(','), ...filas].join('\n');
+        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+        const u = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = u;
+        a.download = 'momar-pedidos-' + new Date().toISOString().slice(0, 10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(u);
+      });
+
+      cargar();
+    })();
   </script>
   <script src="js/pwa.js"></script>
 </body>
