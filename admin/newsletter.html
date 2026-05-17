@@ -98,39 +98,34 @@
     </div>
   </div>
 
-  <!-- Modal de credenciales -->
+  <!-- Modal de password -->
   <div class="nl-modal js-modal">
     <div class="nl-modal__inner">
-      <h2>Acceso al newsletter</h2>
-      <p>Para leer los suscriptores necesitás la <strong>service_role key</strong> de tu proyecto Supabase. Solo se guarda en este navegador (localStorage). No se sube a ningún lado.</p>
+      <h2>Acceso al panel</h2>
+      <p>Ingresá tu password de admin para ver los suscriptores. Se guarda en este navegador para no pedirlo cada vez.</p>
       <div class="nl-error js-modal-error" style="display:none;"></div>
-      <input type="password" class="js-srk-input" placeholder="eyJhbGciOi…" autocomplete="off">
+      <input type="password" class="js-pass-input" placeholder="••••••••" autocomplete="current-password">
       <div class="nl-modal__actions">
-        <button class="btn-sm btn-sm--primary js-srk-save">Guardar y entrar</button>
-      </div>
-      <div class="nl-help">
-        Dónde sacarla → Supabase Dashboard → Project Settings → API → <em>service_role secret</em>. <br>
-        <a href="https://supabase.com/dashboard/project/tfpnfkigfvpvuhnxwpij/settings/api" target="_blank" rel="noopener">Abrir Settings → API</a>
+        <button class="btn-sm btn-sm--primary js-pass-save">Entrar</button>
       </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/admin-data-2026-05-15.js"></script>
   <script src="js/admin-shell-2026-05-15.js"></script>
   <script>
     (function() {
-      const SUPABASE_URL = 'https://tfpnfkigfvpvuhnxwpij.supabase.co';
-      const STORAGE_KEY  = 'momar_admin_srk';
+      const API_ENDPOINT = '/api/newsletter';
+      const STORAGE_KEY  = 'momar_admin_pass';
 
-      let supa = null;
+      let adminPass = null;
       let registros = [];
 
-      // ===== Modal de credenciales =====
+      // ===== Modal de password =====
       const modal = document.querySelector('.js-modal');
-      const modalInput = document.querySelector('.js-srk-input');
+      const modalInput = document.querySelector('.js-pass-input');
       const modalError = document.querySelector('.js-modal-error');
-      const modalSave  = document.querySelector('.js-srk-save');
+      const modalSave  = document.querySelector('.js-pass-save');
 
       function openModal() { modal.classList.add('is-open'); setTimeout(() => modalInput.focus(), 100); }
       function closeModal() { modal.classList.remove('is-open'); modalError.style.display = 'none'; modalInput.value = ''; }
@@ -139,34 +134,32 @@
       modalSave.addEventListener('click', () => trySave(modalInput.value.trim()));
       modalInput.addEventListener('keydown', e => { if (e.key === 'Enter') trySave(modalInput.value.trim()); });
 
-      async function trySave(key) {
-        if (!key) { showError('Pegá la service_role key.'); return; }
-        if (!key.startsWith('eyJ')) { showError('No parece una key válida (debería empezar con "eyJ").'); return; }
-        // Verificar con un fetch chico
+      async function trySave(pass) {
+        if (!pass) { showError('Ingresá el password.'); return; }
         modalSave.disabled = true; modalSave.textContent = 'Verificando…';
         try {
-          const test = await fetch(SUPABASE_URL + '/rest/v1/newsletter_emails?select=id&limit=1', {
-            headers: { apikey: key, Authorization: 'Bearer ' + key }
-          });
-          if (!test.ok) {
-            const body = await test.text();
-            throw new Error('Status ' + test.status + ': ' + body.slice(0, 120));
+          const r = await fetch(API_ENDPOINT, { headers: { 'X-Admin-Password': pass } });
+          if (r.status === 401) throw new Error('Password incorrecto.');
+          if (r.status === 500) {
+            const body = await r.json();
+            throw new Error(body.error || 'Error de servidor.');
           }
-          localStorage.setItem(STORAGE_KEY, key);
+          if (!r.ok) throw new Error('Error ' + r.status);
+          localStorage.setItem(STORAGE_KEY, pass);
+          adminPass = pass;
           closeModal();
           init();
         } catch (e) {
-          showError('No funciona: ' + e.message);
+          showError(e.message);
         } finally {
-          modalSave.disabled = false; modalSave.textContent = 'Guardar y entrar';
+          modalSave.disabled = false; modalSave.textContent = 'Entrar';
         }
       }
 
       // ===== Init =====
       function init() {
-        const key = localStorage.getItem(STORAGE_KEY);
-        if (!key) { openModal(); return; }
-        supa = window.supabase.createClient(SUPABASE_URL, key, { auth: { persistSession: false } });
+        adminPass = localStorage.getItem(STORAGE_KEY);
+        if (!adminPass) { openModal(); return; }
         loadRegistros();
       }
 
@@ -174,16 +167,19 @@
         const wrap = document.querySelector('.js-table-wrap');
         wrap.innerHTML = '<div class="nl-loading">Cargando suscriptores…</div>';
         try {
-          const { data, error } = await supa
-            .from('newsletter_emails')
-            .select('id, email, created_at, origen, user_agent')
-            .order('created_at', { ascending: false });
-          if (error) throw error;
-          registros = data || [];
+          const r = await fetch(API_ENDPOINT, { headers: { 'X-Admin-Password': adminPass } });
+          if (r.status === 401) {
+            localStorage.removeItem(STORAGE_KEY);
+            adminPass = null;
+            openModal();
+            return;
+          }
+          if (!r.ok) throw new Error('Error ' + r.status);
+          registros = await r.json();
           renderKPIs();
           renderTabla();
         } catch (e) {
-          wrap.innerHTML = '<div class="nl-empty"><div class="nl-empty__icon">⚠</div>No se pudieron cargar los suscriptores. <br><small>' + (e.message || e) + '</small><br><br><button class="btn-sm js-relogin">Re-ingresar credenciales</button></div>';
+          wrap.innerHTML = '<div class="nl-empty"><div class="nl-empty__icon">⚠</div>No se pudieron cargar los suscriptores. <br><small>' + (e.message || e) + '</small><br><br><button class="btn-sm js-relogin">Re-ingresar password</button></div>';
           document.querySelector('.js-relogin')?.addEventListener('click', () => {
             localStorage.removeItem(STORAGE_KEY);
             init();
@@ -256,15 +252,19 @@
             const email = tr.querySelector('.nl-email').textContent;
             if (!confirm('¿Eliminar a ' + email + ' del newsletter?')) return;
             tr.classList.add('is-deleting');
-            const { error } = await supa.from('newsletter_emails').delete().eq('id', id);
-            if (error) {
+            try {
+              const r = await fetch(API_ENDPOINT + '?id=' + encodeURIComponent(id), {
+                method: 'DELETE',
+                headers: { 'X-Admin-Password': adminPass }
+              });
+              if (!r.ok) throw new Error('Error ' + r.status);
+              registros = registros.filter(x => x.id !== id);
+              renderKPIs();
+              renderTabla();
+            } catch (err) {
               tr.classList.remove('is-deleting');
-              alert('No se pudo eliminar: ' + error.message);
-              return;
+              alert('No se pudo eliminar: ' + err.message);
             }
-            registros = registros.filter(r => r.id !== id);
-            renderKPIs();
-            renderTabla();
           });
         });
       }
@@ -285,10 +285,10 @@
       document.querySelector('.js-refresh').addEventListener('click', () => loadRegistros());
 
       document.querySelector('.js-logout').addEventListener('click', () => {
-        if (!confirm('¿Borrar las credenciales guardadas en este navegador?')) return;
+        if (!confirm('¿Borrar el password guardado en este navegador?')) return;
         localStorage.removeItem(STORAGE_KEY);
-        supa = null; registros = [];
-        document.querySelector('.js-table-wrap').innerHTML = '<div class="nl-loading">Esperando credenciales…</div>';
+        adminPass = null; registros = [];
+        document.querySelector('.js-table-wrap').innerHTML = '<div class="nl-loading">Esperando password…</div>';
         document.querySelector('.js-k-total').textContent = '—';
         openModal();
       });
