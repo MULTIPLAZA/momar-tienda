@@ -11,6 +11,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin-2026-05-15.css">
+  <style>
+    .oferta-codigo { font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 14px; font-weight: 600; letter-spacing: 1.5px; padding: 4px 10px; background: #FFF7E6; color: #6E5418; display: inline-block; }
+    .oferta-vencido { opacity: 0.5; }
+
+    /* Modal */
+    .o-modal { position: fixed; inset: 0; background: rgba(15,15,15,0.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+    .o-modal.is-open { display: flex; }
+    .o-modal__inner { background: #fff; max-width: 640px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; }
+    .o-modal h2 { margin: 0 0 16px; }
+    .o-modal__footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--color-line); padding-top: 16px; }
+    .o-fb { padding: 12px; font-size: 13px; margin-bottom: 12px; display: none; }
+    .o-fb.is-ok { background: #EFE; color: #285; border-left: 3px solid #285; display: block; }
+    .o-fb.is-err { background: #FEE; color: #B33; border-left: 3px solid #B33; display: block; }
+  </style>
 </head>
 <body>
   <div class="admin-shell">
@@ -20,23 +34,31 @@
       <main class="admin-main">
 
         <div class="admin-main__head">
-          <h1>Ofertas y cupones</h1>
+          <div>
+            <h1>Ofertas y cupones <span class="js-total-count u-text-soft u-fw-400 u-text-lg">cargando…</span></h1>
+            <p class="u-text-md u-text-soft u-mt-1 u-mb-0">Códigos promocionales que tus clientas usan en el checkout. Definí porcentaje, monto fijo o envío gratis.</p>
+          </div>
           <div class="actions">
-            <button class="btn-sm">Historial de uso</button>
-            <button class="btn-sm btn-sm--primary">+ Cupón nuevo</button>
+            <button class="btn-sm btn-sm--primary js-new-oferta">+ Nuevo cupón</button>
           </div>
         </div>
 
-        <div class="admin-tabs">
-          <span class="admin-tabs__item is-active">Cupones</span>
-          <span class="admin-tabs__item">Ofertas automáticas</span>
-          <span class="admin-tabs__item">Combos / bundles</span>
+        <div class="kpis">
+          <div class="kpi"><div class="kpi__label">Cupones activos</div><div class="kpi__value js-k-activos">—</div><div class="kpi__delta">vigentes y habilitados</div></div>
+          <div class="kpi"><div class="kpi__label">Cupones expirados</div><div class="kpi__value js-k-vencidos">—</div><div class="kpi__delta">no aplicables</div></div>
+          <div class="kpi"><div class="kpi__label">Usos totales</div><div class="kpi__value js-k-usos">—</div><div class="kpi__delta">acumulado histórico</div></div>
+          <div class="kpi"><div class="kpi__label">Top código</div><div class="kpi__value js-k-top" style="font-size: 18px; font-family: monospace;">—</div><div class="kpi__delta js-k-top-sub">—</div></div>
         </div>
 
         <div class="admin-toolbar">
           <div class="admin-toolbar__filters">
-            <select><option>Estado: Todos</option><option>Activos</option><option>Vencidos</option><option>Programados</option></select>
-            <select><option>Tipo: Todos</option><option>Porcentaje</option><option>Monto fijo</option><option>Envío gratis</option></select>
+            <select class="js-filtro-estado">
+              <option value="">Todos los cupones</option>
+              <option value="activos">Activos vigentes</option>
+              <option value="inactivos">Pausados</option>
+              <option value="vencidos">Vencidos</option>
+            </select>
+            <input type="search" class="js-buscar" placeholder="Buscar código…" style="max-width: 260px;">
           </div>
         </div>
 
@@ -45,101 +67,375 @@
             <thead>
               <tr>
                 <th>Código</th>
-                <th>Tipo</th>
-                <th>Descuento</th>
-                <th class="col-hide-sm">Condición</th>
+                <th>Tipo / Valor</th>
+                <th>Condición</th>
                 <th class="col-num">Usos</th>
-                <th class="col-hide-sm">Vence</th>
+                <th>Vence</th>
                 <th>Estado</th>
-                <th class="col-actions">Acciones</th>
+                <th class="col-actions"></th>
               </tr>
             </thead>
-            <tbody class="js-ofertas-tbody"></tbody>
+            <tbody class="js-ofertas-tbody"><tr><td colspan="7" style="padding:32px; text-align:center; color:#7A736B;">Cargando…</td></tr></tbody>
           </table>
-        </div>
-
-        <div class="u-mt-3" style="margin-top: 28px;">
-          <h2 class="u-mb-3">Crear cupón rápido</h2>
-          <div class="admin-card">
-            <div class="admin-form">
-              <div class="admin-form__row">
-                <div class="admin-form__group">
-                  <label>Código del cupón</label>
-                  <input type="text" placeholder="MADRE15" style="font-family: monospace; letter-spacing: 2px; text-transform: uppercase;">
-                  <div class="hint">La clienta lo va a escribir en el checkout.</div>
-                </div>
-                <div class="admin-form__group">
-                  <label>Tipo de descuento</label>
-                  <select>
-                    <option>Porcentaje (%)</option>
-                    <option>Monto fijo (Gs)</option>
-                    <option>Envío gratis</option>
-                  </select>
-                </div>
-                <div class="admin-form__group">
-                  <label>Valor</label>
-                  <input type="text" placeholder="15">
-                </div>
-              </div>
-              <div class="admin-form__row">
-                <div class="admin-form__group">
-                  <label>Compra mínima (Gs)</label>
-                  <input type="text" placeholder="0 = sin mínimo">
-                </div>
-                <div class="admin-form__group">
-                  <label>Usos máximos</label>
-                  <input type="text" placeholder="Vacío = sin límite">
-                </div>
-                <div class="admin-form__group">
-                  <label>Vence</label>
-                  <input type="date">
-                </div>
-              </div>
-              <div class="admin-form__group">
-                <label>Aplicable a</label>
-                <select>
-                  <option>Todo el catálogo</option>
-                  <option>Solo joyería</option>
-                  <option>Solo hogar</option>
-                  <option>Categorías específicas…</option>
-                  <option>Productos específicos…</option>
-                </select>
-              </div>
-              <div class="u-flex u-gap-2" style="justify-content: flex-end;">
-                <button class="btn-sm">Guardar como borrador</button>
-                <button class="btn-sm btn-sm--primary">Crear y activar</button>
-              </div>
-            </div>
-          </div>
         </div>
 
       </main>
     </div>
   </div>
 
-  <script src="../js/products.js?v=1"></script>
+  <!-- Modal crear/editar -->
+  <div class="o-modal js-modal">
+    <div class="o-modal__inner">
+      <h2 class="js-modal-title">Nuevo cupón</h2>
+      <div class="o-fb js-modal-fb"></div>
+
+      <div class="admin-form">
+        <div class="admin-form__row">
+          <div class="admin-form__group">
+            <label>Código *</label>
+            <input type="text" class="js-modal-codigo" placeholder="BIENVENIDA10" style="text-transform: uppercase; font-family: monospace;">
+            <div class="hint">Único, mayúsculas. Lo tipea la clienta en checkout.</div>
+          </div>
+          <div class="admin-form__group">
+            <label>Estado</label>
+            <select class="js-modal-activo">
+              <option value="true">Activo</option>
+              <option value="false">Pausado</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="admin-form__row">
+          <div class="admin-form__group">
+            <label>Tipo de descuento *</label>
+            <select class="js-modal-tipo">
+              <option value="porcentaje">Porcentaje (%)</option>
+              <option value="monto">Monto fijo (Gs)</option>
+              <option value="envio_gratis">Envío gratis</option>
+            </select>
+          </div>
+          <div class="admin-form__group js-modal-valor-group">
+            <label><span class="js-modal-valor-label">Porcentaje</span> *</label>
+            <input type="number" min="0" step="0.01" class="js-modal-valor">
+            <div class="hint js-modal-valor-hint">Entre 1 y 100.</div>
+          </div>
+        </div>
+
+        <div class="admin-form__group">
+          <label>Condición</label>
+          <select class="js-modal-cond">
+            <option value="sin_condicion">Sin condición (cualquier compra)</option>
+            <option value="compra_minima">Compra mínima</option>
+            <option value="categoria">Solo categoría específica</option>
+            <option value="primera_compra">Solo primera compra</option>
+          </select>
+        </div>
+
+        <div class="admin-form__group js-cond-minima-group" style="display:none;">
+          <label>Monto mínimo (Gs)</label>
+          <input type="number" min="0" class="js-modal-cond-minima" placeholder="1500000">
+        </div>
+        <div class="admin-form__group js-cond-categoria-group" style="display:none;">
+          <label>Categoría</label>
+          <select class="js-modal-cond-categoria"></select>
+        </div>
+
+        <div class="admin-form__row">
+          <div class="admin-form__group">
+            <label>Vence (opcional)</label>
+            <input type="date" class="js-modal-vence">
+          </div>
+          <div class="admin-form__group">
+            <label>Máximo de usos (opcional)</label>
+            <input type="number" min="1" class="js-modal-usos-max" placeholder="sin límite">
+          </div>
+        </div>
+      </div>
+
+      <div class="o-modal__footer">
+        <button class="btn-sm js-modal-cancel">Cancelar</button>
+        <button class="btn-sm btn-sm--danger js-modal-delete" style="display:none;">Eliminar</button>
+        <button class="btn-sm btn-sm--primary js-modal-save">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data-2026-05-15.js"></script>
   <script src="js/admin-shell-2026-05-15.js"></script>
   <script>
-    MOMAR_renderAdminShell('ofertas.html', 'Ofertas y cupones');
-    const os = window.MOMAR_OFERTAS;
-    document.querySelector('.js-ofertas-tbody').innerHTML = os.map(o => `
-      <tr>
-        <td><strong style="font-family: monospace; letter-spacing: 1px;">${o.codigo}</strong></td>
-        <td>${o.tipo}</td>
-        <td><strong>${o.tipo === 'Envío' ? 'Envío gratis' : o.tipo === 'Porcentaje' ? o.valor + '%' : 'Gs ' + o.valor.toLocaleString('es-PY')}</strong></td>
-        <td class="col-hide-sm">${o.condicion}</td>
-        <td class="col-num">${o.usos}${o.max ? ' / ' + o.max : ''}</td>
-        <td class="col-hide-sm">${o.vence}</td>
-        <td>${o.activo ? '<span class="pill pill--green">Activo</span>' : '<span class="pill pill--gray">Pausado</span>'}</td>
-        <td class="col-actions">
-          <button class="btn-sm btn-sm--ghost">${o.activo ? 'Pausar' : 'Activar'}</button>
-          <button class="btn-sm btn-sm--ghost">Editar</button>
-        </td>
-      </tr>
-    `).join('');
+    MOMAR_renderAdminShell('ofertas.html', 'Ofertas');
+
+    (async function() {
+      await window.MOMAR_AUTH_READY;
+      const supa = window.MOMAR_supabase;
+      const $ = sel => document.querySelector(sel);
+      const fmt = window.MOMAR_fmtGs;
+
+      let ofertas = [];
+      let editingId = null;
+
+      // Cargar categorías
+      const { data: cats } = await supa.from('categorias').select('slug,nombre').order('orden');
+      const condCatSel = $('.js-modal-cond-categoria');
+      (cats || []).forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.slug; o.textContent = c.nombre;
+        condCatSel.appendChild(o);
+      });
+
+      async function cargar() {
+        const { data, error } = await supa.from('ofertas').select('*').order('created_at', { ascending: false });
+        if (error) { alert('Error: ' + error.message); return; }
+        ofertas = data || [];
+        renderKPIs();
+        renderTabla();
+      }
+
+      function isVencido(o) { return o.vence && new Date(o.vence) < new Date(); }
+
+      function renderKPIs() {
+        const activos = ofertas.filter(o => o.activo && !isVencido(o)).length;
+        const vencidos = ofertas.filter(o => isVencido(o)).length;
+        const usos = ofertas.reduce((s, o) => s + (o.usos_count || 0), 0);
+        const top = [...ofertas].sort((a, b) => (b.usos_count || 0) - (a.usos_count || 0))[0];
+        $('.js-k-activos').textContent = activos;
+        $('.js-k-vencidos').textContent = vencidos;
+        $('.js-k-usos').textContent = usos.toLocaleString('es-PY');
+        if (top && top.usos_count > 0) {
+          $('.js-k-top').textContent = top.codigo;
+          $('.js-k-top-sub').textContent = top.usos_count + ' usos';
+        } else {
+          $('.js-k-top').textContent = '—';
+          $('.js-k-top-sub').textContent = 'sin canjes aún';
+        }
+        $('.js-total-count').textContent = '(' + ofertas.length + ')';
+      }
+
+      function tipoLabel(o) {
+        if (o.tipo === 'porcentaje')   return `<strong>${o.valor}%</strong>`;
+        if (o.tipo === 'monto')        return `<strong>${fmt(o.valor)}</strong>`;
+        if (o.tipo === 'envio_gratis') return '<strong>Envío gratis</strong>';
+        return o.tipo;
+      }
+      function condLabel(o) {
+        if (o.condicion_tipo === 'sin_condicion')  return '<span style="color:var(--color-text-soft);">cualquier compra</span>';
+        if (o.condicion_tipo === 'compra_minima')  return 'mínimo ' + fmt((o.condicion_valor && o.condicion_valor.monto) || 0);
+        if (o.condicion_tipo === 'categoria')      return 'solo ' + ((o.condicion_valor && o.condicion_valor.categoria_slug) || '');
+        if (o.condicion_tipo === 'primera_compra') return 'solo primera compra';
+        return o.condicion_tipo;
+      }
+      function estadoPill(o) {
+        if (isVencido(o)) return '<span class="pill pill--gray">Vencido</span>';
+        if (!o.activo)    return '<span class="pill pill--gray">Pausado</span>';
+        return '<span class="pill pill--green">Activo</span>';
+      }
+      function venceTxt(o) {
+        if (!o.vence) return '<span class="u-text-soft">—</span>';
+        const d = new Date(o.vence);
+        return '<span class="' + (isVencido(o) ? 'u-text-soft' : '') + '">' + d.toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' }) + '</span>';
+      }
+
+      function renderTabla() {
+        const filtro = $('.js-filtro-estado').value;
+        const buscar = $('.js-buscar').value.trim().toLowerCase();
+        let lista = ofertas.filter(o => {
+          if (buscar && !(o.codigo || '').toLowerCase().includes(buscar)) return false;
+          if (filtro === 'activos')   return o.activo && !isVencido(o);
+          if (filtro === 'inactivos') return !o.activo;
+          if (filtro === 'vencidos')  return isVencido(o);
+          return true;
+        });
+
+        if (lista.length === 0) {
+          $('.js-ofertas-tbody').innerHTML = `<tr><td colspan="7" style="padding:32px; text-align:center; color:#7A736B;">${ofertas.length === 0 ? 'Aún no creaste cupones. Probá con "BIENVENIDA10" → 10% sobre cualquier compra.' : 'No hay cupones que coincidan con los filtros.'}</td></tr>`;
+          return;
+        }
+
+        $('.js-ofertas-tbody').innerHTML = lista.map(o => `
+          <tr class="${isVencido(o) ? 'oferta-vencido' : ''}" data-id="${o.id}">
+            <td><span class="oferta-codigo">${escapeHTML(o.codigo)}</span></td>
+            <td>${tipoLabel(o)}</td>
+            <td><span class="u-text-md">${condLabel(o)}</span></td>
+            <td class="col-num">
+              <strong>${o.usos_count || 0}</strong>${o.usos_max ? ' / ' + o.usos_max : ''}
+            </td>
+            <td>${venceTxt(o)}</td>
+            <td>${estadoPill(o)}</td>
+            <td class="col-actions">
+              <button class="btn-sm btn-sm--ghost js-edit">Editar</button>
+              <button class="btn-sm btn-sm--ghost js-toggle">${o.activo ? 'Pausar' : 'Activar'}</button>
+            </td>
+          </tr>
+        `).join('');
+
+        document.querySelectorAll('.js-edit').forEach(b => b.addEventListener('click', e => abrirEditar(e.target.closest('tr').dataset.id)));
+        document.querySelectorAll('.js-toggle').forEach(b => b.addEventListener('click', async e => {
+          const id = e.target.closest('tr').dataset.id;
+          const o = ofertas.find(x => x.id === id);
+          const { error } = await supa.from('ofertas').update({ activo: !o.activo }).eq('id', id);
+          if (error) { alert('Error: ' + error.message); return; }
+          cargar();
+        }));
+      }
+
+      // ===== Modal =====
+      function abrirNuevo() {
+        editingId = null;
+        $('.js-modal-title').textContent = 'Nuevo cupón';
+        $('.js-modal-delete').style.display = 'none';
+        resetForm();
+        $('.js-modal').classList.add('is-open');
+        setTimeout(() => $('.js-modal-codigo').focus(), 100);
+      }
+      function abrirEditar(id) {
+        const o = ofertas.find(x => x.id === id);
+        if (!o) return;
+        editingId = id;
+        $('.js-modal-title').textContent = 'Editar cupón';
+        $('.js-modal-delete').style.display = '';
+        $('.js-modal-codigo').value = o.codigo;
+        $('.js-modal-activo').value = o.activo ? 'true' : 'false';
+        $('.js-modal-tipo').value = o.tipo;
+        $('.js-modal-valor').value = o.valor || '';
+        $('.js-modal-cond').value = o.condicion_tipo;
+        $('.js-modal-cond-minima').value = (o.condicion_valor && o.condicion_valor.monto) || '';
+        $('.js-modal-cond-categoria').value = (o.condicion_valor && o.condicion_valor.categoria_slug) || '';
+        $('.js-modal-vence').value = o.vence ? o.vence.slice(0, 10) : '';
+        $('.js-modal-usos-max').value = o.usos_max || '';
+        actualizarTipoUI();
+        actualizarCondUI();
+        $('.js-modal').classList.add('is-open');
+      }
+      function cerrarModal() {
+        $('.js-modal').classList.remove('is-open');
+        $('.js-modal-fb').className = 'o-fb';
+        editingId = null;
+      }
+      function resetForm() {
+        $('.js-modal-codigo').value = '';
+        $('.js-modal-activo').value = 'true';
+        $('.js-modal-tipo').value = 'porcentaje';
+        $('.js-modal-valor').value = '';
+        $('.js-modal-cond').value = 'sin_condicion';
+        $('.js-modal-cond-minima').value = '';
+        $('.js-modal-cond-categoria').value = '';
+        $('.js-modal-vence').value = '';
+        $('.js-modal-usos-max').value = '';
+        actualizarTipoUI();
+        actualizarCondUI();
+      }
+      function actualizarTipoUI() {
+        const tipo = $('.js-modal-tipo').value;
+        const group = $('.js-modal-valor-group');
+        const label = $('.js-modal-valor-label');
+        const hint = $('.js-modal-valor-hint');
+        const input = $('.js-modal-valor');
+        if (tipo === 'envio_gratis') {
+          group.style.display = 'none';
+          input.value = 0;
+        } else {
+          group.style.display = '';
+          if (tipo === 'porcentaje') {
+            label.textContent = 'Porcentaje (%)';
+            hint.textContent = 'Entre 1 y 100.';
+            input.max = 100; input.step = '0.01';
+          } else {
+            label.textContent = 'Monto fijo (Gs)';
+            hint.textContent = 'Se descuenta del total.';
+            input.removeAttribute('max');
+            input.step = '1';
+          }
+        }
+      }
+      function actualizarCondUI() {
+        const cond = $('.js-modal-cond').value;
+        $('.js-cond-minima-group').style.display    = cond === 'compra_minima' ? '' : 'none';
+        $('.js-cond-categoria-group').style.display = cond === 'categoria'     ? '' : 'none';
+      }
+      function feedback(msg, ok) {
+        const el = $('.js-modal-fb');
+        el.textContent = msg;
+        el.className = 'o-fb ' + (ok ? 'is-ok' : 'is-err');
+      }
+
+      $('.js-new-oferta').addEventListener('click', abrirNuevo);
+      $('.js-modal-cancel').addEventListener('click', cerrarModal);
+      $('.js-modal-tipo').addEventListener('change', actualizarTipoUI);
+      $('.js-modal-cond').addEventListener('change', actualizarCondUI);
+      $('.js-modal-codigo').addEventListener('input', e => e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, ''));
+      $('.js-filtro-estado').addEventListener('change', renderTabla);
+      $('.js-buscar').addEventListener('input', renderTabla);
+
+      $('.js-modal-save').addEventListener('click', async () => {
+        const codigo = $('.js-modal-codigo').value.trim();
+        if (!codigo || codigo.length < 3) { feedback('El código debe tener al menos 3 caracteres.', false); return; }
+        const tipo = $('.js-modal-tipo').value;
+        const valorRaw = parseFloat($('.js-modal-valor').value);
+        if (tipo !== 'envio_gratis') {
+          if (!valorRaw || valorRaw <= 0) { feedback('Valor inválido.', false); return; }
+          if (tipo === 'porcentaje' && valorRaw > 100) { feedback('El porcentaje no puede ser mayor a 100.', false); return; }
+        }
+
+        const cond = $('.js-modal-cond').value;
+        let condValor = {};
+        if (cond === 'compra_minima') {
+          const monto = parseFloat($('.js-modal-cond-minima').value);
+          if (!monto || monto <= 0) { feedback('Definí un monto mínimo válido.', false); return; }
+          condValor = { monto };
+        } else if (cond === 'categoria') {
+          const slug = $('.js-modal-cond-categoria').value;
+          if (!slug) { feedback('Elegí una categoría.', false); return; }
+          condValor = { categoria_slug: slug };
+        }
+
+        const payload = {
+          codigo,
+          tipo,
+          valor: tipo === 'envio_gratis' ? 0 : valorRaw,
+          condicion_tipo: cond,
+          condicion_valor: condValor,
+          vence: $('.js-modal-vence').value ? new Date($('.js-modal-vence').value).toISOString() : null,
+          usos_max: parseInt($('.js-modal-usos-max').value) || null,
+          activo: $('.js-modal-activo').value === 'true',
+        };
+
+        const btn = $('.js-modal-save');
+        btn.disabled = true; btn.textContent = 'Guardando…';
+        try {
+          let res;
+          if (editingId) {
+            res = await supa.from('ofertas').update(payload).eq('id', editingId);
+          } else {
+            res = await supa.from('ofertas').insert(payload);
+          }
+          if (res.error) {
+            if (res.error.code === '23505') throw new Error('Ya existe un cupón con ese código.');
+            throw res.error;
+          }
+          feedback('Guardado.', true);
+          setTimeout(() => { cerrarModal(); cargar(); }, 400);
+        } catch (err) {
+          feedback('Error: ' + (err.message || err), false);
+        } finally {
+          btn.disabled = false; btn.textContent = 'Guardar';
+        }
+      });
+
+      $('.js-modal-delete').addEventListener('click', async () => {
+        if (!editingId) return;
+        if (!confirm('¿Eliminar este cupón?')) return;
+        const { error } = await supa.from('ofertas').delete().eq('id', editingId);
+        if (error) { feedback('No se pudo eliminar: ' + error.message, false); return; }
+        cerrarModal();
+        cargar();
+      });
+
+      function escapeHTML(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+      cargar();
+    })();
   </script>
   <script src="js/pwa.js"></script>
 </body>

@@ -11,6 +11,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin-2026-05-15.css">
+  <style>
+    .save-feedback { padding: 12px 16px; margin-bottom: 16px; font-size: 13px; display: none; }
+    .save-feedback.is-shown { display: block; }
+    .save-feedback.is-ok { background: #EFE; color: #285; border-left: 3px solid #285; }
+    .save-feedback.is-err { background: #FEE; color: #B33; border-left: 3px solid #B33; }
+    .save-bar { position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--color-line, #E5E1DA); padding: 16px 24px; margin: 24px -24px -24px; display: flex; gap: 8px; justify-content: flex-end; z-index: 20; }
+  </style>
 </head>
 <body>
   <div class="admin-shell">
@@ -20,133 +27,297 @@
       <main class="admin-main">
 
         <div class="admin-main__head">
-          <h1>Configuración</h1>
+          <div>
+            <h1>Configuración</h1>
+            <p class="u-text-md u-text-soft u-mt-1 u-mb-0">Datos de la tienda visibles al público y configuración interna. Se guardan en una sola fila de la tabla <code>configuracion_tienda</code>.</p>
+          </div>
           <div class="actions">
-            <button class="btn-sm btn-sm--primary">Guardar todo</button>
+            <button class="btn-sm btn-sm--primary js-guardar">Guardar todo</button>
           </div>
         </div>
 
-        <div class="admin-tabs">
-          <span class="admin-tabs__item is-active">Tienda</span>
-          <span class="admin-tabs__item">Pagos</span>
-          <span class="admin-tabs__item">Envíos</span>
-          <span class="admin-tabs__item">SIFEN</span>
-          <span class="admin-tabs__item">Usuarios y permisos</span>
-          <span class="admin-tabs__item">Notificaciones</span>
-        </div>
+        <div class="save-feedback js-feedback"></div>
 
         <div class="admin-grid-2">
           <div>
+            <!-- IDENTIDAD COMERCIAL -->
             <div class="admin-card">
-              <h3 class="u-mb-3">Identidad de la tienda</h3>
+              <h3 class="u-mb-3">Identidad comercial</h3>
               <div class="admin-form">
-                <div class="admin-form__group"><label>Nombre comercial</label><input type="text" value="MoMar"></div>
-                <div class="admin-form__group"><label>Razón social</label><input type="text" value="MoMar Joyería S.R.L."></div>
-                <div class="admin-form__row">
-                  <div class="admin-form__group"><label>RUC</label><input type="text" value="80000000-0"></div>
-                  <div class="admin-form__group"><label>Timbrado</label><input type="text" value="80000000"></div>
+                <div class="admin-form__group">
+                  <label>Nombre comercial *</label>
+                  <input type="text" class="js-nombre_comercial" required>
+                  <div class="hint">El que aparece en la tienda y emails.</div>
                 </div>
-                <div class="admin-form__group"><label>Dominio</label><input type="text" value="momar.com.py"></div>
-                <div class="admin-form__group"><label>Email institucional</label><input type="email" value="contacto@momar.com.py"></div>
-                <div class="admin-form__group"><label>WhatsApp atención</label><input type="tel" value="+595 981 000 000"></div>
+                <div class="admin-form__group">
+                  <label>Razón social</label>
+                  <input type="text" class="js-razon_social" placeholder="MoMar Hogar & Más S.A. (opcional)">
+                </div>
+                <div class="admin-form__row">
+                  <div class="admin-form__group">
+                    <label>RUC</label>
+                    <input type="text" class="js-ruc" placeholder="80012345-6">
+                  </div>
+                  <div class="admin-form__group">
+                    <label>Timbrado</label>
+                    <input type="text" class="js-timbrado">
+                  </div>
+                </div>
+                <div class="admin-form__group">
+                  <label>Dominio</label>
+                  <input type="text" class="js-dominio" placeholder="momar.com.py">
+                </div>
               </div>
             </div>
 
+            <!-- CONTACTO -->
             <div class="admin-card">
-              <h3 class="u-mb-3">Dirección y horarios</h3>
+              <h3 class="u-mb-3">Contacto</h3>
               <div class="admin-form">
-                <div class="admin-form__group"><label>Showroom</label><input type="text" value="Av. España 1234 c/ Brasilia"></div>
-                <div class="admin-form__row">
-                  <div class="admin-form__group"><label>Ciudad</label><input type="text" value="Asunción"></div>
-                  <div class="admin-form__group"><label>Código postal</label><input type="text" value="1209"></div>
+                <div class="admin-form__group">
+                  <label>Email institucional</label>
+                  <input type="email" class="js-email_institucional" placeholder="hola@momar.com.py">
+                </div>
+                <div class="admin-form__group">
+                  <label>WhatsApp de atención</label>
+                  <input type="text" class="js-whatsapp_atencion" placeholder="+595 981 412648">
+                  <div class="hint">Formato internacional. Lo usan los botones de "Consultar por WhatsApp".</div>
+                </div>
+                <div class="admin-form__group">
+                  <label>Dirección showroom (si aplica)</label>
+                  <input type="text" class="js-showroom_direccion">
                 </div>
                 <div class="admin-form__row">
-                  <div class="admin-form__group"><label>Horario L-V</label><input type="text" value="10:00 — 18:00"></div>
-                  <div class="admin-form__group"><label>Sábados</label><input type="text" value="10:00 — 14:00"></div>
+                  <div class="admin-form__group">
+                    <label>Ciudad showroom</label>
+                    <input type="text" class="js-showroom_ciudad">
+                  </div>
+                  <div class="admin-form__group">
+                    <label>CP</label>
+                    <input type="text" class="js-showroom_cp">
+                  </div>
+                </div>
+                <div class="admin-form__row">
+                  <div class="admin-form__group">
+                    <label>Horario lunes a viernes</label>
+                    <input type="text" class="js-horario_lv" placeholder="09:00–18:00">
+                  </div>
+                  <div class="admin-form__group">
+                    <label>Horario sábado</label>
+                    <input type="text" class="js-horario_sabado" placeholder="09:00–13:00">
+                  </div>
                 </div>
               </div>
             </div>
 
+            <!-- REDES SOCIALES -->
             <div class="admin-card">
               <h3 class="u-mb-3">Redes sociales</h3>
               <div class="admin-form">
-                <div class="admin-form__group"><label>Instagram</label><input type="text" value="@momarpy"></div>
-                <div class="admin-form__group"><label>Facebook</label><input type="text" value="MoMar Paraguay"></div>
-                <div class="admin-form__group"><label>TikTok</label><input type="text" placeholder="@momarpy"></div>
+                <div class="admin-form__group">
+                  <label>Instagram</label>
+                  <input type="text" class="js-instagram" placeholder="https://instagram.com/momar.py">
+                </div>
+                <div class="admin-form__group">
+                  <label>Facebook</label>
+                  <input type="text" class="js-facebook">
+                </div>
+                <div class="admin-form__group">
+                  <label>TikTok</label>
+                  <input type="text" class="js-tiktok">
+                </div>
               </div>
             </div>
           </div>
 
           <div>
+            <!-- ENVÍOS Y PAGOS -->
             <div class="admin-card">
-              <h3 class="u-mb-3">Logo</h3>
-              <div class="u-flex u-justify-center u-mb-3" style="background: var(--color-dark); padding: 18px;">
-                <svg class="logo-svg" viewBox="0 0 200 50" style="color: white; height: 36px;"><text x="100" y="38" text-anchor="middle" font-size="38" font-family="Cormorant Garamond, serif" font-weight="500" font-style="italic" fill="currentColor" letter-spacing="-0.5">MoMar</text></svg>
-              </div>
-              <button class="btn-sm" style="width: 100%;">Cambiar logo (SVG)</button>
-              <button class="btn-sm btn-sm--ghost" style="width: 100%; margin-top: 6px;">Cambiar favicon</button>
-            </div>
-
-            <div class="admin-card">
-              <h3 class="u-mb-3">Banner de anuncio (top bar)</h3>
-              <div class="admin-form__group">
-                <label>Texto</label>
-                <input type="text" value="ENVÍO GRATIS EN ASUNCIÓN SOBRE 2.500.000 GS · 3 CUOTAS SIN INTERÉS">
-                <div class="hint">Sale arriba de todo en el sitio público.</div>
-              </div>
-              <div class="admin-form__group" style="margin-top: var(--space-2);">
-                <label class="u-flex u-items-center u-gap-2 u-text-md u-text-dark" style="text-transform: none; letter-spacing: 0;"><input type="checkbox" checked> Mostrar en la tienda</label>
-              </div>
-            </div>
-
-            <div class="admin-card">
-              <h3 class="u-mb-3">SEO global</h3>
+              <h3 class="u-mb-3">Envíos y pagos</h3>
               <div class="admin-form">
                 <div class="admin-form__group">
-                  <label>Title (tab del navegador)</label>
-                  <input type="text" value="MoMar · Joyería y accesorios premium">
+                  <label>Envío gratis desde (Gs)</label>
+                  <input type="number" min="0" class="js-envio_gratis_desde_gs" placeholder="500000">
+                  <div class="hint">Sale en topbar y en checkout: "Envío gratis sobre Gs X".</div>
+                </div>
+                <div class="admin-form__group">
+                  <label>Cuotas sin interés (Bancard)</label>
+                  <input type="number" min="0" max="24" class="js-cuotas_sin_interes" placeholder="3">
+                  <div class="hint">Cantidad de cuotas que ofrecés sin recargo.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TOPBAR -->
+            <div class="admin-card">
+              <h3 class="u-mb-3">Topbar (cinta superior)</h3>
+              <div class="admin-form">
+                <div class="admin-form__group">
+                  <label><input type="checkbox" class="js-topbar_activo" style="width:auto; margin-right:6px;">Mostrar topbar en el sitio público</label>
+                </div>
+                <div class="admin-form__group">
+                  <label>Texto del topbar</label>
+                  <input type="text" class="js-topbar_texto" placeholder="ENVÍO GRATIS EN ASUNCIÓN SOBRE GS 500.000">
+                  <div class="hint">Cinta con fondo negro arriba de todo. Mayúsculas + letras espaciadas.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SEO -->
+            <div class="admin-card">
+              <h3 class="u-mb-3">SEO base</h3>
+              <div class="admin-form">
+                <div class="admin-form__group">
+                  <label>Título SEO por defecto</label>
+                  <input type="text" class="js-seo_title" placeholder="MoMar · Hogar & Más">
                 </div>
                 <div class="admin-form__group">
                   <label>Meta description</label>
-                  <textarea>Joyería de autor en oro 18k y plata 925, accesorios de hogar premium curados en Asunción. Envíos gratis en Asunción.</textarea>
+                  <textarea class="js-seo_desc" rows="3" placeholder="Curaduría de artesanías colombianas..."></textarea>
                 </div>
-                <div class="admin-form__row">
-                  <div class="admin-form__group"><label>Pixel de Meta</label><input type="text" placeholder="123456789012345"></div>
-                  <div class="admin-form__group"><label>Google Tag Manager</label><input type="text" placeholder="GTM-XXXXX"></div>
+              </div>
+            </div>
+
+            <!-- TRACKING -->
+            <div class="admin-card">
+              <h3 class="u-mb-3">Tracking / pixels</h3>
+              <div class="admin-form">
+                <div class="admin-form__group">
+                  <label>Meta Pixel ID</label>
+                  <input type="text" class="js-meta_pixel_id" placeholder="123456789012345">
+                </div>
+                <div class="admin-form__group">
+                  <label>Google Tag Manager ID</label>
+                  <input type="text" class="js-gtm_id" placeholder="GTM-XXXXXXX">
+                </div>
+              </div>
+            </div>
+
+            <!-- ASSETS -->
+            <div class="admin-card">
+              <h3 class="u-mb-3">Logo / favicon</h3>
+              <div class="admin-form">
+                <div class="admin-form__group">
+                  <label>URL del logo</label>
+                  <input type="text" class="js-logo_url">
+                  <div class="hint">Hoy se sirve desde <code>/img/logo-white.png</code> y <code>logo-dark.png</code> del repo.</div>
+                </div>
+                <div class="admin-form__group">
+                  <label>URL del favicon</label>
+                  <input type="text" class="js-favicon_url">
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- SECCIÓN USUARIOS (preview de otra tab) -->
-        <div style="margin-top: var(--space-5);">
-          <h2 style="font-family: var(--font-body); font-size: 16px; margin-bottom: var(--space-3);">Usuarios y permisos (preview)</h2>
-          <div class="admin-card" style="padding: 0;">
-            <div class="admin-table-wrap">
-              <table class="admin-table">
-                <thead><tr><th>Usuario</th><th>Email</th><th>Rol</th><th>Último acceso</th><th class="col-actions">Acciones</th></tr></thead>
-                <tbody>
-                  <tr><td><strong>Martina Recalde</strong></td><td>martina@momar.com.py</td><td><span class="pill pill--dark">Dueña</span></td><td>hace 5 min</td><td class="col-actions"><button class="btn-sm btn-sm--ghost">Editar</button></td></tr>
-                  <tr><td><strong>Camila Báez</strong></td><td>camila@momar.com.py</td><td><span class="pill pill--purple">Dueña</span></td><td>ayer</td><td class="col-actions"><button class="btn-sm btn-sm--ghost">Editar</button></td></tr>
-                  <tr><td><strong>Asistente</strong></td><td>asistente@momar.com.py</td><td><span class="pill pill--gray">Operaciones</span></td><td>hace 2 días</td><td class="col-actions"><button class="btn-sm btn-sm--ghost">Editar</button></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <button class="btn-sm" style="margin-top: var(--space-3);">+ Invitar usuario</button>
+        <div class="save-bar">
+          <button class="btn-sm js-cancelar">Cancelar cambios</button>
+          <button class="btn-sm btn-sm--primary js-guardar-bottom">Guardar todo</button>
         </div>
 
       </main>
     </div>
   </div>
 
-  <script src="../js/products.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data-2026-05-15.js"></script>
   <script src="js/admin-shell-2026-05-15.js"></script>
-  <script>MOMAR_renderAdminShell('configuracion.html', 'Configuración');</script>
+  <script>
+    MOMAR_renderAdminShell('configuracion.html', 'Configuración');
+
+    (async function() {
+      await window.MOMAR_AUTH_READY;
+      const supa = window.MOMAR_supabase;
+      const $ = sel => document.querySelector(sel);
+      let original = null;
+
+      const CAMPOS = [
+        'nombre_comercial', 'razon_social', 'ruc', 'timbrado', 'dominio',
+        'email_institucional', 'whatsapp_atencion',
+        'showroom_direccion', 'showroom_ciudad', 'showroom_cp',
+        'horario_lv', 'horario_sabado',
+        'instagram', 'facebook', 'tiktok',
+        'logo_url', 'favicon_url',
+        'topbar_texto', 'seo_title', 'seo_desc',
+        'meta_pixel_id', 'gtm_id',
+        'envio_gratis_desde_gs', 'cuotas_sin_interes',
+      ];
+      const CHECKS = ['topbar_activo'];
+
+      function feedback(msg, ok) {
+        const el = $('.js-feedback');
+        el.textContent = msg;
+        el.classList.remove('is-ok', 'is-err');
+        el.classList.add(ok ? 'is-ok' : 'is-err', 'is-shown');
+        setTimeout(() => el.classList.remove('is-shown'), 5000);
+      }
+
+      async function cargar() {
+        const { data, error } = await supa.from('configuracion_tienda').select('*').eq('id', 1).maybeSingle();
+        if (error && error.code !== 'PGRST116') {
+          feedback('Error cargando configuración: ' + error.message, false);
+          return;
+        }
+        original = data || {};
+        CAMPOS.forEach(c => {
+          const el = $('.js-' + c);
+          if (el) el.value = original[c] == null ? '' : original[c];
+        });
+        CHECKS.forEach(c => {
+          const el = $('.js-' + c);
+          if (el) el.checked = !!original[c];
+        });
+        if (!data) feedback('Sin configuración guardada todavía. Llená y guardá para crear la primera fila.', true);
+      }
+
+      function recolectar() {
+        const obj = { id: 1 };
+        CAMPOS.forEach(c => {
+          const el = $('.js-' + c);
+          if (!el) return;
+          let v = el.value.trim();
+          if (v === '') v = null;
+          if ((c === 'envio_gratis_desde_gs' || c === 'cuotas_sin_interes') && v != null) v = Number(v);
+          obj[c] = v;
+        });
+        CHECKS.forEach(c => {
+          const el = $('.js-' + c);
+          if (el) obj[c] = el.checked;
+        });
+        return obj;
+      }
+
+      async function guardar() {
+        const payload = recolectar();
+        if (!payload.nombre_comercial) {
+          feedback('El nombre comercial es obligatorio.', false);
+          return;
+        }
+        const btn = $('.js-guardar');
+        btn.disabled = true; btn.textContent = 'Guardando…';
+        try {
+          const { error } = await supa.from('configuracion_tienda').upsert(payload, { onConflict: 'id' });
+          if (error) throw error;
+          feedback('Configuración guardada.', true);
+          await cargar();
+        } catch (err) {
+          feedback('Error: ' + (err.message || err), false);
+        } finally {
+          btn.disabled = false; btn.textContent = 'Guardar todo';
+        }
+      }
+
+      $('.js-guardar').addEventListener('click', guardar);
+      $('.js-guardar-bottom').addEventListener('click', guardar);
+      $('.js-cancelar').addEventListener('click', () => {
+        if (confirm('¿Descartar cambios sin guardar?')) cargar();
+      });
+
+      cargar();
+    })();
+  </script>
   <script src="js/pwa.js"></script>
 </body>
 </html>
