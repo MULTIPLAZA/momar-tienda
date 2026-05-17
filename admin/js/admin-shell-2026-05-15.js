@@ -96,4 +96,163 @@
       });
     });
   };
+
+  // ============================================
+  // HELPERS GLOBALES — Modal, Toast, Sortable
+  // (Refinamiento 2026-05-17. No modifica markup existente;
+  // sólo agrega comportamiento consistente.)
+  // ============================================
+
+  // Selector compartido de modales: a-modal (nuevo) + legacy con sus prefijos
+  const MODAL_SELECTOR = '.a-modal, .c-modal, .b-modal, .nl-modal, .o-modal';
+
+  function closeAllOpenModals() {
+    document.querySelectorAll(MODAL_SELECTOR + '.is-open').forEach(m => {
+      m.classList.remove('is-open');
+    });
+  }
+
+  // Esc cierra cualquier modal abierto
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const opened = document.querySelector(MODAL_SELECTOR + '.is-open');
+      if (opened) {
+        e.stopPropagation();
+        opened.classList.remove('is-open');
+      } else if (document.body.classList.contains('admin-menu-open')) {
+        document.body.classList.remove('admin-menu-open');
+      }
+    }
+  });
+
+  // Click en el backdrop cierra (sólo si el target es el contenedor exterior, NO el inner)
+  document.addEventListener('click', (e) => {
+    const modal = e.target.matches(MODAL_SELECTOR) ? e.target : null;
+    if (modal && modal.classList.contains('is-open')) {
+      modal.classList.remove('is-open');
+    }
+  });
+
+  // Botón close estándar: cualquier elemento con [data-modal-close] o clase .js-modal-close-x
+  document.addEventListener('click', (e) => {
+    const closeBtn = e.target.closest('[data-modal-close], .js-modal-close-x');
+    if (closeBtn) {
+      const modal = closeBtn.closest(MODAL_SELECTOR);
+      if (modal) modal.classList.remove('is-open');
+    }
+  });
+
+  // Inyectar botón X automáticamente en modales legacy que no lo tengan
+  function injectModalCloseButtons() {
+    document.querySelectorAll(MODAL_SELECTOR).forEach(modal => {
+      const inner = modal.querySelector('.a-modal__inner, .c-modal__inner, .b-modal__inner, .nl-modal__inner, .o-modal__inner');
+      if (!inner) return;
+      if (inner.querySelector('.a-modal__close, [data-modal-close]')) return;
+      const btn = document.createElement('button');
+      btn.className = 'a-modal__close';
+      btn.setAttribute('aria-label', 'Cerrar');
+      btn.setAttribute('data-modal-close', '');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+      inner.appendChild(btn);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', injectModalCloseButtons);
+  // Re-inyectar si después se agregan modales por JS
+  const _moObserver = new MutationObserver(() => injectModalCloseButtons());
+  document.addEventListener('DOMContentLoaded', () => {
+    _moObserver.observe(document.body, { childList: true, subtree: true });
+  });
+
+  // ---- Toast ----
+  window.MOMAR_toast = function(msg, opts) {
+    opts = opts || {};
+    const kind = opts.kind || 'info'; // 'ok' | 'err' | 'info'
+    const ms = opts.ms || (kind === 'err' ? 4500 : 2400);
+
+    let container = document.querySelector('.a-toast');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'a-toast';
+      container.setAttribute('aria-live', 'polite');
+      container.setAttribute('aria-atomic', 'true');
+      document.body.appendChild(container);
+    }
+
+    const item = document.createElement('div');
+    item.className = 'a-toast__item is-' + kind;
+    const icon = kind === 'ok'
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m5 12 5 5 9-11"/></svg>'
+      : kind === 'err'
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 17v.5"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v.5"/></svg>';
+    item.innerHTML = icon + '<span>' + String(msg).replace(/</g, '&lt;') + '</span>';
+    container.appendChild(item);
+
+    setTimeout(() => {
+      item.classList.add('is-hiding');
+      setTimeout(() => item.remove(), 220);
+    }, ms);
+  };
+
+  // ---- Sortable tables ----
+  // Activar agregando data-sort al <th> con un valor: "text" | "num" | "date".
+  // El tbody debe tener filas reales (no skeletons). Si la fila contiene celdas
+  // con data-sort-value, se prefiere ese valor.
+  function makeSortable(table) {
+    const headers = table.querySelectorAll('th[data-sort]');
+    if (!headers.length) return;
+    headers.forEach((th, idx) => {
+      if (th._sortWired) return;
+      th._sortWired = true;
+      th.setAttribute('tabindex', '0');
+      th.setAttribute('role', 'button');
+      th.setAttribute('aria-label', 'Ordenar por ' + (th.textContent || '').trim());
+      const trigger = () => sortBy(table, idx, th.dataset.sort, th);
+      th.addEventListener('click', trigger);
+      th.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); trigger(); }
+      });
+    });
+  }
+  function sortBy(table, colIdx, kind, th) {
+    const tbody = table.querySelector('tbody');
+    if (!tbody) return;
+    const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.classList.contains('skel-row') && r.children.length > colIdx);
+    if (rows.length === 0) return;
+
+    const desc = th.classList.contains('is-sort-asc'); // toggle
+    table.querySelectorAll('th[data-sort]').forEach(h => h.classList.remove('is-sort-asc', 'is-sort-desc'));
+    th.classList.add(desc ? 'is-sort-desc' : 'is-sort-asc');
+
+    const getVal = (row) => {
+      const cell = row.children[colIdx];
+      if (!cell) return '';
+      const dv = cell.getAttribute('data-sort-value');
+      if (dv != null) return dv;
+      return (cell.textContent || '').trim();
+    };
+
+    rows.sort((a, b) => {
+      let va = getVal(a), vb = getVal(b);
+      if (kind === 'num') {
+        const na = parseFloat(String(va).replace(/[^\d.-]/g, '')) || 0;
+        const nb = parseFloat(String(vb).replace(/[^\d.-]/g, '')) || 0;
+        return desc ? nb - na : na - nb;
+      }
+      if (kind === 'date') {
+        const da = new Date(va).getTime() || 0;
+        const db = new Date(vb).getTime() || 0;
+        return desc ? db - da : da - db;
+      }
+      return desc ? vb.localeCompare(va, 'es') : va.localeCompare(vb, 'es');
+    });
+
+    rows.forEach(r => tbody.appendChild(r));
+  }
+  window.MOMAR_makeSortable = makeSortable;
+  // Auto-wire al cargar el DOM y observar cambios para tablas hidratadas por JS
+  function autoWireSortable() {
+    document.querySelectorAll('table.admin-table').forEach(makeSortable);
+  }
+  document.addEventListener('DOMContentLoaded', autoWireSortable);
 })();

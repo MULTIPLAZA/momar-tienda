@@ -301,9 +301,11 @@
           const { error } = await supa.from('configuracion_tienda').upsert(payload, { onConflict: 'id' });
           if (error) throw error;
           feedback('Configuración guardada.', true);
+          window.MOMAR_toast && window.MOMAR_toast('Configuración guardada', { kind: 'ok' });
           await cargar();
         } catch (err) {
           feedback('Error: ' + (err.message || err), false);
+          window.MOMAR_toast && window.MOMAR_toast(err.message || String(err), { kind: 'err' });
         } finally {
           btn.disabled = false; btn.textContent = 'Guardar todo';
         }

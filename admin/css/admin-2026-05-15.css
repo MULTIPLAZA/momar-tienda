@@ -773,3 +773,292 @@ body:has(.admin-shell) {
   /* Tabla: ocultar columnas menos importantes en mobile */
   .admin-table .col-hide-sm { display: none; }
 }
+
+/* ============================================
+   REFINAMIENTOS 2026-05-17 — Modal, Toast, Skeleton,
+   Empty state, Accesibilidad, Tabla ordenable
+   ============================================ */
+
+/* ---- Modal compartido (a-modal) ----
+   Todas las páginas del admin pueden usar esta clase. Esc, click-fuera
+   y botón X cierran. Las pages que aún tienen su propio prefijo (c-modal,
+   b-modal, nl-modal, o-modal) reciben el comportamiento Esc+clickout
+   gracias al hook genérico en admin-shell-2026-05-15.js. */
+.a-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 15, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  animation: a-modal-bg 0.18s var(--ease);
+}
+.a-modal.is-open { display: flex; }
+.a-modal__inner {
+  background: var(--color-bg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px 28px;
+  position: relative;
+  animation: a-modal-in 0.22s var(--ease);
+}
+.a-modal__close {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-soft);
+  border-radius: 50%;
+  transition: background 0.15s, color 0.15s;
+}
+.a-modal__close:hover { background: var(--color-bg-alt); color: var(--color-text); }
+.a-modal__close svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.a-modal__head { margin-bottom: 14px; padding-right: 32px; }
+.a-modal__head h2 { margin: 0 0 4px; font-size: 18px; }
+.a-modal__head p { margin: 0; font-size: 12px; color: var(--color-text-soft); }
+.a-modal__footer {
+  display: flex; gap: 8px; justify-content: flex-end;
+  margin-top: 16px;
+  border-top: 1px solid var(--color-line);
+  padding-top: 16px;
+}
+
+/* Aplicamos transición de apertura a TODOS los modals históricos
+   (c-modal, b-modal, nl-modal, o-modal) para consistencia visual */
+.c-modal, .b-modal, .nl-modal, .o-modal {
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.c-modal.is-open, .b-modal.is-open,
+.nl-modal.is-open, .o-modal.is-open {
+  animation: a-modal-bg 0.18s var(--ease);
+}
+.c-modal__inner, .b-modal__inner,
+.nl-modal__inner, .o-modal__inner {
+  animation: a-modal-in 0.22s var(--ease);
+  position: relative;
+}
+
+@keyframes a-modal-bg {
+  from { background: rgba(15,15,15,0); }
+  to   { background: rgba(15,15,15,0.55); }
+}
+@keyframes a-modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---- Toast ---- */
+.a-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.a-toast__item {
+  background: var(--color-text);
+  color: var(--color-bg);
+  padding: 12px 18px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 24px rgba(15,15,15,0.18);
+  min-width: 240px;
+  max-width: 380px;
+  pointer-events: auto;
+  animation: a-toast-in 0.25s var(--ease);
+  border-left: 3px solid currentColor;
+}
+.a-toast__item.is-ok { background: #1F4D3A; color: #fff; border-left-color: #6FCB97; }
+.a-toast__item.is-err { background: #5B1F22; color: #fff; border-left-color: #E18689; }
+.a-toast__item.is-info { background: var(--color-text); }
+.a-toast__item.is-hiding { animation: a-toast-out 0.2s var(--ease) forwards; }
+.a-toast__item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+@keyframes a-toast-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes a-toast-out {
+  to { opacity: 0; transform: translateX(20px); }
+}
+@media (max-width: 640px) {
+  .a-toast { right: 12px; left: 12px; bottom: 12px; }
+  .a-toast__item { min-width: 0; max-width: 100%; }
+}
+
+/* ---- Skeleton loading ---- */
+.skel {
+  display: inline-block;
+  background: linear-gradient(90deg, #ECE9E2 0%, #F5F4F0 50%, #ECE9E2 100%);
+  background-size: 200% 100%;
+  animation: skel-shimmer 1.3s linear infinite;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+.skel--line { display: block; height: 12px; margin: 6px 0; }
+.skel--text-sm { width: 60%; height: 10px; }
+.skel--text-md { width: 80%; height: 12px; }
+.skel--text-lg { width: 90%; height: 14px; }
+.skel--num    { width: 60px; height: 22px; }
+.skel--img    { width: 36px; height: 36px; border-radius: 0; }
+.skel--img-lg { width: 60px; height: 60px; border-radius: 0; }
+.skel--circle { width: 36px; height: 36px; border-radius: 50%; }
+.skel--pill   { width: 64px; height: 18px; border-radius: 1px; }
+.skel--btn    { width: 88px; height: 28px; }
+@keyframes skel-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel { animation: none; }
+}
+/* Filas skeleton para tablas */
+.skel-row td { padding: 11px 12px; }
+.skel-row .skel--line { margin: 2px 0; }
+
+/* ---- Empty state unificado ---- */
+.a-empty {
+  padding: 56px 24px;
+  text-align: center;
+  color: var(--color-text);
+}
+.a-empty__icon {
+  width: 56px; height: 56px;
+  margin: 0 auto var(--space-3);
+  color: var(--color-text-soft);
+  opacity: 0.65;
+}
+.a-empty__icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.2; }
+.a-empty h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: var(--color-text);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.a-empty p {
+  color: var(--color-text-soft);
+  max-width: 460px;
+  margin: 0 auto var(--space-3);
+  line-height: 1.55;
+  font-size: 13px;
+}
+.a-empty__actions { display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+/* Compacto (dentro de admin-card pequeño) */
+.a-empty--sm { padding: 32px 16px; }
+.a-empty--sm .a-empty__icon { width: 40px; height: 40px; margin-bottom: var(--space-2); }
+.a-empty--sm h3 { font-size: 14px; }
+.a-empty--sm p { font-size: 12px; }
+
+/* ---- Accesibilidad focus ---- */
+.btn-sm:focus-visible,
+.admin-side__menu li a:focus-visible,
+.a-modal__close:focus-visible,
+.admin-bell:focus-visible,
+.admin-hamburger:focus-visible,
+.admin-table th[data-sort]:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+.admin-form__group input:focus-visible,
+.admin-form__group select:focus-visible,
+.admin-form__group textarea:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: -2px;
+  border-color: var(--color-text);
+}
+
+/* ---- Tabla ordenable ---- */
+.admin-table th[data-sort] {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 22px;
+}
+.admin-table th[data-sort]:hover { color: var(--color-text); }
+.admin-table th[data-sort]::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 5px solid currentColor;
+  opacity: 0.25;
+}
+.admin-table th[data-sort].is-sort-desc::after {
+  border-bottom: none;
+  border-top: 5px solid currentColor;
+  opacity: 0.85;
+}
+.admin-table th[data-sort].is-sort-asc::after { opacity: 0.85; }
+.admin-table th.col-num[data-sort] { padding-right: 22px; }
+
+/* ---- Botones-icono accesibles ---- */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: var(--color-text-soft);
+  border-radius: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.icon-btn:hover { background: var(--color-bg-alt); color: var(--color-text); }
+.icon-btn:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 1px;
+}
+.icon-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+.icon-btn--danger:hover { color: var(--color-sale); }
+
+/* Inline svg icon dentro de empty-block legacy */
+.empty-block svg, .empty-state svg, .nl-empty svg {
+  width: 32px; height: 32px;
+  margin: 0 auto 8px;
+  display: block;
+  color: var(--color-text-soft);
+  opacity: 0.55;
+}
+
+/* Hover de filas más sutil para no chocar con tablas grandes */
+.admin-table tbody tr { transition: background 0.1s; }
+
+/* Sidebar mobile cierre suave + close button visible */
+.admin-side__close {
+  display: none;
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 30px; height: 30px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-bg);
+  align-items: center;
+  justify-content: center;
+}
+.admin-side__close svg { width: 16px; height: 16px; }
+@media (max-width: 900px) {
+  .admin-side__close { display: flex; }
+}

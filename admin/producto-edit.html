@@ -317,7 +317,7 @@
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
         if (!productoId && !$('.js-input-sku').value.trim()) {
-          alert('Antes de subir fotos, llená al menos SKU y guardá una primera vez.');
+          window.MOMAR_toast && window.MOMAR_toast('Cargá el SKU y guardá una primera vez antes de subir fotos.', { kind: 'info' });
           return;
         }
         const overlay = $('.js-uploading');
@@ -332,7 +332,7 @@
             const orden = (fotosActuales[fotosActuales.length - 1]?.orden || 0) + 1 + i;
             const key = `${sku}/foto-${Date.now()}-${i}.${ext}`;
             const { error: upErr } = await supa.storage.from('productos').upload(key, file, { contentType: file.type, upsert: false });
-            if (upErr) { alert('Error subiendo foto: ' + upErr.message); continue; }
+            if (upErr) { window.MOMAR_toast && window.MOMAR_toast('Error subiendo foto: ' + upErr.message, { kind: 'err' }); continue; }
             const { data: pub } = supa.storage.from('productos').getPublicUrl(key);
             const esPrincipal = fotosActuales.length === 0 && i === 0;
             // Si el producto ya existe en DB, insertar fila de foto
@@ -344,7 +344,7 @@
                 es_principal: esPrincipal,
                 alt: $('.js-input-nombre').value || sku,
               }).select().single();
-              if (insErr) { alert('Error registrando foto: ' + insErr.message); continue; }
+              if (insErr) { window.MOMAR_toast && window.MOMAR_toast('Error registrando foto: ' + insErr.message, { kind: 'err' }); continue; }
               fotosActuales.push(newFoto);
             } else {
               // Producto no existe todavía: lo guardamos en memoria
@@ -423,6 +423,7 @@
           }
 
           feedback('Guardado.', true);
+          window.MOMAR_toast && window.MOMAR_toast(esNuevo ? 'Producto creado' : 'Cambios guardados', { kind: 'ok' });
 
           // Si era nuevo, redirigir a la URL con sku para que próximos cambios sean updates
           if (esNuevo) {
@@ -435,6 +436,7 @@
           $('.js-stock-titulo').textContent = payload.stock + ' unid · ' + payload.estado;
         } catch (err) {
           feedback('Error: ' + (err.message || err), false);
+          window.MOMAR_toast && window.MOMAR_toast(err.message || String(err), { kind: 'err' });
         } finally {
           btn.disabled = false; btn.textContent = 'Guardar';
         }

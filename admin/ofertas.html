@@ -66,16 +66,20 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Código</th>
-                <th>Tipo / Valor</th>
+                <th data-sort="text">Código</th>
+                <th data-sort="text">Tipo / Valor</th>
                 <th>Condición</th>
-                <th class="col-num">Usos</th>
-                <th>Vence</th>
-                <th>Estado</th>
+                <th class="col-num" data-sort="num">Usos</th>
+                <th data-sort="date">Vence</th>
+                <th data-sort="text">Estado</th>
                 <th class="col-actions"></th>
               </tr>
             </thead>
-            <tbody class="js-ofertas-tbody"><tr><td colspan="7" style="padding:32px; text-align:center; color:#7A736B;">Cargando…</td></tr></tbody>
+            <tbody class="js-ofertas-tbody">
+              <tr class="skel-row"><td><span class="skel skel--pill"></span></td><td><span class="skel skel--line skel--text-md"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--pill"></span></td><td></td></tr>
+              <tr class="skel-row"><td><span class="skel skel--pill"></span></td><td><span class="skel skel--line skel--text-md"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--pill"></span></td><td></td></tr>
+              <tr class="skel-row"><td><span class="skel skel--pill"></span></td><td><span class="skel skel--line skel--text-md"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--pill"></span></td><td></td></tr>
+            </tbody>
           </table>
         </div>
 
@@ -187,7 +191,10 @@
 
       async function cargar() {
         const { data, error } = await supa.from('ofertas').select('*').order('created_at', { ascending: false });
-        if (error) { alert('Error: ' + error.message); return; }
+        if (error) {
+          window.MOMAR_toast && window.MOMAR_toast('No pude cargar las ofertas: ' + error.message, { kind: 'err' });
+          return;
+        }
         ofertas = data || [];
         renderKPIs();
         renderTabla();
@@ -249,7 +256,21 @@
         });
 
         if (lista.length === 0) {
-          $('.js-ofertas-tbody').innerHTML = `<tr><td colspan="7" style="padding:32px; text-align:center; color:#7A736B;">${ofertas.length === 0 ? 'Aún no creaste cupones. Probá con "BIENVENIDA10" → 10% sobre cualquier compra.' : 'No hay cupones que coincidan con los filtros.'}</td></tr>`;
+          if (ofertas.length === 0) {
+            $('.js-ofertas-tbody').innerHTML = `<tr><td colspan="7"><div class="a-empty">
+              <div class="a-empty__icon">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M6 24a3 3 0 0 0 3-3v-6h46v6a3 3 0 0 0 0 6v6a3 3 0 0 0 0 6v6H9v-6a3 3 0 0 0 0-6Z"/>
+                  <path d="M30 18v4M30 30v4M30 42v4"/>
+                </svg>
+              </div>
+              <h3>Todavía no creaste cupones</h3>
+              <p>Sugerencia: <strong>BIENVENIDA10</strong> · 10% sobre cualquier compra — anda muy bien con clientas que llegan por primera vez.</p>
+              <div class="a-empty__actions"><button class="btn-sm btn-sm--primary js-new-oferta">+ Nuevo cupón</button></div>
+            </div></td></tr>`;
+          } else {
+            $('.js-ofertas-tbody').innerHTML = `<tr><td colspan="7"><div class="a-empty a-empty--sm"><h3>Sin resultados</h3><p>No hay cupones que coincidan con los filtros.</p></div></td></tr>`;
+          }
           return;
         }
 
@@ -275,7 +296,8 @@
           const id = e.target.closest('tr').dataset.id;
           const o = ofertas.find(x => x.id === id);
           const { error } = await supa.from('ofertas').update({ activo: !o.activo }).eq('id', id);
-          if (error) { alert('Error: ' + error.message); return; }
+          if (error) { window.MOMAR_toast && window.MOMAR_toast(error.message, { kind: 'err' }); return; }
+          window.MOMAR_toast && window.MOMAR_toast(o.activo ? 'Cupón pausado' : 'Cupón activado', { kind: 'ok' });
           cargar();
         }));
       }

@@ -70,21 +70,21 @@
           <div class="admin-card__head">
             <h3>Hero principal · home <span class="u-text-md u-text-soft u-fw-400">(arriba de todo)</span></h3>
           </div>
-          <div class="js-list-hero"><div class="banner-empty">Cargando…</div></div>
+          <div class="js-list-hero"><div class="banner-empty"><span class="skel skel--line" style="height:80px;width:100%;display:block;"></span></div></div>
         </div>
 
         <div class="admin-card">
           <div class="admin-card__head">
             <h3>Banner promo · home <span class="u-text-md u-text-soft u-fw-400">(después de destacados)</span></h3>
           </div>
-          <div class="js-list-promo"><div class="banner-empty">Cargando…</div></div>
+          <div class="js-list-promo"><div class="banner-empty"><span class="skel skel--line" style="height:80px;width:100%;display:block;"></span></div></div>
         </div>
 
         <div class="admin-card">
           <div class="admin-card__head">
             <h3>Otros / inactivos</h3>
           </div>
-          <div class="js-list-otros"><div class="banner-empty">Cargando…</div></div>
+          <div class="js-list-otros"><div class="banner-empty"><span class="skel skel--line" style="height:80px;width:100%;display:block;"></span></div></div>
         </div>
 
       </main>
@@ -101,7 +101,10 @@
         <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#999; font-size:13px;">Sin imagen</div>
       </div>
       <input type="file" accept="image/*" class="js-modal-file" style="display:none;">
-      <button class="btn-sm js-modal-upload">📷 Subir imagen</button>
+      <button class="btn-sm js-modal-upload" type="button">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" style="vertical-align:-2px; margin-right:4px;" aria-hidden="true"><path d="M21 19V7a2 2 0 0 0-2-2h-3l-2-2H10L8 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2Z"/><circle cx="12" cy="13" r="4"/></svg>
+            Subir imagen
+          </button>
       <div class="hint" style="margin: 6px 0 16px;">JPG o PNG · proporción 21:9 recomendada · mín. 1920×820 px · máx. 10 MB</div>
 
       <div class="admin-form">
@@ -186,7 +189,10 @@
 
       async function cargarBanners() {
         const { data, error } = await supa.from('banners').select('*').order('ubicacion').order('orden').order('created_at', { ascending: false });
-        if (error) { alert('Error cargando banners: ' + error.message); return; }
+        if (error) {
+          window.MOMAR_toast && window.MOMAR_toast('No pude cargar los banners: ' + error.message, { kind: 'err' });
+          return;
+        }
         banners = data || [];
         renderListas();
       }
@@ -246,7 +252,8 @@
           const b = banners.find(x => x.id === id);
           if (!b) return;
           const { error } = await supa.from('banners').update({ activo: !b.activo }).eq('id', id);
-          if (error) { alert('Error: ' + error.message); return; }
+          if (error) { window.MOMAR_toast && window.MOMAR_toast(error.message, { kind: 'err' }); return; }
+          window.MOMAR_toast && window.MOMAR_toast(b.activo ? 'Banner pausado' : 'Banner activado', { kind: 'ok' });
           await cargarBanners();
         }));
       }

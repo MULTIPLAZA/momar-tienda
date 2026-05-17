@@ -56,14 +56,14 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th style="width: 30px;"><input type="checkbox"></th>
+                <th style="width: 30px;"><input type="checkbox" aria-label="Seleccionar todos"></th>
                 <th></th>
-                <th>Producto</th>
-                <th class="col-hide-sm">SKU</th>
-                <th class="col-hide-sm">Categoría</th>
-                <th class="col-num">Precio</th>
-                <th class="col-num">Stock</th>
-                <th>Estado</th>
+                <th data-sort="text">Producto</th>
+                <th class="col-hide-sm" data-sort="text">SKU</th>
+                <th class="col-hide-sm" data-sort="text">Categoría</th>
+                <th class="col-num" data-sort="num">Precio</th>
+                <th class="col-num" data-sort="num">Stock</th>
+                <th data-sort="text">Estado</th>
                 <th class="col-actions">Acciones</th>
               </tr>
             </thead>
@@ -128,15 +128,15 @@
 
       function skel() {
         return Array(6).fill(0).map(() => `
-          <tr class="is-skel">
-            <td><input type="checkbox" disabled></td>
-            <td class="col-mini-img"><div style="width:48px;height:48px;background:#EEE;"></div></td>
-            <td><div style="height:14px;width:60%;background:#EEE;margin-bottom:6px;"></div><div style="height:10px;width:40%;background:#F4F4F4;"></div></td>
-            <td class="col-hide-sm"><div style="height:10px;width:50px;background:#EEE;"></div></td>
-            <td class="col-hide-sm"><div style="height:10px;width:60px;background:#EEE;"></div></td>
-            <td class="col-num"><div style="height:12px;width:70px;background:#EEE;margin-left:auto;"></div></td>
-            <td class="col-num"><div style="height:18px;width:60px;background:#EEE;margin-left:auto;"></div></td>
-            <td><div style="height:18px;width:70px;background:#EEE;"></div></td>
+          <tr class="skel-row">
+            <td><input type="checkbox" disabled aria-label="Cargando"></td>
+            <td class="col-mini-img"><span class="skel skel--img"></span></td>
+            <td><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span></td>
+            <td class="col-hide-sm"><span class="skel skel--line skel--text-sm"></span></td>
+            <td class="col-hide-sm"><span class="skel skel--line skel--text-sm"></span></td>
+            <td class="col-num"><span class="skel skel--line skel--text-sm" style="margin-left:auto;width:60px;"></span></td>
+            <td class="col-num"><span class="skel skel--pill" style="margin-left:auto;"></span></td>
+            <td><span class="skel skel--pill"></span></td>
             <td class="col-actions"></td>
           </tr>
         `).join('');
@@ -171,15 +171,34 @@
 
         const { data, error, count } = await q.limit(200);
         if (error) {
-          tbody.innerHTML = `<tr><td colspan="9" style="padding:32px;text-align:center;color:#B33;">Error: ${error.message}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="9"><div class="a-empty"><div class="a-empty__icon"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26"/><path d="M32 20v14M32 40v.5"/></svg></div><h3>No se pudieron cargar los productos</h3><p>${escapeHTML(error.message || '')}</p></div></td></tr>`;
           totalCount.textContent = '';
+          window.MOMAR_toast && window.MOMAR_toast('Error al cargar productos', { kind: 'err' });
           return;
         }
 
         totalCount.textContent = '· ' + (count ?? data.length) + ' productos';
 
         if (!data || data.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="9" style="padding:32px;text-align:center;color:#7A736B;">No hay productos que coincidan con los filtros.</td></tr>`;
+          const noFilters = !filtros.cat && !filtros.estado && !filtros.buscar;
+          tbody.innerHTML = `<tr><td colspan="9"><div class="a-empty">
+            <div class="a-empty__icon">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M52 18 32 8 12 18v28l20 10 20-10V18Z"/>
+                <path d="m12 18 20 10 20-10M32 28v28"/>
+              </svg>
+            </div>
+            <h3>${noFilters ? 'Todavía no hay productos' : 'Ningún producto coincide con los filtros'}</h3>
+            <p>${noFilters ? 'Cargá tu primer producto y empezamos a vestir el catálogo.' : 'Probá ajustar los filtros o limpiar la búsqueda.'}</p>
+            <div class="a-empty__actions">
+              ${noFilters ? '<a href="producto-edit.html" class="btn-sm btn-sm--primary">+ Producto nuevo</a>' : '<button class="btn-sm js-clear-filters">Limpiar filtros</button>'}
+            </div>
+          </div></td></tr>`;
+          document.querySelector('.js-clear-filters')?.addEventListener('click', () => {
+            filtroCat.value = ''; filtroEstado.value = ''; buscar.value = '';
+            filtros.cat = ''; filtros.estado = ''; filtros.buscar = '';
+            cargar();
+          });
           return;
         }
 
@@ -206,7 +225,9 @@
               <td>${pillEstado(p.estado, p.stock || 0)}</td>
               <td class="col-actions">
                 <a href="producto-edit.html?sku=${encodeURIComponent(p.sku)}" class="btn-sm btn-sm--ghost">Editar</a>
-                <a href="../producto.html?sku=${encodeURIComponent(p.sku)}" target="_blank" class="btn-sm btn-sm--ghost" title="Ver en la tienda">↗</a>
+                <a href="../producto.html?sku=${encodeURIComponent(p.sku)}" target="_blank" rel="noopener" class="icon-btn" aria-label="Ver en la tienda" title="Ver en la tienda">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M10 6H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></svg>
+                </a>
               </td>
             </tr>
           `;

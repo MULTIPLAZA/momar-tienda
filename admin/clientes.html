@@ -12,20 +12,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin-2026-05-15.css">
   <style>
+    /* Específicos de clientes — no duplicar lo que ya está en admin CSS */
     .avatar-circ { width: 36px; height: 36px; border-radius: 50%; background: var(--color-nude, #E8DFD3); color: var(--color-text, #0F0F0F); display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
-    .empty-state { padding: 60px 20px; text-align: center; }
-    .empty-state__icon { font-size: 40px; margin-bottom: 16px; opacity: 0.5; }
-    .empty-state h3 { margin: 0 0 8px; font-size: 18px; }
-    .empty-state p { color: var(--color-text-soft, #7A736B); max-width: 480px; margin: 0 auto 16px; line-height: 1.6; }
 
+    /* Modal: layout estructural (el comportamiento + animación viene del CSS compartido) */
     .c-modal { position: fixed; inset: 0; background: rgba(15,15,15,0.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
     .c-modal.is-open { display: flex; }
-    .c-modal__inner { background: #fff; max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; }
+    .c-modal__inner { background: var(--color-bg); max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; position: relative; }
     .c-modal h2 { margin: 0 0 16px; }
-    .c-modal__footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--color-line); padding-top: 16px; }
-    .c-fb { padding: 12px; font-size: 13px; margin-bottom: 12px; display: none; }
-    .c-fb.is-ok { background: #EFE; color: #285; border-left: 3px solid #285; display: block; }
-    .c-fb.is-err { background: #FEE; color: #B33; border-left: 3px solid #B33; display: block; }
+    .c-modal__footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--color-line); padding-top: 16px; flex-wrap: wrap; }
+    .c-fb { padding: 12px; font-size: 13px; margin-bottom: 12px; display: none; border-left: 3px solid transparent; }
+    .c-fb.is-ok { background: #EFF6EF; color: #1F4D3A; border-left-color: #2A8A5C; display: block; }
+    .c-fb.is-err { background: #F7E9E9; color: #5B1F22; border-left-color: #B33; display: block; }
     .c-detalle__head { display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--color-line); margin-bottom: 16px; }
     .c-detalle__head .avatar-circ { width: 64px; height: 64px; font-size: 22px; }
     .c-detalle__head h3 { margin: 0; font-size: 22px; }
@@ -81,16 +79,20 @@
             <thead>
               <tr>
                 <th></th>
-                <th>Clienta</th>
-                <th class="col-hide-sm">Contacto</th>
-                <th class="col-hide-sm">Ciudad</th>
-                <th class="col-num">Pedidos</th>
-                <th class="col-num">Total gastado</th>
-                <th class="col-hide-sm">Última compra</th>
+                <th data-sort="text">Clienta</th>
+                <th class="col-hide-sm" data-sort="text">Contacto</th>
+                <th class="col-hide-sm" data-sort="text">Ciudad</th>
+                <th class="col-num" data-sort="num">Pedidos</th>
+                <th class="col-num" data-sort="num">Total gastado</th>
+                <th class="col-hide-sm" data-sort="date">Última compra</th>
                 <th class="col-actions"></th>
               </tr>
             </thead>
-            <tbody class="js-clientes-tbody"><tr><td colspan="8" style="padding:32px; text-align:center; color:#7A736B;">Cargando…</td></tr></tbody>
+            <tbody class="js-clientes-tbody">
+              <tr class="skel-row"><td><span class="skel skel--circle"></span></td><td><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td></td></tr>
+              <tr class="skel-row"><td><span class="skel skel--circle"></span></td><td><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td></td></tr>
+              <tr class="skel-row"><td><span class="skel skel--circle"></span></td><td><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td><span class="skel skel--line skel--text-sm"></span></td><td></td></tr>
+            </tbody>
           </table>
         </div>
 
@@ -188,7 +190,10 @@
 
       async function cargar() {
         const { data, error } = await supa.from('clientes').select('*').order('created_at', { ascending: false });
-        if (error) { alert('Error: ' + error.message); return; }
+        if (error) {
+          window.MOMAR_toast && window.MOMAR_toast('No pude traer las clientas: ' + error.message, { kind: 'err' });
+          return;
+        }
         clientes = data || [];
         renderKPIs();
         renderTabla();
@@ -219,11 +224,23 @@
       function emptyState() {
         return `
           <tr><td colspan="8">
-            <div class="empty-state">
-              <div class="empty-state__icon">👥</div>
+            <div class="a-empty">
+              <div class="a-empty__icon">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <circle cx="24" cy="22" r="8"/>
+                  <path d="M8 54c0-9 7-15 16-15s16 6 16 15"/>
+                  <circle cx="46" cy="24" r="6"/>
+                  <path d="M58 50c0-7-5-12-12-12"/>
+                </svg>
+              </div>
               <h3>Todavía no tenés clientas cargadas</h3>
-              <p>Cuando tengas el checkout real conectado (Bancard), las clientas se cargan automáticamente al hacer una compra. Mientras tanto podés cargar manualmente las clientas que conocés con el botón <strong>+ Cliente manual</strong>.</p>
-              <button class="btn-sm btn-sm--primary js-empty-add">+ Cargar clienta manual</button>
+              <p>
+                Cuando se conecte el checkout real (Bancard), las clientas se cargan automáticamente al hacer una compra.
+                Mientras tanto podés cargar las que conocés con <strong>+ Cliente manual</strong>.
+              </p>
+              <div class="a-empty__actions">
+                <button class="btn-sm btn-sm--primary js-empty-add">+ Cargar clienta manual</button>
+              </div>
             </div>
           </td></tr>
         `;
@@ -434,6 +451,7 @@
             throw res.error;
           }
           feedback('Guardado.', true);
+          window.MOMAR_toast && window.MOMAR_toast(editingId ? 'Clienta actualizada' : 'Clienta cargada', { kind: 'ok' });
           setTimeout(() => { cerrarModal(); cargar(); }, 400);
         } catch (err) {
           feedback('Error: ' + (err.message || err), false);
@@ -451,13 +469,17 @@
           if (!confirm('¿Eliminar esta clienta?')) return;
         }
         const { error } = await supa.from('clientes').delete().eq('id', editingId);
-        if (error) { feedback('No se pudo eliminar: ' + error.message, false); return; }
+        if (error) { feedback('No se pudo eliminar: ' + error.message, false); window.MOMAR_toast && window.MOMAR_toast(error.message, { kind: 'err' }); return; }
+        window.MOMAR_toast && window.MOMAR_toast('Clienta eliminada', { kind: 'ok' });
         cerrarModal();
         cargar();
       });
 
       $('.js-export-csv').addEventListener('click', () => {
-        if (clientes.length === 0) { alert('No hay clientas para exportar.'); return; }
+        if (clientes.length === 0) {
+          window.MOMAR_toast && window.MOMAR_toast('No hay clientas para exportar.', { kind: 'info' });
+          return;
+        }
         const cols = ['nombre', 'apellido', 'email', 'whatsapp', 'ci_ruc', 'dir_calle', 'dir_ciudad', 'es_vip', 'pedidos_count', 'total_gastado', 'created_at'];
         const csv = [
           cols.join(','),

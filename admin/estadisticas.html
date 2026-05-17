@@ -97,13 +97,13 @@
           <!-- Distribución por categoría -->
           <div class="admin-card">
             <h3 class="u-mb-3">Productos por categoría</h3>
-            <div class="js-chart-categorias"><div class="empty-block">Cargando…</div></div>
+            <div class="js-chart-categorias"><div class="empty-block"><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span><span class="skel skel--line skel--text-md"></span></div></div>
           </div>
 
           <!-- Distribución de precios -->
           <div class="admin-card">
             <h3 class="u-mb-3">Distribución de precios</h3>
-            <div class="js-chart-precios"><div class="empty-block">Cargando…</div></div>
+            <div class="js-chart-precios"><div class="empty-block"><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span><span class="skel skel--line skel--text-md"></span></div></div>
           </div>
         </div>
 
@@ -111,13 +111,13 @@
           <!-- Carga mensual -->
           <div class="admin-card">
             <h3 class="u-mb-3">Productos cargados por mes <span class="u-text-soft u-fw-400" style="font-size:12px;">— últimos 6 meses</span></h3>
-            <div class="js-chart-carga"><div class="empty-block">Cargando…</div></div>
+            <div class="js-chart-carga"><div class="empty-block"><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span><span class="skel skel--line skel--text-md"></span></div></div>
           </div>
 
           <!-- Productos sin foto / sin descripción -->
           <div class="admin-card">
             <h3 class="u-mb-3">Salud del catálogo</h3>
-            <div class="js-salud"><div class="empty-block">Cargando…</div></div>
+            <div class="js-salud"><div class="empty-block"><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span><span class="skel skel--line skel--text-md"></span></div></div>
           </div>
         </div>
 
@@ -128,13 +128,13 @@
           <!-- Banners más clickeados -->
           <div class="admin-card">
             <h3 class="u-mb-3">Banners más clickeados</h3>
-            <div class="js-top-banners"><div class="empty-block">Cargando…</div></div>
+            <div class="js-top-banners"><div class="empty-block"><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span><span class="skel skel--line skel--text-md"></span></div></div>
           </div>
 
           <!-- Top cupones -->
           <div class="admin-card">
             <h3 class="u-mb-3">Cupones por uso</h3>
-            <div class="js-top-cupones"><div class="empty-block">Cargando…</div></div>
+            <div class="js-top-cupones"><div class="empty-block"><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span><span class="skel skel--line skel--text-md"></span></div></div>
           </div>
         </div>
 
@@ -142,7 +142,7 @@
         <h2 style="margin: 32px 0 12px; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-soft);">Ventas</h2>
 
         <div class="admin-card">
-          <div class="js-ventas"><div class="empty-block">Cargando…</div></div>
+          <div class="js-ventas"><div class="empty-block"><span class="skel skel--line skel--text-md"></span><span class="skel skel--line skel--text-sm"></span><span class="skel skel--line skel--text-md"></span></div></div>
         </div>
 
       </main>
@@ -300,15 +300,17 @@
       // ===== Banners más clickeados =====
       const { data: banners } = await supa.from('banners').select('titulo, imagen_url, clicks_count, ubicacion, activo').order('clicks_count', { ascending: false });
       if (!banners || banners.length === 0) {
-        $('.js-top-banners').innerHTML = '<div class="empty-block"><div class="empty-block__icon">🖼️</div>Sin banners creados todavía. <br><a href="banners.html" class="u-link">Crear el primero →</a></div>';
+        $('.js-top-banners').innerHTML = '<div class="a-empty a-empty--sm"><div class="a-empty__icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="8" y="18" width="48" height="28" rx="2"/><circle cx="22" cy="30" r="3"/><path d="m12 42 14-12 12 10 12-8 4 4"/></svg></div><h3>Sin banners creados</h3><p>Activá un banner para que clientes lleguen a tus ofertas.</p><div class="a-empty__actions"><a href="banners.html" class="btn-sm">Crear el primero</a></div></div>';
       } else {
         const conClicks = banners.filter(b => (b.clicks_count || 0) > 0);
         if (conClicks.length === 0) {
           $('.js-top-banners').innerHTML = `
-            <div class="empty-block" style="padding-bottom: 24px;">
-              <div class="empty-block__icon">📊</div>
-              Aún no hay clicks registrados.<br>
-              <small>${banners.length} banner${banners.length === 1 ? '' : 's'} cargado${banners.length === 1 ? '' : 's'} pero el contador está en cero.</small>
+            <div class="a-empty a-empty--sm">
+              <div class="a-empty__icon">
+                <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 56V24M22 56V14M36 56V32M50 56V20M8 8h48"/></svg>
+              </div>
+              <h3>Aún no hay clicks</h3>
+              <p>${banners.length} banner${banners.length === 1 ? '' : 's'} cargado${banners.length === 1 ? '' : 's'}, pero el contador todavía está en cero.</p>
             </div>
           `;
         } else {
@@ -328,11 +330,11 @@
       // ===== Top cupones =====
       const { data: ofertas } = await supa.from('ofertas').select('codigo, tipo, valor, usos_count, usos_max, activo, vence').order('usos_count', { ascending: false });
       if (!ofertas || ofertas.length === 0) {
-        $('.js-top-cupones').innerHTML = '<div class="empty-block"><div class="empty-block__icon">🎟️</div>Sin cupones creados todavía. <br><a href="ofertas.html" class="u-link">Crear el primero →</a></div>';
+        $('.js-top-cupones').innerHTML = '<div class="a-empty a-empty--sm"><div class="a-empty__icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 24a3 3 0 0 0 3-3v-6h46v6a3 3 0 0 0 0 6v6a3 3 0 0 0 0 6v6H9v-6a3 3 0 0 0 0-6Z"/><path d="M30 18v4M30 30v4M30 42v4"/></svg></div><h3>Sin cupones creados</h3><p>Armá un código de descuento para campañas o regalos a clientas top.</p><div class="a-empty__actions"><a href="ofertas.html" class="btn-sm">Crear el primero</a></div></div>';
       } else {
         const conUsos = ofertas.filter(o => (o.usos_count || 0) > 0);
         const lista = conUsos.length > 0 ? conUsos : ofertas;
-        const subtitulo = conUsos.length > 0 ? '' : '<div class="empty-block" style="padding: 12px 0 16px;">Aún no se canjeó ningún cupón. Esta lista se llena cuando haya checkout real.</div>';
+        const subtitulo = conUsos.length > 0 ? '' : '<p class="u-text-soft u-text-md" style="padding: 4px 0 12px; margin:0;">Aún no se canjeó ningún cupón. Esta lista se llena cuando haya checkout real.</p>';
         $('.js-top-cupones').innerHTML = subtitulo + lista.slice(0, 5).map(o => {
           const valor = o.tipo === 'porcentaje' ? o.valor + '%' :
                         o.tipo === 'monto'      ? fmt(o.valor) :
@@ -340,7 +342,7 @@
           const venc = o.vence && new Date(o.vence) < new Date() ? '<span class="pill pill--gray" style="margin-left:6px;">vencido</span>' : '';
           return `
             <div class="list-row">
-              <div style="font-size:18px;">🎟️</div>
+              <div class="u-text-soft" style="display:flex;align-items:center;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 10a1.5 1.5 0 0 0 1.5-1.5V7h17v1.5a1.5 1.5 0 0 0 0 3v3a1.5 1.5 0 0 0 0 3V17h-17v-1.5a1.5 1.5 0 0 0 0-3v-3a1.5 1.5 0 0 0 0-3z"/><path d="M11 9v2M11 13v2"/></svg></div>
               <div>
                 <div class="list-row__name" style="font-family:monospace; letter-spacing:1px;">${esc(o.codigo)}${venc}</div>
                 <div class="list-row__sub">${valor} · ${o.activo ? 'activo' : 'pausado'}</div>
@@ -355,11 +357,16 @@
       const { count: cantPedidos } = await supa.from('pedidos').select('id', { count: 'exact', head: true });
       if ((cantPedidos || 0) === 0) {
         $('.js-ventas').innerHTML = `
-          <div class="empty-block">
-            <div class="empty-block__icon">📦</div>
-            <h3 style="margin: 0 0 8px;">Sin pedidos registrados todavía</h3>
-            <p style="max-width: 480px; margin: 0 auto;">
-              Cuando tengas el checkout real conectado (Bancard), acá vas a ver:<br>
+          <div class="a-empty">
+            <div class="a-empty__icon">
+              <svg viewBox="0 0 64 64" aria-hidden="true">
+                <path d="M10 18h44l-3 32a4 4 0 0 1-4 3.5H17a4 4 0 0 1-4-3.5L10 18Z"/>
+                <path d="M22 18v-4a10 10 0 0 1 20 0v4"/>
+              </svg>
+            </div>
+            <h3>Sin pedidos registrados todavía</h3>
+            <p>
+              Cuando se conecte el checkout real (Bancard), acá vas a ver:
               ventas por día y por mes, productos más vendidos, ticket promedio, ciudades top y métodos de pago.
             </p>
           </div>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -15,28 +15,55 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260517j">
+  <link rel="stylesheet" href="css/style.css?v=20260517k">
 </head>
-<body>
+<body class="checkout-page">
   <div class="js-shell-top"></div>
 
   <div class="container">
-    <div class="breadcrumb" style="display:flex; gap:24px;">
-      <span style="opacity:0.4;">1 · Carrito</span>
-      <span style="font-weight:500; color: var(--color-text);">2 · Datos y pago</span>
-      <span style="opacity:0.4;">3 · Confirmación</span>
+
+    <!-- Breadcrumb wizard -->
+    <nav class="checkout-breadcrumb" aria-label="Pasos de compra">
+      <span class="checkout-breadcrumb__step is-done">
+        <span class="checkout-breadcrumb__num">1</span>
+        <span class="checkout-breadcrumb__label">Carrito</span>
+      </span>
+      <span class="checkout-breadcrumb__sep" aria-hidden="true"></span>
+      <span class="checkout-breadcrumb__step is-current">
+        <span class="checkout-breadcrumb__num">2</span>
+        <span class="checkout-breadcrumb__label">Datos y pago</span>
+      </span>
+      <span class="checkout-breadcrumb__sep" aria-hidden="true"></span>
+      <span class="checkout-breadcrumb__step">
+        <span class="checkout-breadcrumb__num">3</span>
+        <span class="checkout-breadcrumb__label">Confirmación</span>
+      </span>
+    </nav>
+
+    <div class="section__head section__head--checkout">
+      <h1 class="checkout-title">Finalizar compra</h1>
+      <p class="checkout-sub u-text-soft">Faltan pocos pasos para que tu pieza llegue a casa.</p>
     </div>
 
-    <div class="section__head" style="text-align: left; margin-bottom: var(--space-4);">
-      <h1 style="font-style: italic;">Finalizar compra</h1>
+    <!-- Empty state (oculto por default; mostrado por JS cuando el carrito está vacío) -->
+    <div class="checkout-empty js-checkout-empty" style="display:none;">
+      <svg class="checkout-empty__icon" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+        <path d="M14 18h36l-3 28a4 4 0 0 1-4 3.5H21a4 4 0 0 1-4-3.5L14 18Z"/>
+        <path d="M24 18v-3a8 8 0 0 1 16 0v3"/>
+        <circle cx="24" cy="30" r="1.2" fill="currentColor"/>
+        <circle cx="40" cy="30" r="1.2" fill="currentColor"/>
+      </svg>
+      <h2>Tu carrito está vacío</h2>
+      <p>Pasá por el catálogo, elegí lo que te enamore y te esperamos acá para finalizar.</p>
+      <a href="catalogo.html" class="btn btn--primary">Ver catálogo</a>
     </div>
 
     <datalist id="ciudades-py">
       <option value="Asunción"><option value="Fernando de la Mora"><option value="Lambaré"><option value="Luque"><option value="San Lorenzo"><option value="Mariano Roque Alonso"><option value="Capiatá"><option value="Ñemby"><option value="Itauguá"><option value="Areguá"><option value="San Bernardino"><option value="Ypacaraí"><option value="Caacupé"><option value="Caaguazú"><option value="Ciudad del Este"><option value="Encarnación"><option value="Concepción"><option value="Coronel Oviedo"><option value="Pedro Juan Caballero"><option value="Villarrica"><option value="Pilar">
     </datalist>
 
-    <div class="checkout-layout">
-      <div>
+    <div class="checkout-layout js-checkout-layout">
+      <div class="checkout-form-col">
 
         <!-- PASO 1: Contacto -->
         <div class="form-step is-active" data-step="1">
@@ -46,20 +73,23 @@
             <button class="form-step__edit" type="button">Editar</button>
           </div>
           <div class="form-step__body">
+            <p class="form-step__intro u-text-soft">Te avisamos por acá cuando salga tu pedido.</p>
             <div class="form-row">
               <div class="form-field">
-                <label>Email</label>
-                <input type="email" id="f-email" placeholder="tu@email.com" autocomplete="email">
+                <label for="f-email">Email</label>
+                <input type="email" id="f-email" placeholder="tu@email.com" autocomplete="email" required>
+                <span class="form-field__ok" aria-hidden="true">✓</span>
                 <span class="form-field__err">Ingresá un email válido</span>
               </div>
               <div class="form-field">
-                <label>WhatsApp</label>
-                <input type="tel" id="f-whatsapp" placeholder="+595 9XX XXX XXX" autocomplete="tel" inputmode="tel">
+                <label for="f-whatsapp">WhatsApp</label>
+                <input type="tel" id="f-whatsapp" placeholder="+595 9XX XXX XXX" autocomplete="tel" inputmode="tel" required>
+                <span class="form-field__ok" aria-hidden="true">✓</span>
                 <span class="form-field__err">Ingresá un número con código de país</span>
               </div>
             </div>
             <div class="form-step__continue">
-              <button class="btn-sm btn-sm--primary" onclick="continuarPaso(1)" style="padding: 12px 28px;">Continuar →</button>
+              <button class="btn btn--primary checkout-cta" type="button" onclick="continuarPaso(1)">Continuar</button>
             </div>
           </div>
         </div>
@@ -72,39 +102,57 @@
             <button class="form-step__edit" type="button">Editar</button>
           </div>
           <div class="form-step__body">
+            <p class="form-step__intro u-text-soft">¿A dónde te lo enviamos?</p>
             <div class="form-row">
-              <div class="form-field"><label>Nombre</label><input type="text" id="f-nombre" placeholder="María" autocomplete="given-name"></div>
-              <div class="form-field"><label>Apellido</label><input type="text" id="f-apellido" placeholder="Benítez" autocomplete="family-name"></div>
+              <div class="form-field">
+                <label for="f-nombre">Nombre</label>
+                <input type="text" id="f-nombre" placeholder="María" autocomplete="given-name" required>
+                <span class="form-field__ok" aria-hidden="true">✓</span>
+                <span class="form-field__err">Ingresá tu nombre</span>
+              </div>
+              <div class="form-field">
+                <label for="f-apellido">Apellido</label>
+                <input type="text" id="f-apellido" placeholder="Benítez" autocomplete="family-name" required>
+                <span class="form-field__ok" aria-hidden="true">✓</span>
+                <span class="form-field__err">Ingresá tu apellido</span>
+              </div>
             </div>
             <div class="form-row">
               <div class="form-field">
-                <label>CI / RUC</label>
-                <input type="text" id="f-ci" inputmode="numeric" placeholder="1.234.567">
+                <label for="f-ci">CI / RUC</label>
+                <input type="text" id="f-ci" inputmode="numeric" placeholder="1.234.567" required>
+                <span class="form-field__ok" aria-hidden="true">✓</span>
                 <span class="form-field__err">Mínimo 6 dígitos</span>
               </div>
               <div class="form-field">
-                <label>Documento</label>
+                <label for="f-doc">Documento a emitir</label>
                 <select id="f-doc"><option>Factura</option><option>Boleta</option></select>
               </div>
             </div>
             <div class="form-field" style="margin-bottom: var(--space-3);">
-              <label>Dirección</label>
-              <input type="text" id="f-direccion" placeholder="Calle, número y entre calles" autocomplete="street-address">
+              <label for="f-direccion">Dirección</label>
+              <input type="text" id="f-direccion" placeholder="Calle, número y entre calles" autocomplete="street-address" required>
+              <span class="form-field__ok" aria-hidden="true">✓</span>
+              <span class="form-field__err">Ingresá una dirección</span>
             </div>
             <div class="form-row">
               <div class="form-field">
-                <label>Ciudad</label>
-                <input type="text" id="f-ciudad" list="ciudades-py" placeholder="Asunción" autocomplete="address-level2">
+                <label for="f-ciudad">Ciudad</label>
+                <input type="text" id="f-ciudad" list="ciudades-py" placeholder="Asunción" autocomplete="address-level2" required>
+                <span class="form-field__ok" aria-hidden="true">✓</span>
+                <span class="form-field__err">Indicá la ciudad</span>
               </div>
-              <div class="form-field"><label>Referencia / piso</label><input type="text" id="f-ref" placeholder="Edificio Marsala, 3B"></div>
+              <div class="form-field">
+                <label for="f-ref">Referencia / piso</label>
+                <input type="text" id="f-ref" placeholder="Edificio Marsala, 3B">
+              </div>
             </div>
-            <div style="margin-top: var(--space-3); padding: var(--space-3); background: var(--color-bg-alt); font-size: 13px;">
-              <label style="display:flex; gap:8px; align-items:center; cursor:pointer;">
-                <input type="checkbox" id="f-regalo"> Es un regalo (enviamos sin precio en el packaging)
-              </label>
-            </div>
+            <label class="checkout-check">
+              <input type="checkbox" id="f-regalo">
+              <span>Es un regalo <em class="u-text-soft">(lo enviamos sin el precio en el packaging)</em></span>
+            </label>
             <div class="form-step__continue">
-              <button class="btn-sm btn-sm--primary" onclick="continuarPaso(2)" style="padding: 12px 28px;">Continuar →</button>
+              <button class="btn btn--primary checkout-cta" type="button" onclick="continuarPaso(2)">Continuar</button>
             </div>
           </div>
         </div>
@@ -117,26 +165,33 @@
             <button class="form-step__edit" type="button">Editar</button>
           </div>
           <div class="form-step__body">
+            <p class="form-step__intro u-text-soft">Elegí cómo te lo hacemos llegar.</p>
             <label class="metodo-pago is-selected" data-envio="asuncion">
               <input type="radio" name="envio" checked style="position:absolute; opacity:0;">
-              <div class="metodo-pago__icon">→</div>
-              <div style="flex:1;"><div class="metodo-pago__nombre">Envío Asunción · 24 hs</div><div class="metodo-pago__desc">Entrega al día hábil siguiente, con seguimiento por WhatsApp.</div></div>
+              <div class="metodo-pago__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+              </div>
+              <div style="flex:1;"><div class="metodo-pago__nombre">Envío en Asunción · 24 hs</div><div class="metodo-pago__desc">Entrega al día hábil siguiente, con seguimiento por WhatsApp.</div></div>
               <strong style="color: var(--color-success);">GRATIS</strong>
             </label>
             <label class="metodo-pago" data-envio="interior">
               <input type="radio" name="envio" style="position:absolute; opacity:0;">
-              <div class="metodo-pago__icon">→</div>
-              <div style="flex:1;"><div class="metodo-pago__nombre">Envío interior · 3-5 días</div><div class="metodo-pago__desc">Encomienda terrestre asegurada hasta el domicilio.</div></div>
+              <div class="metodo-pago__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div style="flex:1;"><div class="metodo-pago__nombre">Envío al interior · 3-5 días</div><div class="metodo-pago__desc">Encomienda terrestre asegurada hasta el domicilio.</div></div>
               <strong>Gs 80.000</strong>
             </label>
             <label class="metodo-pago" data-envio="coordinar">
               <input type="radio" name="envio" style="position:absolute; opacity:0;">
-              <div class="metodo-pago__icon">→</div>
+              <div class="metodo-pago__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9 9 0 0 1-3.7-.8L3 21l1.3-4.6A8.5 8.5 0 1 1 21 11.5Z"/></svg>
+              </div>
               <div style="flex:1;"><div class="metodo-pago__nombre">Coordinar entrega por WhatsApp</div><div class="metodo-pago__desc">Te contactamos para acordar día, horario y forma de entrega.</div></div>
               <strong style="color: var(--color-success);">GRATIS</strong>
             </label>
             <div class="form-step__continue">
-              <button class="btn-sm btn-sm--primary" onclick="continuarPaso(3)" style="padding: 12px 28px;">Continuar →</button>
+              <button class="btn btn--primary checkout-cta" type="button" onclick="continuarPaso(3)">Continuar</button>
             </div>
           </div>
         </div>
@@ -149,44 +204,95 @@
             <button class="form-step__edit" type="button">Editar</button>
           </div>
           <div class="form-step__body">
+            <p class="form-step__intro u-text-soft">Pago seguro, procesado por Bancard.</p>
             <label class="metodo-pago is-selected" data-pago="bancard">
               <input type="radio" name="pago" checked style="position:absolute; opacity:0;">
-              <div class="metodo-pago__icon">BCD</div>
+              <div class="metodo-pago__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="6" width="20" height="13" rx="1.5"/><path d="M2 10h20M6 15h4"/></svg>
+              </div>
               <div style="flex:1;"><div class="metodo-pago__nombre">Tarjeta de crédito o débito</div><div class="metodo-pago__desc">Bancard · Hasta 12 cuotas · 3 sin interés</div></div>
             </label>
             <label class="metodo-pago" data-pago="wally">
               <input type="radio" name="pago" style="position:absolute; opacity:0;">
-              <div class="metodo-pago__icon">WLY</div>
-              <div style="flex:1;"><div class="metodo-pago__nombre">Wally / Personal Pay</div><div class="metodo-pago__desc">Pago instantáneo desde la billetera</div></div>
+              <div class="metodo-pago__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 8h16v10H4zM4 12h16M9 16h2"/></svg>
+              </div>
+              <div style="flex:1;"><div class="metodo-pago__nombre">Wally / Personal Pay</div><div class="metodo-pago__desc">Pago instantáneo desde la billetera digital.</div></div>
             </label>
             <label class="metodo-pago" data-pago="transferencia">
               <input type="radio" name="pago" style="position:absolute; opacity:0;">
-              <div class="metodo-pago__icon">BNK</div>
-              <div style="flex:1;"><div class="metodo-pago__nombre">Transferencia bancaria</div><div class="metodo-pago__desc">Itaú · Continental · Atlas — confirmación manual</div></div>
+              <div class="metodo-pago__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 10h18M5 6h14l1 4H4l1-4ZM6 10v9M18 10v9M3 19h18"/></svg>
+              </div>
+              <div style="flex:1;"><div class="metodo-pago__nombre">Transferencia bancaria</div><div class="metodo-pago__desc">Itaú · Continental · Atlas — confirmación manual.</div></div>
             </label>
-            <button class="btn btn--primary btn--block" style="margin-top: var(--space-4);" onclick="confirmarPedido()">
-              Confirmar pedido — <span class="js-cart-page-total">Gs 0</span>
+
+            <!-- Notas opcionales -->
+            <div class="form-field checkout-notas">
+              <label for="f-notas">Notas para la entrega (opcional)</label>
+              <textarea id="f-notas" rows="2" placeholder="Ej: dejar en portería, llamar antes de subir, dedicatoria…"></textarea>
+            </div>
+
+            <!-- Indicador de seguridad -->
+            <div class="checkout-trust">
+              <div class="checkout-trust__row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+                <span><strong>Pago procesado por Bancard.</strong> Tus datos de tarjeta viajan cifrados y nunca tocan nuestros servidores.</span>
+              </div>
+              <div class="checkout-trust__row">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                <span>30 días para cambios o devoluciones, sin preguntas.</span>
+              </div>
+            </div>
+
+            <button class="btn btn--primary btn--block checkout-submit" type="button" onclick="confirmarPedido()">
+              <span>Confirmar pedido</span>
+              <span class="checkout-submit__total js-cart-page-total">Gs 0</span>
             </button>
-            <p style="text-align:center; font-size:10px; letter-spacing:2px; color: var(--color-text-soft); margin-top: var(--space-3);">
-              AL CONFIRMAR ACEPTÁS TÉRMINOS Y POLÍTICA DE PRIVACIDAD
-            </p>
+            <p class="checkout-legal">AL CONFIRMAR ACEPTÁS TÉRMINOS Y POLÍTICA DE PRIVACIDAD</p>
           </div>
         </div>
       </div>
 
-      <aside class="resumen">
-        <h3>Tu pedido</h3>
-        <div class="js-cart-page-items" style="font-size: 13px;"></div>
-        <div style="border-top: 1px solid var(--color-line); margin-top: var(--space-3); padding-top: var(--space-3);">
+      <aside class="resumen checkout-resumen">
+        <div class="resumen__head">
+          <h3>Tu pedido</h3>
+          <a href="carrito.html" class="resumen__edit-link">Editar</a>
+        </div>
+        <div class="js-cart-page-items resumen__items"></div>
+        <div class="resumen__totals">
           <div class="resumen__linea"><span>Subtotal</span><span class="js-cart-page-subtotal">Gs 0</span></div>
           <div class="resumen__linea"><span>Descuento</span><span class="js-cart-page-discount" style="color: var(--color-success);">Gs 0</span></div>
           <div class="resumen__linea"><span>Envío</span><span style="color: var(--color-success);">GRATIS</span></div>
           <div class="resumen__linea resumen__total"><span>Total</span><span class="js-cart-page-total">Gs 0</span></div>
         </div>
-        <p style="font-size: 12px; color: var(--color-text-soft); margin-top: var(--space-3);">
+        <p class="resumen__cuota js-cart-page-cuota-line">
           <strong>3 cuotas sin interés</strong> de <span class="js-cart-page-cuota">Gs 0</span>
         </p>
+        <div class="resumen__beneficios">
+          <div class="resumen__beneficio">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+            <span>Envío gratis en Asunción</span>
+          </div>
+          <div class="resumen__beneficio">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="m7 12 3 3 7-7"/></svg>
+            <span>Packaging de regalo incluido</span>
+          </div>
+          <div class="resumen__beneficio">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/></svg>
+            <span>Cambios y devoluciones 30 días</span>
+          </div>
+        </div>
       </aside>
+    </div>
+
+    <!-- Sticky bottom mobile -->
+    <div class="checkout-mobile-bar" aria-hidden="true">
+      <div class="checkout-mobile-bar__total">
+        <span class="checkout-mobile-bar__label">Total</span>
+        <strong class="js-cart-page-total">Gs 0</strong>
+      </div>
+      <button class="btn btn--primary checkout-mobile-bar__cta" type="button" onclick="document.querySelector('.form-step.is-active .checkout-cta, .form-step.is-active .checkout-submit')?.click()">Continuar</button>
     </div>
   </div>
 
@@ -201,6 +307,22 @@
   <script src="js/render.js?v=20260517j"></script>
   <script>
     // ============= CHECKOUT WIZARD =============
+
+    // Empty cart guard: si el carrito está vacío, mostrar empty state y ocultar formulario
+    function syncCheckoutEmpty() {
+      const empty = document.querySelector('.js-checkout-empty');
+      const layout = document.querySelector('.js-checkout-layout');
+      const bar = document.querySelector('.checkout-mobile-bar');
+      const isEmpty = !window.cart || window.cart.items.length === 0;
+      if (empty) empty.style.display = isEmpty ? 'block' : 'none';
+      if (layout) layout.style.display = isEmpty ? 'none' : '';
+      if (bar) bar.style.display = isEmpty ? 'none' : '';
+    }
+    // Esperar a que cart.js renderice; cart.js renderiza dentro de DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', () => {
+      // pequeño delay para que cart.js inyecte los items y los totales primero
+      setTimeout(syncCheckoutEmpty, 100);
+    });
 
     // Auto-formato CI con puntos (#11)
     const ci = document.getElementById('f-ci');
@@ -232,14 +354,24 @@
       const el = document.getElementById(id);
       if (!el) return;
       el.addEventListener('blur', () => {
-        if (el.value && !validators[id](el.value)) {
-          el.classList.add('is-error');
-        } else {
+        if (!el.value) {
           el.classList.remove('is-error');
+          el.classList.remove('is-ok');
+          return;
+        }
+        if (validators[id](el.value)) {
+          el.classList.remove('is-error');
+          el.classList.add('is-ok');
+        } else {
+          el.classList.add('is-error');
+          el.classList.remove('is-ok');
         }
       });
       el.addEventListener('input', () => {
-        if (el.classList.contains('is-error') && validators[id](el.value)) el.classList.remove('is-error');
+        if (el.classList.contains('is-error') && validators[id](el.value)) {
+          el.classList.remove('is-error');
+          el.classList.add('is-ok');
+        }
       });
     });
 
@@ -250,21 +382,25 @@
 
       // Validar campos del paso
       let valid = true;
+      let firstInvalid = null;
       if (n === 1) {
         ['f-email', 'f-whatsapp'].forEach(id => {
           const el = document.getElementById(id);
           if (!el) return;
-          if (!validators[id](el.value)) { el.classList.add('is-error'); valid = false; }
+          if (!validators[id](el.value)) { el.classList.add('is-error'); valid = false; if (!firstInvalid) firstInvalid = el; }
         });
       }
       if (n === 2) {
         ['f-nombre', 'f-apellido', 'f-ci', 'f-direccion', 'f-ciudad'].forEach(id => {
           const el = document.getElementById(id);
           if (!el) return;
-          if (!validators[id](el.value)) { el.classList.add('is-error'); valid = false; }
+          if (!validators[id](el.value)) { el.classList.add('is-error'); valid = false; if (!firstInvalid) firstInvalid = el; }
         });
       }
-      if (!valid) return;
+      if (!valid) {
+        if (firstInvalid) firstInvalid.focus();
+        return;
+      }
 
       // Calcular resumen del paso
       let summary = '';
@@ -284,12 +420,20 @@
       }
     }
 
-    // Editar un paso completado vuelve a abrirlo
+    // Editar un paso completado vuelve a abrirlo (y colapsa el siguiente)
     document.querySelectorAll('.form-step__edit').forEach(btn => {
       btn.addEventListener('click', () => {
         const step = btn.closest('.form-step');
         step.classList.remove('is-complete');
         step.classList.add('is-active');
+        // Colapsar todos los pasos siguientes
+        let cur = step.nextElementSibling;
+        while (cur && cur.classList.contains('form-step')) {
+          cur.classList.remove('is-active', 'is-complete');
+          cur.classList.add('is-collapsed');
+          const sum = cur.querySelector('.form-step__summary'); if (sum) sum.textContent = '';
+          cur = cur.nextElementSibling;
+        }
       });
     });
 
