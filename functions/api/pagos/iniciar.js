@@ -180,7 +180,7 @@ export async function onRequest(context) {
       pedido_id: pedidoId,
       pedido_numero: pedidoNumero,
       mensaje: 'El pedido se registró correctamente pero la pasarela Bancard aún no está activada. La dueña te va a contactar por WhatsApp para coordinar el pago por transferencia.',
-      whatsapp_url: `https://wa.me/595981412648?text=${encodeURIComponent(`Hola, hice el pedido #${pedidoNumero} en momar.com.py. Espero por las instrucciones de pago. Total: Gs ${total.toLocaleString('es-PY')}.`)}`,
+      whatsapp_url: `https://wa.me/595981353110?text=${encodeURIComponent(`Hola, hice el pedido #${pedidoNumero} en momar.com.py. Espero por las instrucciones de pago. Total: Gs ${total.toLocaleString('es-PY')}.`)}`,
     }, 200, corsHeaders);
   }
 
