@@ -1,20 +1,13 @@
-# Cloudflare Pages — short URLs friendly para categorías
-/anillos    /catalogo.html?cat=anillos    301
-/collares   /catalogo.html?cat=collares   301
-/aros       /catalogo.html?cat=aros       301
-/pulseras   /catalogo.html?cat=pulseras   301
-/hogar      /catalogo.html?cat=hogar      301
+# Cloudflare Pages — solo redirects que cambian la URL.
+# Las URLs limpias (sin .html) ya las resuelve Cloudflare por default.
+
+# Short URLs friendly para categorías
+/anillos     /catalogo.html?cat=anillos    301
+/collares    /catalogo.html?cat=collares   301
+/aros        /catalogo.html?cat=aros       301
+/pulseras    /catalogo.html?cat=pulseras   301
+/hogar       /catalogo.html?cat=hogar      301
 /catalogo/:cat    /catalogo.html?cat=:cat   301
 
-# URLs limpias (sin .html) → archivo real
-/checkout            /checkout.html            301
-/carrito             /carrito.html             301
-/catalogo            /catalogo.html            301
-/producto            /producto.html            301
-/info                /info.html                301
-/nuestra-historia    /nuestra-historia.html    301
-/login               /admin/login.html         301
-/admin               /admin/index.html         301
-
-# Fallback: cualquier otra ruta no existente → 404.html (con código 404 real)
-/*    /404.html    404
+# Login del admin: alias corto
+/login       /admin/login.html             301
