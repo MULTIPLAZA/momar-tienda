@@ -154,7 +154,7 @@
       <div class="search-modal" role="dialog" aria-label="Buscar">
         <div class="search-modal__head">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:20px; height:20px; margin-right:12px; flex-shrink:0;"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input type="search" class="search-modal__input js-search-input" placeholder="Buscá por nombre o referencia…" autocomplete="off" autofocus>
+          <input type="search" class="search-modal__input js-search-input" placeholder="Buscá por nombre o referencia…" autocomplete="off">
           <button class="search-modal__close js-search-close" aria-label="Cerrar">Cerrar ×</button>
         </div>
         <div class="search-modal__results js-search-results">
