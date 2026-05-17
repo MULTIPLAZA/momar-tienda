@@ -447,10 +447,167 @@
       });
     });
 
-    function confirmarPedido() {
-      // Validar paso 4
+    // Costos de envío según opción elegida
+    const ENVIO_COSTOS = {
+      asuncion: { tipo: 'asuncion', gs: 0 },
+      interior: { tipo: 'interior', gs: 80000 },
+      coordinar: { tipo: 'asuncion', gs: 0 },
+    };
+
+    async function confirmarPedido() {
+      const submitBtn = document.querySelector('.checkout-submit');
       if (!document.querySelector('.metodo-pago.is-selected[data-pago]')) return;
-      alert('¡Pedido confirmado! En producción acá va a SIFEN.');
+
+      // Verificar que carrito tenga items
+      if (!window.cart || window.cart.items.length === 0) {
+        showError('Tu carrito está vacío. Volvé al catálogo y elegí algo.');
+        return;
+      }
+
+      // Recolectar items con datos enriquecidos (necesita window.MOMAR_findProduct)
+      const enriched = window.cart.enriched();
+      if (enriched.length === 0) {
+        showError('No pudimos leer los items del carrito. Recargá la página e intentá de nuevo.');
+        return;
+      }
+
+      const items = enriched.map(p => ({
+        producto_id: p.id || null,
+        sku: p.sku,
+        nombre: p.nombre,
+        precio_unit: p.precio,
+        cantidad: p.qty,
+      }));
+
+      // Opción de envío seleccionada
+      const envioOpt = document.querySelector('.metodo-pago.is-selected[data-envio]')?.dataset.envio || 'asuncion';
+      const envioConfig = ENVIO_COSTOS[envioOpt] || ENVIO_COSTOS.asuncion;
+
+      const subtotal = window.cart.subtotal();
+      const total = subtotal + envioConfig.gs;
+
+      const payload = {
+        items,
+        cliente: {
+          nombre: document.getElementById('f-nombre').value.trim(),
+          apellido: document.getElementById('f-apellido').value.trim(),
+          email: document.getElementById('f-email').value.trim(),
+          whatsapp: document.getElementById('f-whatsapp').value.trim(),
+          ci_ruc: document.getElementById('f-ci').value.trim() || null,
+        },
+        envio: {
+          tipo: envioConfig.tipo,
+          calle: document.getElementById('f-direccion').value.trim(),
+          ciudad: document.getElementById('f-ciudad').value.trim(),
+          referencia: document.getElementById('f-ref').value.trim() || null,
+        },
+        envio_gs: envioConfig.gs,
+        descuento_gs: 0,
+        total,
+        cupon: null,
+        notas: document.getElementById('f-notas').value.trim() || null,
+        es_regalo: document.getElementById('f-regalo').checked,
+      };
+
+      submitBtn.disabled = true;
+      const labelOriginal = submitBtn.querySelector('span').textContent;
+      submitBtn.querySelector('span').textContent = 'Procesando…';
+
+      try {
+        const r = await fetch('/api/pagos/iniciar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await r.json();
+
+        if (!r.ok) {
+          throw new Error(data.error || 'No se pudo procesar el pedido');
+        }
+
+        // Caso "sin-bancard": el endpoint ya creó el pedido en DB y nos da WhatsApp
+        if (data.mode === 'sin-bancard') {
+          window.cart.empty();
+          showSuccessSinBancard(data);
+          return;
+        }
+
+        // Caso Bancard real (TODO: cuando estén las credenciales)
+        // Acá redirigiríamos al modal de Bancard con data.bancard_process_id
+        showError('La pasarela de pago está en configuración. Te derivamos por WhatsApp.');
+
+      } catch (err) {
+        showError('No pudimos procesar el pedido: ' + (err.message || err) + '. Intentá de nuevo o escribinos por WhatsApp.');
+        submitBtn.disabled = false;
+        submitBtn.querySelector('span').textContent = labelOriginal;
+      }
+    }
+
+    function showError(msg) {
+      // Banner de error simple arriba del paso 4
+      let el = document.querySelector('.js-checkout-error');
+      if (!el) {
+        el = document.createElement('div');
+        el.className = 'js-checkout-error';
+        el.style.cssText = 'background:#FEE; color:#B33; padding:14px 18px; border-left:3px solid #B33; margin-bottom:16px; font-size:14px;';
+        document.querySelector('.form-step[data-step="4"] .form-step__body').prepend(el);
+      }
+      el.textContent = msg;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function showSuccessSinBancard(data) {
+      const layout = document.querySelector('.js-checkout-layout');
+      const bar = document.querySelector('.checkout-mobile-bar');
+      const breadcrumb = document.querySelector('.checkout-breadcrumb');
+      const head = document.querySelector('.section__head--checkout');
+      if (layout) layout.style.display = 'none';
+      if (bar) bar.style.display = 'none';
+      if (head) head.style.display = 'none';
+
+      // Marcar paso 3 como done en el breadcrumb
+      if (breadcrumb) {
+        const steps = breadcrumb.querySelectorAll('.checkout-breadcrumb__step');
+        steps.forEach((s, i) => {
+          s.classList.remove('is-current');
+          if (i <= 2) s.classList.add('is-done');
+        });
+      }
+
+      // Pantalla de éxito
+      const success = document.createElement('div');
+      success.className = 'checkout-success';
+      success.style.cssText = 'max-width: 640px; margin: 60px auto; text-align: center; padding: 0 var(--space-3);';
+      success.innerHTML = `
+        <div style="width: 72px; height: 72px; border-radius: 50%; background: #EFF6EF; color: #2A8A5C; display:flex; align-items:center; justify-content:center; margin: 0 auto 24px;">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="m8 12 3 3 5-6"/>
+          </svg>
+        </div>
+        <h1 style="font-family: var(--font-display); font-style: italic; font-size: clamp(32px, 5vw, 48px); margin: 0 0 12px;">¡Recibimos tu pedido!</h1>
+        <p style="color: var(--color-text-soft); font-size: 17px; line-height: 1.6; max-width: 480px; margin: 0 auto 8px;">
+          Tu pedido <strong style="color: var(--color-text); font-family: monospace;">#${data.pedido_numero}</strong> quedó registrado. Te escribimos por WhatsApp en las próximas horas para coordinar el pago y la entrega.
+        </p>
+        <p style="color: var(--color-text-soft); font-size: 14px; max-width: 480px; margin: 16px auto 32px;">
+          ${data.mensaje || 'Mientras tanto podés contactarnos directamente desde el botón de abajo si tenés alguna duda.'}
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <a href="${data.whatsapp_url}" target="_blank" rel="noopener" class="btn btn--primary">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" style="margin-right: 8px; vertical-align: middle;"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 0 1 8.413 3.488 11.821 11.821 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/></svg>
+            Escribir por WhatsApp
+          </a>
+          <a href="catalogo.html" class="btn btn--outline">Seguir comprando</a>
+        </div>
+        <div style="margin-top: 48px; padding: 20px; background: var(--color-bg-alt); font-size: 13px; color: var(--color-text-soft); border-radius: 0;">
+          <strong style="color: var(--color-text); display:block; margin-bottom:6px;">¿Qué sigue?</strong>
+          Recibirás un mensaje nuestro por WhatsApp con las opciones de pago disponibles
+          (transferencia bancaria a Atlas con descuento adicional, Bancard cuando esté activo).
+          En cuanto confirmemos el pago, te avisamos del envío.
+        </div>
+      `;
+      document.querySelector('.container').appendChild(success);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   </script>
 </body>
