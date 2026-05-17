@@ -11,6 +11,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin-2026-05-15.css">
+  <style>
+    .avatar-circ { width: 36px; height: 36px; border-radius: 50%; background: var(--color-nude, #E8DFD3); color: var(--color-text, #0F0F0F); display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
+    .empty-state { padding: 60px 20px; text-align: center; }
+    .empty-state__icon { font-size: 40px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state h3 { margin: 0 0 8px; font-size: 18px; }
+    .empty-state p { color: var(--color-text-soft, #7A736B); max-width: 480px; margin: 0 auto 16px; line-height: 1.6; }
+
+    .c-modal { position: fixed; inset: 0; background: rgba(15,15,15,0.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+    .c-modal.is-open { display: flex; }
+    .c-modal__inner { background: #fff; max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; }
+    .c-modal h2 { margin: 0 0 16px; }
+    .c-modal__footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--color-line); padding-top: 16px; }
+    .c-fb { padding: 12px; font-size: 13px; margin-bottom: 12px; display: none; }
+    .c-fb.is-ok { background: #EFE; color: #285; border-left: 3px solid #285; display: block; }
+    .c-fb.is-err { background: #FEE; color: #B33; border-left: 3px solid #B33; display: block; }
+    .c-detalle__head { display: grid; grid-template-columns: 64px 1fr auto; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--color-line); margin-bottom: 16px; }
+    .c-detalle__head .avatar-circ { width: 64px; height: 64px; font-size: 22px; }
+    .c-detalle__head h3 { margin: 0; font-size: 22px; }
+    .c-detalle__head p { margin: 4px 0 0; color: var(--color-text-soft); font-size: 13px; }
+  </style>
 </head>
 <body>
   <div class="admin-shell">
@@ -20,61 +40,57 @@
       <main class="admin-main">
 
         <div class="admin-main__head">
-          <h1>Clientes <span class="js-total-count u-text-soft u-fw-400 u-text-lg">cargando…</span></h1>
+          <div>
+            <h1>Clientas <span class="js-total-count u-text-soft u-fw-400 u-text-lg">cargando…</span></h1>
+            <p class="u-text-md u-text-soft u-mt-1 u-mb-0">Personas que compraron o que cargaste manualmente. El historial de compras se actualiza automáticamente cuando llegan pedidos.</p>
+          </div>
           <div class="actions">
-            <button class="btn-sm">Exportar CSV</button>
-            <button class="btn-sm">📧 Newsletter</button>
-            <button class="btn-sm btn-sm--primary">+ Cliente nuevo</button>
+            <button class="btn-sm js-export-csv">Exportar CSV</button>
+            <button class="btn-sm btn-sm--primary js-new-cliente">+ Cliente manual</button>
           </div>
         </div>
 
         <div class="kpis">
-          <div class="kpi">
-            <div class="kpi__label">Clientas totales</div>
-            <div class="kpi__value js-k-total">—</div>
-            <div class="kpi__delta">↑ 5 este mes</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi__label">Compradoras VIP</div>
-            <div class="kpi__value js-k-vip">—</div>
-            <div class="kpi__delta">+3M Gs en compras</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi__label">Ticket promedio</div>
-            <div class="kpi__value"><span class="kpi__currency">Gs</span>2.45M</div>
-            <div class="kpi__delta">↑ 12% vs mes pasado</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi__label">Tasa de recompra</div>
-            <div class="kpi__value">38%</div>
-            <div class="kpi__delta">↑ Excelente para premium</div>
-          </div>
+          <div class="kpi"><div class="kpi__label">Total clientas</div><div class="kpi__value js-k-total">—</div><div class="kpi__delta js-k-total-sub">—</div></div>
+          <div class="kpi"><div class="kpi__label">VIP</div><div class="kpi__value js-k-vip">—</div><div class="kpi__delta">marcadas como VIP</div></div>
+          <div class="kpi"><div class="kpi__label">Compradoras (con pedido pagado)</div><div class="kpi__value js-k-compradoras">—</div><div class="kpi__delta js-k-compradoras-sub">de todas las cargadas</div></div>
+          <div class="kpi"><div class="kpi__label">Ticket promedio</div><div class="kpi__value js-k-ticket">—</div><div class="kpi__delta">de compradoras</div></div>
         </div>
 
         <div class="admin-toolbar">
           <div class="admin-toolbar__filters">
-            <select><option>Segmento: Todas</option><option>VIP</option><option>Recurrentes</option><option>Nuevas (últimos 30d)</option><option>Sin compras (90+ días)</option></select>
-            <select><option>Período: Todo el tiempo</option><option>Este mes</option><option>Últimos 3 meses</option><option>Último año</option></select>
-            <input type="text" placeholder="Buscar nombre, email…" class="u-w-full" style="max-width: 240px;">
+            <select class="js-filtro-segmento">
+              <option value="">Segmento: Todas</option>
+              <option value="vip">VIP</option>
+              <option value="compradoras">Con compras</option>
+              <option value="sin-compras">Sin compras (manual)</option>
+            </select>
+            <input type="search" class="js-buscar" placeholder="Buscar por nombre, email o WhatsApp…" style="max-width: 320px;">
           </div>
-          <select><option>Ordenar: Total gastado</option><option>Cantidad de pedidos</option><option>Última compra</option><option>Nombre A-Z</option></select>
+          <select class="js-orden">
+            <option value="created_at.desc">Más nuevas primero</option>
+            <option value="ultima_compra.desc">Última compra</option>
+            <option value="total_gastado.desc">Mayor gasto</option>
+            <option value="pedidos_count.desc">Más pedidos</option>
+            <option value="nombre.asc">Nombre A-Z</option>
+          </select>
         </div>
 
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
               <tr>
-                <th style="width: 30px;"><input type="checkbox"></th>
+                <th></th>
                 <th>Clienta</th>
                 <th class="col-hide-sm">Contacto</th>
+                <th class="col-hide-sm">Ciudad</th>
                 <th class="col-num">Pedidos</th>
                 <th class="col-num">Total gastado</th>
                 <th class="col-hide-sm">Última compra</th>
-                <th>Segmento</th>
-                <th class="col-actions">Acciones</th>
+                <th class="col-actions"></th>
               </tr>
             </thead>
-            <tbody class="js-clientes-tbody"></tbody>
+            <tbody class="js-clientes-tbody"><tr><td colspan="8" style="padding:32px; text-align:center; color:#7A736B;">Cargando…</td></tr></tbody>
           </table>
         </div>
 
@@ -82,46 +98,384 @@
     </div>
   </div>
 
-  <script src="../js/products.js?v=1"></script>
+  <!-- Modal crear/editar -->
+  <div class="c-modal js-modal">
+    <div class="c-modal__inner">
+      <h2 class="js-modal-title">Nueva clienta</h2>
+      <div class="c-fb js-modal-fb"></div>
+
+      <div class="js-detalle-head" style="display:none;"></div>
+
+      <div class="admin-form">
+        <div class="admin-form__row">
+          <div class="admin-form__group">
+            <label>Nombre *</label>
+            <input type="text" class="js-modal-nombre" required>
+          </div>
+          <div class="admin-form__group">
+            <label>Apellido</label>
+            <input type="text" class="js-modal-apellido">
+          </div>
+        </div>
+
+        <div class="admin-form__row">
+          <div class="admin-form__group">
+            <label>Email *</label>
+            <input type="email" class="js-modal-email" required>
+          </div>
+          <div class="admin-form__group">
+            <label>WhatsApp</label>
+            <input type="text" class="js-modal-whatsapp" placeholder="+595 981 412648">
+          </div>
+        </div>
+
+        <div class="admin-form__group">
+          <label>CI / RUC</label>
+          <input type="text" class="js-modal-ci">
+        </div>
+
+        <div class="admin-form__group">
+          <label>Dirección</label>
+          <input type="text" class="js-modal-dir-calle" placeholder="Calle, número, entre calles">
+        </div>
+        <div class="admin-form__row">
+          <div class="admin-form__group">
+            <label>Ciudad</label>
+            <input type="text" class="js-modal-dir-ciudad">
+          </div>
+          <div class="admin-form__group">
+            <label>Referencia / depto</label>
+            <input type="text" class="js-modal-dir-ref">
+          </div>
+        </div>
+
+        <div class="admin-form__group">
+          <label><input type="checkbox" class="js-modal-vip" style="width:auto; margin-right:6px;">Marcar como VIP</label>
+          <div class="hint">Las VIP aparecen primero en filtros y reciben trato preferencial.</div>
+        </div>
+
+        <div class="admin-form__group">
+          <label>Notas internas (solo vos las ves)</label>
+          <textarea class="js-modal-notas" rows="2"></textarea>
+        </div>
+      </div>
+
+      <div class="js-historial" style="margin-top: 24px;"></div>
+
+      <div class="c-modal__footer">
+        <button class="btn-sm js-modal-cancel">Cancelar</button>
+        <button class="btn-sm btn-sm--danger js-modal-delete" style="display:none;">Eliminar</button>
+        <button class="btn-sm btn-sm--primary js-modal-save">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data-2026-05-15.js"></script>
   <script src="js/admin-shell-2026-05-15.js"></script>
   <script>
     MOMAR_renderAdminShell('clientes.html', 'Clientes');
-    const fmt = window.MOMAR_fmtGs;
-    const cs = window.MOMAR_CLIENTES;
-    document.querySelector('.js-total-count').textContent = `· ${cs.length} registradas`;
-    document.querySelector('.js-k-total').textContent = cs.length;
-    document.querySelector('.js-k-vip').textContent = cs.filter(c => c.vip).length;
 
-    document.querySelector('.js-clientes-tbody').innerHTML = cs.map(c => {
-      const inicial = c.nombre.split(' ').map(n => n[0]).slice(0, 2).join('');
-      const segPill = c.vip
-        ? '<span class="pill pill--dark">VIP</span>'
-        : c.pedidos >= 3 ? '<span class="pill pill--purple">Recurrente</span>'
-        : '<span class="pill pill--gray">Ocasional</span>';
-      return `
-        <tr>
-          <td><input type="checkbox"></td>
-          <td>
-            <div class="u-flex u-items-center u-gap-2">
-              <div class="u-flex u-items-center u-justify-center u-font-display u-italic u-text-md" style="width:32px; height:32px; background: var(--color-bg-alt); border-radius:50%;">${inicial}</div>
-              <strong>${c.nombre}</strong>
+    (async function() {
+      await window.MOMAR_AUTH_READY;
+      const supa = window.MOMAR_supabase;
+      const $ = sel => document.querySelector(sel);
+      const fmt = window.MOMAR_fmtGs;
+
+      let clientes = [];
+      let editingId = null;
+
+      async function cargar() {
+        const { data, error } = await supa.from('clientes').select('*').order('created_at', { ascending: false });
+        if (error) { alert('Error: ' + error.message); return; }
+        clientes = data || [];
+        renderKPIs();
+        renderTabla();
+      }
+
+      function renderKPIs() {
+        const total = clientes.length;
+        const vip = clientes.filter(c => c.es_vip).length;
+        const compradoras = clientes.filter(c => (c.pedidos_count || 0) > 0);
+        const totalCompradoras = compradoras.length;
+        const sumaGasto = compradoras.reduce((s, c) => s + Number(c.total_gastado || 0), 0);
+        const sumaPedidos = compradoras.reduce((s, c) => s + (c.pedidos_count || 0), 0);
+        const ticket = sumaPedidos > 0 ? Math.round(sumaGasto / sumaPedidos) : 0;
+
+        $('.js-k-total').textContent = total;
+        $('.js-k-total-sub').textContent = total === 0 ? 'aún sin clientas cargadas' : 'en la base';
+        $('.js-k-vip').textContent = vip;
+        $('.js-k-compradoras').textContent = totalCompradoras;
+        $('.js-k-compradoras-sub').textContent = total > 0 ? Math.round(totalCompradoras / total * 100) + '%' : '—';
+        $('.js-k-ticket').textContent = ticket > 0 ? fmt(ticket) : '—';
+        $('.js-total-count').textContent = '(' + total + ')';
+      }
+
+      function avatar(c) {
+        const ini = ((c.nombre || '?')[0] + (c.apellido ? c.apellido[0] : '')).toUpperCase();
+        return `<span class="avatar-circ">${ini}</span>`;
+      }
+      function emptyState() {
+        return `
+          <tr><td colspan="8">
+            <div class="empty-state">
+              <div class="empty-state__icon">👥</div>
+              <h3>Todavía no tenés clientas cargadas</h3>
+              <p>Cuando tengas el checkout real conectado (Bancard), las clientas se cargan automáticamente al hacer una compra. Mientras tanto podés cargar manualmente las clientas que conocés con el botón <strong>+ Cliente manual</strong>.</p>
+              <button class="btn-sm btn-sm--primary js-empty-add">+ Cargar clienta manual</button>
             </div>
-          </td>
-          <td class="col-hide-sm u-text-base">${c.email}<br>${c.whatsapp}</td>
-          <td class="col-num"><strong>${c.pedidos}</strong></td>
-          <td class="col-num"><strong>${fmt(c.total)}</strong></td>
-          <td class="col-hide-sm">${c.ultima}</td>
-          <td>${segPill}</td>
-          <td class="col-actions">
-            <a class="btn-sm btn-sm--ghost" target="_blank" href="https://wa.me/${c.whatsapp.replace(/\D/g, '')}">💬</a>
-            <a href="#" class="btn-sm btn-sm--ghost">Ver →</a>
-          </td>
-        </tr>
-      `;
-    }).join('');
+          </td></tr>
+        `;
+      }
+
+      function renderTabla() {
+        const filtro = $('.js-filtro-segmento').value;
+        const buscar = $('.js-buscar').value.trim().toLowerCase();
+        const orden = $('.js-orden').value;
+
+        let lista = clientes.filter(c => {
+          if (filtro === 'vip')           return c.es_vip;
+          if (filtro === 'compradoras')   return (c.pedidos_count || 0) > 0;
+          if (filtro === 'sin-compras')   return (c.pedidos_count || 0) === 0;
+          return true;
+        }).filter(c => {
+          if (!buscar) return true;
+          const blob = ((c.nombre || '') + ' ' + (c.apellido || '') + ' ' + (c.email || '') + ' ' + (c.whatsapp || '')).toLowerCase();
+          return blob.includes(buscar);
+        });
+
+        const [col, dir] = orden.split('.');
+        lista.sort((a, b) => {
+          let va = a[col], vb = b[col];
+          if (va == null) va = dir === 'asc' ? Infinity : -Infinity;
+          if (vb == null) vb = dir === 'asc' ? Infinity : -Infinity;
+          if (col === 'nombre') return dir === 'asc' ? (va || '').localeCompare(vb || '') : (vb || '').localeCompare(va || '');
+          return dir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+        });
+
+        if (lista.length === 0) {
+          if (clientes.length === 0) {
+            $('.js-clientes-tbody').innerHTML = emptyState();
+            const emptyBtn = document.querySelector('.js-empty-add');
+            if (emptyBtn) emptyBtn.addEventListener('click', abrirNueva);
+          } else {
+            $('.js-clientes-tbody').innerHTML = `<tr><td colspan="8" style="padding:32px; text-align:center; color:#7A736B;">No hay clientas que coincidan con los filtros.</td></tr>`;
+          }
+          return;
+        }
+
+        $('.js-clientes-tbody').innerHTML = lista.map(c => {
+          const ultima = c.ultima_compra
+            ? new Date(c.ultima_compra).toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' })
+            : '<span class="u-text-soft">—</span>';
+          return `
+            <tr data-id="${c.id}">
+              <td>${avatar(c)}</td>
+              <td>
+                <strong>${escapeHTML(c.nombre || '')} ${escapeHTML(c.apellido || '')}</strong>
+                ${c.es_vip ? '<span class="pill pill--purple" style="margin-left:6px;">VIP</span>' : ''}
+                <div class="u-text-sm u-text-soft u-mt-1">${escapeHTML(c.email)}</div>
+              </td>
+              <td class="col-hide-sm">
+                ${c.whatsapp ? `<a href="https://wa.me/${c.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener">${escapeHTML(c.whatsapp)}</a>` : '<span class="u-text-soft">—</span>'}
+              </td>
+              <td class="col-hide-sm">${escapeHTML(c.dir_ciudad || '—')}</td>
+              <td class="col-num">${c.pedidos_count || 0}</td>
+              <td class="col-num"><strong>${(c.total_gastado || 0) > 0 ? fmt(c.total_gastado) : '<span class="u-text-soft">—</span>'}</strong></td>
+              <td class="col-hide-sm">${ultima}</td>
+              <td class="col-actions">
+                <button class="btn-sm btn-sm--ghost js-edit">Ver / editar</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        document.querySelectorAll('.js-edit').forEach(b => b.addEventListener('click', e => {
+          abrirEditar(e.target.closest('tr').dataset.id);
+        }));
+      }
+
+      function abrirNueva() {
+        editingId = null;
+        $('.js-modal-title').textContent = 'Nueva clienta manual';
+        $('.js-modal-delete').style.display = 'none';
+        $('.js-detalle-head').style.display = 'none';
+        $('.js-historial').innerHTML = '';
+        resetForm();
+        $('.js-modal').classList.add('is-open');
+        setTimeout(() => $('.js-modal-nombre').focus(), 100);
+      }
+
+      async function abrirEditar(id) {
+        const c = clientes.find(x => x.id === id);
+        if (!c) return;
+        editingId = id;
+        $('.js-modal-title').textContent = 'Editar clienta';
+        $('.js-modal-delete').style.display = '';
+
+        const ini = ((c.nombre || '?')[0] + (c.apellido ? c.apellido[0] : '')).toUpperCase();
+        const reg = new Date(c.created_at).toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' });
+        $('.js-detalle-head').style.display = '';
+        $('.js-detalle-head').innerHTML = `
+          <div class="c-detalle__head">
+            <span class="avatar-circ">${ini}</span>
+            <div>
+              <h3>${escapeHTML(c.nombre || '')} ${escapeHTML(c.apellido || '')}</h3>
+              <p>Registrada el ${reg} · ${c.pedidos_count || 0} pedidos · Total ${fmt(c.total_gastado || 0)}</p>
+            </div>
+            <div style="text-align: right;">
+              ${c.whatsapp ? `<a href="https://wa.me/${c.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" class="btn-sm">WhatsApp ↗</a>` : ''}
+              ${c.email ? `<a href="mailto:${c.email}" class="btn-sm" style="margin-left:6px;">Email ↗</a>` : ''}
+            </div>
+          </div>
+        `;
+
+        $('.js-modal-nombre').value = c.nombre || '';
+        $('.js-modal-apellido').value = c.apellido || '';
+        $('.js-modal-email').value = c.email || '';
+        $('.js-modal-whatsapp').value = c.whatsapp || '';
+        $('.js-modal-ci').value = c.ci_ruc || '';
+        $('.js-modal-dir-calle').value = c.dir_calle || '';
+        $('.js-modal-dir-ciudad').value = c.dir_ciudad || '';
+        $('.js-modal-dir-ref').value = c.dir_referencia || '';
+        $('.js-modal-vip').checked = !!c.es_vip;
+        $('.js-modal-notas').value = c.notas_internas || '';
+
+        // Cargar historial de pedidos
+        const histEl = $('.js-historial');
+        histEl.innerHTML = '<div class="u-text-soft" style="padding: 8px; font-size: 12px;">Cargando historial…</div>';
+        try {
+          const { data: pedidos } = await supa
+            .from('pedidos')
+            .select('id, numero, estado_pago, total_gs, created_at')
+            .eq('cliente_id', id)
+            .order('created_at', { ascending: false })
+            .limit(20);
+          if (pedidos && pedidos.length > 0) {
+            histEl.innerHTML = `
+              <h4 style="margin-bottom: 8px;">Historial de pedidos (${pedidos.length})</h4>
+              <table class="admin-table">
+                <thead><tr><th>Pedido</th><th>Fecha</th><th>Estado</th><th class="col-num">Total</th></tr></thead>
+                <tbody>${pedidos.map(p => `
+                  <tr>
+                    <td><strong>#${p.numero}</strong></td>
+                    <td>${new Date(p.created_at).toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    <td>${escapeHTML(p.estado_pago || '')}</td>
+                    <td class="col-num">${fmt(p.total_gs)}</td>
+                  </tr>
+                `).join('')}</tbody>
+              </table>
+            `;
+          } else {
+            histEl.innerHTML = '<div class="u-text-soft" style="padding: 8px; font-size: 12px;">Sin pedidos registrados todavía.</div>';
+          }
+        } catch (e) {
+          histEl.innerHTML = '';
+        }
+
+        $('.js-modal').classList.add('is-open');
+      }
+
+      function cerrarModal() {
+        $('.js-modal').classList.remove('is-open');
+        $('.js-modal-fb').className = 'c-fb';
+        editingId = null;
+      }
+      function resetForm() {
+        ['nombre', 'apellido', 'email', 'whatsapp', 'ci', 'dir-calle', 'dir-ciudad', 'dir-ref', 'notas'].forEach(f => {
+          const el = $('.js-modal-' + f);
+          if (el) el.value = '';
+        });
+        $('.js-modal-vip').checked = false;
+      }
+      function feedback(msg, ok) {
+        const el = $('.js-modal-fb');
+        el.textContent = msg;
+        el.className = 'c-fb ' + (ok ? 'is-ok' : 'is-err');
+      }
+
+      $('.js-new-cliente').addEventListener('click', abrirNueva);
+      $('.js-modal-cancel').addEventListener('click', cerrarModal);
+      $('.js-filtro-segmento').addEventListener('change', renderTabla);
+      $('.js-buscar').addEventListener('input', renderTabla);
+      $('.js-orden').addEventListener('change', renderTabla);
+
+      $('.js-modal-save').addEventListener('click', async () => {
+        const nombre = $('.js-modal-nombre').value.trim();
+        const email = $('.js-modal-email').value.trim();
+        if (!nombre) { feedback('El nombre es obligatorio.', false); return; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { feedback('Email inválido.', false); return; }
+
+        const payload = {
+          nombre,
+          apellido: $('.js-modal-apellido').value.trim() || null,
+          email,
+          whatsapp: $('.js-modal-whatsapp').value.trim() || null,
+          ci_ruc: $('.js-modal-ci').value.trim() || null,
+          dir_calle: $('.js-modal-dir-calle').value.trim() || null,
+          dir_ciudad: $('.js-modal-dir-ciudad').value.trim() || null,
+          dir_referencia: $('.js-modal-dir-ref').value.trim() || null,
+          es_vip: $('.js-modal-vip').checked,
+          notas_internas: $('.js-modal-notas').value.trim() || null,
+        };
+
+        const btn = $('.js-modal-save');
+        btn.disabled = true; btn.textContent = 'Guardando…';
+        try {
+          let res;
+          if (editingId) {
+            res = await supa.from('clientes').update(payload).eq('id', editingId);
+          } else {
+            res = await supa.from('clientes').insert(payload);
+          }
+          if (res.error) {
+            if (res.error.code === '23505') throw new Error('Ya existe una clienta con ese email.');
+            throw res.error;
+          }
+          feedback('Guardado.', true);
+          setTimeout(() => { cerrarModal(); cargar(); }, 400);
+        } catch (err) {
+          feedback('Error: ' + (err.message || err), false);
+        } finally {
+          btn.disabled = false; btn.textContent = 'Guardar';
+        }
+      });
+
+      $('.js-modal-delete').addEventListener('click', async () => {
+        if (!editingId) return;
+        const c = clientes.find(x => x.id === editingId);
+        if (c && (c.pedidos_count || 0) > 0) {
+          if (!confirm(`Esta clienta tiene ${c.pedidos_count} pedido(s) asociado(s). Si la eliminás, los pedidos quedan sin cliente vinculado. ¿Continuar?`)) return;
+        } else {
+          if (!confirm('¿Eliminar esta clienta?')) return;
+        }
+        const { error } = await supa.from('clientes').delete().eq('id', editingId);
+        if (error) { feedback('No se pudo eliminar: ' + error.message, false); return; }
+        cerrarModal();
+        cargar();
+      });
+
+      $('.js-export-csv').addEventListener('click', () => {
+        if (clientes.length === 0) { alert('No hay clientas para exportar.'); return; }
+        const cols = ['nombre', 'apellido', 'email', 'whatsapp', 'ci_ruc', 'dir_calle', 'dir_ciudad', 'es_vip', 'pedidos_count', 'total_gastado', 'created_at'];
+        const csv = [
+          cols.join(','),
+          ...clientes.map(c => cols.map(k => `"${String(c[k] == null ? '' : c[k]).replace(/"/g, '""')}"`).join(','))
+        ].join('\n');
+        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+        const u = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = u;
+        a.download = 'momar-clientes-' + new Date().toISOString().slice(0, 10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(u);
+      });
+
+      function escapeHTML(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+      cargar();
+    })();
   </script>
   <script src="js/pwa.js"></script>
 </body>
