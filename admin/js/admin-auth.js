@@ -13,6 +13,14 @@
   const SUPABASE_URL  = 'https://tfpnfkigfvpvuhnxwpij.supabase.co';
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmcG5ma2lnZnZwdnVobnh3cGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NTI3MTEsImV4cCI6MjA5NDQyODcxMX0.gIlRtTF9qPrGACI-xmxjzeWUydU-3U2UVMAl-Nwtvgg';
 
+  // Detección robusta de la página de login. Cloudflare Pages redirige
+  // /admin/login.html → /admin/login (308), entonces el pathname puede ser
+  // cualquiera de los dos. Cubrimos ambos casos.
+  function isLoginPage() {
+    const p = location.pathname;
+    return /\/login(?:\.html)?$/.test(p);
+  }
+
   if (typeof window.supabase === 'undefined' || !window.supabase.createClient) {
     console.error('[MOMAR-AUTH] supabase-js no cargado');
     return;
@@ -34,7 +42,7 @@
     const session = data && data.session;
     if (!session) {
       // No hay sesión: redirigir a login (a menos que ya estemos ahí)
-      if (!/login\.html/.test(location.pathname)) {
+      if (!isLoginPage()) {
         sessionStorage.setItem('momar-admin-after-login', location.pathname);
         location.replace('login.html');
       }
@@ -66,7 +74,7 @@
   // Listener: si la sesión expira, refresh automático del SDK.
   // Si vuelve null (logout/expirado), redirigimos a login.
   client.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT' && !/login\.html/.test(location.pathname)) {
+    if (event === 'SIGNED_OUT' && !isLoginPage()) {
       location.replace('login.html');
     }
   });
