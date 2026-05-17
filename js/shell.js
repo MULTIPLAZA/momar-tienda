@@ -274,7 +274,7 @@
       res.innerHTML = matches.map(p => `
         <a href="producto.html?sku=${encodeURIComponent(p.sku)}" class="search-modal__item">
           <div class="search-modal__item-img">
-            <img src="${p.imagen}" alt="${p.nombre}" loading="lazy" onerror="this.style.opacity=0;">
+            <img src="${p.imagen}" alt="${p.nombre}" loading="lazy">
           </div>
           <div class="search-modal__item-body">
             <div class="search-modal__item-cat">${p.cat || ''} · ${p.material || ''}</div>

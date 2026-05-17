@@ -45,7 +45,7 @@
     const base = src.split('?')[0];
     const isUnsplash = base.includes('unsplash.com');
     if (!isUnsplash) {
-      return `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" onerror="this.style.opacity=0;">`;
+      return `<img src="${src}" alt="${alt}" loading="lazy" decoding="async">`;
     }
     const params = '&q=80&auto=format&fit=crop';
     const src400 = `${base}?w=400${params}`;
@@ -56,7 +56,7 @@
       srcset="${src400} 400w, ${src800} 800w, ${src1200} 1200w"
       sizes="${sizes}"
       alt="${alt}" loading="lazy" decoding="async"
-      onerror="this.style.opacity=0;">`;
+     >`;
   }
 
   // Stock alert (#8)

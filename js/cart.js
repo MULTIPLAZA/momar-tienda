@@ -93,7 +93,7 @@
     list.innerHTML = items.map(p => `
       <div class="cart-drawer-item" data-key="${p.key}">
         <div class="cart-drawer-item__img">
-          <img src="${p.imagen}" alt="${p.nombre}" onerror="this.style.opacity=0;">
+          <img src="${p.imagen}" alt="${p.nombre}">
         </div>
         <div class="cart-drawer-item__body">
           <div class="cart-drawer-item__nombre">${p.nombre}</div>
@@ -240,7 +240,7 @@
     }
     t.innerHTML = `
       <div class="toast-persistente__img">
-        <img src="${first.imagen}" alt="${first.nombre}" onerror="this.style.opacity=0;">
+        <img src="${first.imagen}" alt="${first.nombre}">
       </div>
       <div class="toast-persistente__body">
         <strong>Tenés ${count} pieza${count > 1 ? 's' : ''} guardada${count > 1 ? 's' : ''}</strong>
@@ -288,7 +288,7 @@
     target.innerHTML = items.map(p => `
       <div class="carrito-item" data-key="${p.key}">
         <div class="carrito-item__img">
-          <img src="${p.imagen}" alt="${p.nombre}" onerror="this.style.opacity=0;">
+          <img src="${p.imagen}" alt="${p.nombre}">
         </div>
         <div>
           <div class="carrito-item__nombre">${p.nombre}</div>
