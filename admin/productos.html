@@ -22,8 +22,7 @@
         <div class="admin-main__head">
           <h1>Productos <span class="js-total-count u-text-soft u-fw-400 u-text-lg">cargando…</span></h1>
           <div class="actions">
-            <button class="btn-sm">Importar CSV</button>
-            <button class="btn-sm">Exportar</button>
+            <button class="btn-sm js-export-csv">Exportar CSV</button>
             <a href="producto-edit.html" class="btn-sm btn-sm--primary">+ Producto nuevo</a>
           </div>
         </div>
@@ -56,7 +55,7 @@
           <table class="admin-table">
             <thead>
               <tr>
-                <th style="width: 30px;"><input type="checkbox" aria-label="Seleccionar todos"></th>
+                <th style="width: 30px;"><input type="checkbox" class="js-check-all" aria-label="Seleccionar todos"></th>
                 <th></th>
                 <th data-sort="text">Producto</th>
                 <th class="col-hide-sm" data-sort="text">SKU</th>
@@ -71,12 +70,11 @@
           </table>
         </div>
 
-        <div class="u-flex u-items-center u-gap-2 u-mt-3">
-          <span class="u-text-base u-text-soft u-mr-2">Con seleccionados:</span>
-          <button class="btn-sm btn-sm--ghost">Aplicar oferta</button>
-          <button class="btn-sm btn-sm--ghost">Cambiar categoría</button>
-          <button class="btn-sm btn-sm--ghost">Ocultar</button>
-          <button class="btn-sm btn-sm--ghost btn-sm--danger">Eliminar</button>
+        <div class="u-flex u-items-center u-gap-2 u-mt-3 js-bulk-bar" style="display:none;">
+          <span class="u-text-base u-text-soft u-mr-2">Con <strong class="js-bulk-count">0</strong> seleccionados:</span>
+          <button class="btn-sm btn-sm--ghost js-bulk-publicar">Publicar</button>
+          <button class="btn-sm btn-sm--ghost js-bulk-ocultar">Ocultar</button>
+          <button class="btn-sm btn-sm--ghost btn-sm--danger js-bulk-eliminar">Eliminar</button>
         </div>
 
       </main>
@@ -208,8 +206,8 @@
           const principal = fotos.find(f => f.es_principal) || fotos[0];
           const url = principal ? principal.url : '';
           return `
-            <tr>
-              <td><input type="checkbox"></td>
+            <tr data-id="${p.id}" data-sku="${escapeHTML(p.sku)}" data-nombre="${escapeHTML(p.nombre || '')}">
+              <td><input type="checkbox" class="js-row-check" data-id="${p.id}"></td>
               <td class="col-mini-img">${url ? `<img src="${url}" onerror="this.style.opacity=0;">` : '<div style="width:48px;height:48px;background:#F4F4F4;"></div>'}</td>
               <td>
                 <a href="producto-edit.html?sku=${encodeURIComponent(p.sku)}"><strong>${escapeHTML(p.nombre || '(sin nombre)')}</strong></a>
@@ -237,6 +235,107 @@
       function escapeHTML(s) {
         return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
       }
+
+      // ===== Selección de filas (checkboxes) =====
+      const bulkBar = document.querySelector('.js-bulk-bar');
+      const bulkCount = document.querySelector('.js-bulk-count');
+      const checkAll = document.querySelector('.js-check-all');
+
+      function selectedIds() {
+        return Array.from(document.querySelectorAll('.js-row-check:checked')).map(c => c.dataset.id);
+      }
+      function refreshBulkBar() {
+        const n = selectedIds().length;
+        bulkCount.textContent = n;
+        bulkBar.style.display = n > 0 ? '' : 'none';
+        // Sync el check-all del header
+        const total = document.querySelectorAll('.js-row-check').length;
+        if (total > 0) {
+          checkAll.checked = n === total;
+          checkAll.indeterminate = n > 0 && n < total;
+        }
+      }
+      tbody.addEventListener('change', e => {
+        if (e.target.classList.contains('js-row-check')) refreshBulkBar();
+      });
+      checkAll.addEventListener('change', () => {
+        document.querySelectorAll('.js-row-check').forEach(c => c.checked = checkAll.checked);
+        refreshBulkBar();
+      });
+
+      // ===== Bulk: cambiar estado masivo =====
+      async function bulkUpdateEstado(estado, labelAccion) {
+        const ids = selectedIds();
+        if (ids.length === 0) return;
+        if (!confirm('¿' + labelAccion + ' ' + ids.length + ' producto(s)?')) return;
+        const { error } = await supa.from('productos').update({ estado }).in('id', ids);
+        if (error) {
+          window.MOMAR_toast && window.MOMAR_toast('Error: ' + error.message, { kind: 'err' });
+          return;
+        }
+        window.MOMAR_toast && window.MOMAR_toast(ids.length + ' producto(s) ' + labelAccion.toLowerCase() + 'do(s)', { kind: 'ok' });
+        await cargar();
+      }
+      document.querySelector('.js-bulk-publicar').addEventListener('click', () => bulkUpdateEstado('publicado', 'Publicar'));
+      document.querySelector('.js-bulk-ocultar').addEventListener('click', () => bulkUpdateEstado('oculto', 'Ocultar'));
+
+      // ===== Bulk: eliminar =====
+      document.querySelector('.js-bulk-eliminar').addEventListener('click', async () => {
+        const ids = selectedIds();
+        if (ids.length === 0) return;
+        if (!confirm('¿Eliminar definitivamente ' + ids.length + ' producto(s)? Se borran también sus fotos asociadas. Esta acción no se puede deshacer.')) return;
+
+        // Borrar fotos del storage primero (para no dejar huérfanas)
+        try {
+          const { data: fotos } = await supa.from('producto_fotos').select('url').in('producto_id', ids);
+          if (fotos && fotos.length > 0) {
+            const keys = fotos.map(f => {
+              const m = (f.url || '').match(/\/productos\/(.+)$/);
+              return m ? m[1] : null;
+            }).filter(Boolean);
+            if (keys.length > 0) await supa.storage.from('productos').remove(keys).catch(() => {});
+          }
+        } catch (e) { /* no crítico */ }
+
+        const { error } = await supa.from('productos').delete().in('id', ids);
+        if (error) {
+          window.MOMAR_toast && window.MOMAR_toast('Error: ' + error.message, { kind: 'err' });
+          return;
+        }
+        window.MOMAR_toast && window.MOMAR_toast(ids.length + ' producto(s) eliminado(s)', { kind: 'ok' });
+        await cargar();
+      });
+
+      // ===== Exportar CSV =====
+      document.querySelector('.js-export-csv').addEventListener('click', async () => {
+        // Re-fetch sin paginar para exportar todo (no solo los 200 visibles)
+        const { data, error } = await supa
+          .from('productos')
+          .select('sku,nombre,descripcion_corta,precio_gs,precio_antes_gs,costo_gs,stock,es_unica,estado,material,peso_gr,origen,certificado,created_at,categoria:categorias(nombre)')
+          .order('created_at', { ascending: false });
+        if (error) {
+          window.MOMAR_toast && window.MOMAR_toast('Error: ' + error.message, { kind: 'err' });
+          return;
+        }
+        if (!data || data.length === 0) {
+          window.MOMAR_toast && window.MOMAR_toast('No hay productos para exportar', { kind: 'err' });
+          return;
+        }
+        const cols = ['sku', 'nombre', 'descripcion_corta', 'categoria', 'precio_gs', 'precio_antes_gs', 'costo_gs', 'stock', 'es_unica', 'estado', 'material', 'peso_gr', 'origen', 'certificado', 'created_at'];
+        const filas = data.map(p => {
+          const row = { ...p, categoria: p.categoria?.nombre || '' };
+          return cols.map(k => `"${String(row[k] == null ? '' : row[k]).replace(/"/g, '""')}"`).join(',');
+        });
+        const csv = [cols.join(','), ...filas].join('\n');
+        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+        const u = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = u;
+        a.download = 'momar-productos-' + new Date().toISOString().slice(0, 10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(u);
+        window.MOMAR_toast && window.MOMAR_toast(data.length + ' productos exportados a CSV', { kind: 'ok' });
+      });
 
       cargar();
     })();

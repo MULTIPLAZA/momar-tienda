@@ -2,7 +2,7 @@
 (function() {
   const PAGES = [
     { href: 'index.html',       label: 'Inicio',         icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><path d="M3 12 12 4l9 8M5 10v10h14V10"/></svg>', section: 'principal' },
-    { href: 'pedidos.html',     label: 'Pedidos',        icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><path d="M6 7h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>', badge: '3', section: 'principal' },
+    { href: 'pedidos.html',     label: 'Pedidos',        icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><path d="M6 7h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg>', badge: '', badgeKey: 'pedidos', section: 'principal' },
     { href: 'productos.html',   label: 'Productos',      icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><path d="M20 7 12 3 4 7v10l8 4 8-4V7Z"/><path d="m4 7 8 4 8-4M12 11v10"/></svg>', section: 'principal' },
     { href: 'clientes.html',    label: 'Clientes',       icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-3.5 3.1-6 7-6s7 2.5 7 6"/><circle cx="17" cy="8" r="3"/><path d="M22 19c0-2.5-2-4.5-5-4.5"/></svg>', section: 'principal' },
     { type: 'label', label: 'Marketing' },
@@ -27,8 +27,12 @@
         ${PAGES.map(p => {
           if (p.type === 'label') return `<li class="section-label">${p.label}</li>`;
           const active = p.href === activeHref ? 'is-active' : '';
-          const badge = p.badge ? `<span class="admin-side__badge">${p.badge}</span>` : '';
-          return `<li class="${active}"><a href="${p.href}">${p.icon}<span>${p.label}</span>${badge}</a></li>`;
+          // El badge se popula despues por loadSidebarBadges() — empieza oculto
+          const badgeAttr = p.badgeKey ? ` data-badge-key="${p.badgeKey}"` : '';
+          const badge = p.badgeKey
+            ? `<span class="admin-side__badge" data-badge="${p.badgeKey}" style="display:none;"></span>`
+            : (p.badge ? `<span class="admin-side__badge">${p.badge}</span>` : '');
+          return `<li class="${active}"${badgeAttr}><a href="${p.href}">${p.icon}<span>${p.label}</span>${badge}</a></li>`;
         }).join('')}
       </ul>
       <div class="admin-side__user">
@@ -95,7 +99,35 @@
         else location.replace('login.html');
       });
     });
+    // Cargar badges dinámicos (no bloqueante)
+    loadSidebarBadges().catch(() => {});
   };
+
+  // Carga los counts reales para los badges del sidebar (Pedidos, etc.)
+  // No bloquea el render del shell — se actualiza apenas resuelve.
+  async function loadSidebarBadges() {
+    if (!window.MOMAR_supabase) return;
+    try {
+      // Pedidos: "pago a confirmar" + "pagados esperando envío"
+      const supa = window.MOMAR_supabase;
+      const [confR, envR] = await Promise.all([
+        supa.from('pedidos').select('id', { count: 'exact', head: true }).eq('pago_estado', 'a_confirmar'),
+        supa.from('pedidos').select('id', { count: 'exact', head: true })
+          .eq('pago_estado', 'pagado')
+          .in('envio_estado', ['pendiente', 'preparado']),
+      ]);
+      const n = (confR.count || 0) + (envR.count || 0);
+      const el = document.querySelector('[data-badge="pedidos"]');
+      if (el) {
+        if (n > 0) {
+          el.textContent = n;
+          el.style.display = '';
+        } else {
+          el.style.display = 'none';
+        }
+      }
+    } catch (e) { /* sin red, simplemente no mostramos badge */ }
+  }
 
   // ============================================
   // HELPERS GLOBALES — Modal, Toast, Sortable
