@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0F0F0F">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>Newsletter · MoMar Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin-2026-05-15.css">
+  <style>
+    /* Estilos locales para esta vista */
+    .nl-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--color-line, #E5E1DA); }
+    .nl-table th, .nl-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--color-line, #E5E1DA); font-size: 14px; vertical-align: middle; }
+    .nl-table th { background: var(--color-bg-alt, #F5F2EC); font-weight: 600; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--color-text-soft, #7A736B); }
+    .nl-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+    .nl-table tbody tr.is-deleting { opacity: 0.4; pointer-events: none; }
+    .nl-email { font-weight: 500; }
+    .nl-ua { color: var(--color-text-soft, #7A736B); font-size: 12px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .nl-fecha { color: var(--color-text-soft, #7A736B); font-size: 13px; white-space: nowrap; }
+    .nl-origen { font-size: 11px; padding: 3px 8px; background: var(--color-bg-alt, #F5F2EC); border-radius: 999px; letter-spacing: 0.3px; }
+    .nl-actions { text-align: right; white-space: nowrap; }
+    .nl-btn-del { background: transparent; border: 1px solid var(--color-line, #E5E1DA); color: var(--color-text-soft, #7A736B); padding: 6px 10px; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+    .nl-btn-del:hover { background: #B33; color: #fff; border-color: #B33; }
+    .nl-empty { padding: 60px 20px; text-align: center; color: var(--color-text-soft); }
+    .nl-empty__icon { font-size: 36px; margin-bottom: 12px; }
+    .nl-loading { padding: 60px 20px; text-align: center; color: var(--color-text-soft); }
+
+    /* Modal de service_role */
+    .nl-modal { position: fixed; inset: 0; background: rgba(15,15,15,0.6); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+    .nl-modal.is-open { display: flex; }
+    .nl-modal__inner { background: #fff; max-width: 540px; width: 100%; padding: 32px; border-radius: 4px; }
+    .nl-modal h2 { margin: 0 0 12px; font-size: 22px; }
+    .nl-modal p { color: var(--color-text-soft, #7A736B); font-size: 14px; line-height: 1.6; margin-bottom: 16px; }
+    .nl-modal input { width: 100%; padding: 10px 12px; font-family: monospace; font-size: 12px; border: 1px solid var(--color-line, #E5E1DA); margin-bottom: 16px; }
+    .nl-modal__actions { display: flex; gap: 8px; justify-content: flex-end; }
+    .nl-error { background: #FEE; color: #B33; padding: 12px 16px; border-left: 3px solid #B33; margin-bottom: 16px; font-size: 13px; }
+    .nl-help { font-size: 11px; color: var(--color-text-soft); padding: 12px; background: var(--color-bg-alt); margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-side"></aside>
+    <div>
+      <div class="admin-topbar"></div>
+      <main class="admin-main">
+
+        <div class="admin-main__head">
+          <h1>Newsletter <span class="js-total-count u-text-soft u-fw-400 u-text-lg">cargando…</span></h1>
+          <div class="actions">
+            <button class="btn-sm js-export-csv">Exportar CSV</button>
+            <button class="btn-sm js-refresh">↻ Actualizar</button>
+            <button class="btn-sm js-logout" title="Borrar credenciales guardadas">🔓 Cerrar acceso</button>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi">
+            <div class="kpi__label">Suscriptores totales</div>
+            <div class="kpi__value js-k-total">—</div>
+            <div class="kpi__delta js-k-total-sub">—</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi__label">Esta semana</div>
+            <div class="kpi__value js-k-week">—</div>
+            <div class="kpi__delta">últimos 7 días</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi__label">Este mes</div>
+            <div class="kpi__value js-k-month">—</div>
+            <div class="kpi__delta">últimos 30 días</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi__label">Origen principal</div>
+            <div class="kpi__value js-k-origen" style="font-size: 22px;">—</div>
+            <div class="kpi__delta js-k-origen-sub">—</div>
+          </div>
+        </div>
+
+        <div class="admin-toolbar">
+          <div class="admin-toolbar__filters">
+            <input type="search" class="js-search u-w-full" placeholder="Buscar por email…" style="max-width: 320px; padding: 8px 12px; border: 1px solid var(--color-line, #E5E1DA); font-size: 14px;">
+          </div>
+          <select class="js-orden" style="padding: 8px 12px; border: 1px solid var(--color-line, #E5E1DA); font-size: 14px;">
+            <option value="desc">Más nuevos primero</option>
+            <option value="asc">Más antiguos primero</option>
+          </select>
+        </div>
+
+        <div class="js-table-wrap">
+          <div class="nl-loading">Cargando…</div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal de credenciales -->
+  <div class="nl-modal js-modal">
+    <div class="nl-modal__inner">
+      <h2>Acceso al newsletter</h2>
+      <p>Para leer los suscriptores necesitás la <strong>service_role key</strong> de tu proyecto Supabase. Solo se guarda en este navegador (localStorage). No se sube a ningún lado.</p>
+      <div class="nl-error js-modal-error" style="display:none;"></div>
+      <input type="password" class="js-srk-input" placeholder="eyJhbGciOi…" autocomplete="off">
+      <div class="nl-modal__actions">
+        <button class="btn-sm btn-sm--primary js-srk-save">Guardar y entrar</button>
+      </div>
+      <div class="nl-help">
+        Dónde sacarla → Supabase Dashboard → Project Settings → API → <em>service_role secret</em>. <br>
+        <a href="https://supabase.com/dashboard/project/tfpnfkigfvpvuhnxwpij/settings/api" target="_blank" rel="noopener">Abrir Settings → API</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/admin-data-2026-05-15.js"></script>
+  <script src="js/admin-shell-2026-05-15.js"></script>
+  <script>
+    (function() {
+      const SUPABASE_URL = 'https://tfpnfkigfvpvuhnxwpij.supabase.co';
+      const STORAGE_KEY  = 'momar_admin_srk';
+
+      let supa = null;
+      let registros = [];
+
+      // ===== Modal de credenciales =====
+      const modal = document.querySelector('.js-modal');
+      const modalInput = document.querySelector('.js-srk-input');
+      const modalError = document.querySelector('.js-modal-error');
+      const modalSave  = document.querySelector('.js-srk-save');
+
+      function openModal() { modal.classList.add('is-open'); setTimeout(() => modalInput.focus(), 100); }
+      function closeModal() { modal.classList.remove('is-open'); modalError.style.display = 'none'; modalInput.value = ''; }
+      function showError(msg) { modalError.textContent = msg; modalError.style.display = 'block'; }
+
+      modalSave.addEventListener('click', () => trySave(modalInput.value.trim()));
+      modalInput.addEventListener('keydown', e => { if (e.key === 'Enter') trySave(modalInput.value.trim()); });
+
+      async function trySave(key) {
+        if (!key) { showError('Pegá la service_role key.'); return; }
+        if (!key.startsWith('eyJ')) { showError('No parece una key válida (debería empezar con "eyJ").'); return; }
+        // Verificar con un fetch chico
+        modalSave.disabled = true; modalSave.textContent = 'Verificando…';
+        try {
+          const test = await fetch(SUPABASE_URL + '/rest/v1/newsletter_emails?select=id&limit=1', {
+            headers: { apikey: key, Authorization: 'Bearer ' + key }
+          });
+          if (!test.ok) {
+            const body = await test.text();
+            throw new Error('Status ' + test.status + ': ' + body.slice(0, 120));
+          }
+          localStorage.setItem(STORAGE_KEY, key);
+          closeModal();
+          init();
+        } catch (e) {
+          showError('No funciona: ' + e.message);
+        } finally {
+          modalSave.disabled = false; modalSave.textContent = 'Guardar y entrar';
+        }
+      }
+
+      // ===== Init =====
+      function init() {
+        const key = localStorage.getItem(STORAGE_KEY);
+        if (!key) { openModal(); return; }
+        supa = window.supabase.createClient(SUPABASE_URL, key, { auth: { persistSession: false } });
+        loadRegistros();
+      }
+
+      async function loadRegistros() {
+        const wrap = document.querySelector('.js-table-wrap');
+        wrap.innerHTML = '<div class="nl-loading">Cargando suscriptores…</div>';
+        try {
+          const { data, error } = await supa
+            .from('newsletter_emails')
+            .select('id, email, created_at, origen, user_agent')
+            .order('created_at', { ascending: false });
+          if (error) throw error;
+          registros = data || [];
+          renderKPIs();
+          renderTabla();
+        } catch (e) {
+          wrap.innerHTML = '<div class="nl-empty"><div class="nl-empty__icon">⚠</div>No se pudieron cargar los suscriptores. <br><small>' + (e.message || e) + '</small><br><br><button class="btn-sm js-relogin">Re-ingresar credenciales</button></div>';
+          document.querySelector('.js-relogin')?.addEventListener('click', () => {
+            localStorage.removeItem(STORAGE_KEY);
+            init();
+          });
+        }
+      }
+
+      function renderKPIs() {
+        const now = Date.now();
+        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        const oneMonth = 30 * 24 * 60 * 60 * 1000;
+        const week = registros.filter(r => now - new Date(r.created_at).getTime() < oneWeek).length;
+        const month = registros.filter(r => now - new Date(r.created_at).getTime() < oneMonth).length;
+        document.querySelector('.js-k-total').textContent = registros.length;
+        document.querySelector('.js-k-total-sub').textContent = registros.length === 0 ? 'aún sin suscriptores' : 'desde el inicio';
+        document.querySelector('.js-k-week').textContent = week;
+        document.querySelector('.js-k-month').textContent = month;
+        document.querySelector('.js-total-count').textContent = '(' + registros.length + ')';
+
+        // Origen principal
+        const origenes = {};
+        registros.forEach(r => { const o = r.origen || 'desconocido'; origenes[o] = (origenes[o] || 0) + 1; });
+        const top = Object.entries(origenes).sort((a, b) => b[1] - a[1])[0];
+        if (top) {
+          document.querySelector('.js-k-origen').textContent = top[0];
+          document.querySelector('.js-k-origen-sub').textContent = top[1] + ' de ' + registros.length;
+        } else {
+          document.querySelector('.js-k-origen').textContent = '—';
+          document.querySelector('.js-k-origen-sub').textContent = 'sin datos';
+        }
+      }
+
+      function renderTabla() {
+        const wrap = document.querySelector('.js-table-wrap');
+        const filtro = (document.querySelector('.js-search').value || '').toLowerCase().trim();
+        const orden = document.querySelector('.js-orden').value;
+        let lista = registros.filter(r => !filtro || (r.email || '').toLowerCase().includes(filtro));
+        lista.sort((a, b) => {
+          const t = new Date(a.created_at) - new Date(b.created_at);
+          return orden === 'asc' ? t : -t;
+        });
+        if (lista.length === 0) {
+          wrap.innerHTML = '<div class="nl-empty"><div class="nl-empty__icon">📭</div>' +
+            (registros.length === 0
+              ? 'Todavía no hay suscriptores. Cuando alguien se suscriba desde el form de la home, aparece acá.'
+              : 'No hay resultados para esa búsqueda.') + '</div>';
+          return;
+        }
+        const rows = lista.map(r => `
+          <tr data-id="${r.id}">
+            <td><span class="nl-email">${escapeHTML(r.email)}</span></td>
+            <td><span class="nl-fecha">${fmtFecha(r.created_at)}</span></td>
+            <td><span class="nl-origen">${escapeHTML(r.origen || 'desconocido')}</span></td>
+            <td><span class="nl-ua" title="${escapeHTML(r.user_agent || '')}">${escapeHTML(r.user_agent || '—')}</span></td>
+            <td class="nl-actions"><button class="nl-btn-del js-del">Eliminar</button></td>
+          </tr>
+        `).join('');
+        wrap.innerHTML = `
+          <table class="nl-table">
+            <thead><tr>
+              <th>Email</th><th>Fecha</th><th>Origen</th><th>User agent</th><th></th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+        wrap.querySelectorAll('.js-del').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const tr = e.target.closest('tr');
+            const id = tr.dataset.id;
+            const email = tr.querySelector('.nl-email').textContent;
+            if (!confirm('¿Eliminar a ' + email + ' del newsletter?')) return;
+            tr.classList.add('is-deleting');
+            const { error } = await supa.from('newsletter_emails').delete().eq('id', id);
+            if (error) {
+              tr.classList.remove('is-deleting');
+              alert('No se pudo eliminar: ' + error.message);
+              return;
+            }
+            registros = registros.filter(r => r.id !== id);
+            renderKPIs();
+            renderTabla();
+          });
+        });
+      }
+
+      function fmtFecha(iso) {
+        const d = new Date(iso);
+        const f = d.toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' });
+        const h = d.toLocaleTimeString('es-PY', { hour: '2-digit', minute: '2-digit' });
+        return f + ' · ' + h;
+      }
+      function escapeHTML(s) {
+        return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+      }
+
+      // ===== Toolbar =====
+      document.querySelector('.js-search').addEventListener('input', () => renderTabla());
+      document.querySelector('.js-orden').addEventListener('change', () => renderTabla());
+      document.querySelector('.js-refresh').addEventListener('click', () => loadRegistros());
+
+      document.querySelector('.js-logout').addEventListener('click', () => {
+        if (!confirm('¿Borrar las credenciales guardadas en este navegador?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        supa = null; registros = [];
+        document.querySelector('.js-table-wrap').innerHTML = '<div class="nl-loading">Esperando credenciales…</div>';
+        document.querySelector('.js-k-total').textContent = '—';
+        openModal();
+      });
+
+      document.querySelector('.js-export-csv').addEventListener('click', () => {
+        if (registros.length === 0) { alert('No hay suscriptores para exportar.'); return; }
+        const cols = ['email', 'created_at', 'origen', 'user_agent'];
+        const csv = [
+          cols.join(','),
+          ...registros.map(r => cols.map(c => `"${String(r[c] || '').replace(/"/g, '""')}"`).join(','))
+        ].join('\n');
+        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'momar-newsletter-' + new Date().toISOString().slice(0, 10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      init();
+    })();
+  </script>
+</body>
+</html>

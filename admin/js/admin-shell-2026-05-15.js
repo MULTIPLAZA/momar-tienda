@@ -7,6 +7,7 @@
     { href: 'clientes.html',    label: 'Clientes',       icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-3.5 3.1-6 7-6s7 2.5 7 6"/><circle cx="17" cy="8" r="3"/><path d="M22 19c0-2.5-2-4.5-5-4.5"/></svg>', section: 'principal' },
     { type: 'label', label: 'Marketing' },
     { href: 'banners.html',     label: 'Banners',        icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 10h18"/></svg>' },
+    { href: 'newsletter.html',  label: 'Newsletter',     icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="m4 6 8 7 8-7"/></svg>' },
     { href: 'ofertas.html',     label: 'Ofertas y cupones', icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><path d="M3 12 12 3l9 9-9 9z"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/></svg>' },
     { type: 'label', label: 'Reportes' },
     { href: 'estadisticas.html',label: 'Estadísticas',   icon: '<svg class="admin-side__icon" viewBox="0 0 24 24"><path d="M4 20V8m6 12V4m6 16v-8m6 8v-4"/></svg>' },
