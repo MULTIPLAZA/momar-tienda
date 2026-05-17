@@ -21,61 +21,62 @@
 
         <div class="admin-main__head">
           <div>
-            <h1>Buen día, Martina<span class="u-fw-400 u-text-soft u-text-md u-ml-2">Hoy es <span id="js-fecha">15 de mayo</span></span></h1>
+            <h1 class="js-saludo">Buen día<span class="u-fw-400 u-text-soft u-text-md u-ml-2">Hoy es <span class="js-fecha">—</span></span></h1>
           </div>
           <div class="actions">
-            <a href="productos.html" class="btn-sm">+ Cargar producto</a>
-            <a href="pedidos.html" class="btn-sm btn-sm--primary">Ver pedidos del día</a>
+            <a href="producto-edit.html" class="btn-sm">+ Cargar producto</a>
+            <a href="pedidos.html" class="btn-sm btn-sm--primary">Ver pedidos</a>
           </div>
         </div>
 
         <!-- KPIs -->
-        <div class="kpis js-kpis"></div>
+        <div class="kpis js-kpis">
+          <div class="kpi"><div class="kpi__label">Productos publicados</div><div class="kpi__value js-k-pub">—</div><div class="kpi__delta js-k-pub-sub">cargando…</div></div>
+          <div class="kpi"><div class="kpi__label">Stock bajo (≤2)</div><div class="kpi__value js-k-bajo">—</div><div class="kpi__delta js-k-bajo-sub">cargando…</div></div>
+          <div class="kpi"><div class="kpi__label">Sin stock</div><div class="kpi__value js-k-sin">—</div><div class="kpi__delta js-k-sin-sub">cargando…</div></div>
+          <div class="kpi"><div class="kpi__label">Categorías activas</div><div class="kpi__value js-k-cats">—</div><div class="kpi__delta js-k-cats-sub">cargando…</div></div>
+        </div>
 
-        <!-- Notificaciones rápidas -->
-        <div class="admin-card admin-card--alerta">
+        <!-- Alertas reales (se ocultan si no hay nada que mostrar) -->
+        <div class="admin-card admin-card--alerta js-alertas-card" style="display:none;">
           <div class="u-flex u-items-start u-gap-3">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6E5418" stroke-width="1.5" class="u-flex-shrink-0 u-mt-1">
               <circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16v.5"/>
             </svg>
             <div class="u-flex-1">
-              <h3 class="u-mb-1">Atención hoy · 3 pendientes</h3>
-              <ul class="u-text-md u-line-loose" style="padding-left: 16px; margin: 0;">
-                <li><strong>3 pedidos esperan envío</strong> · <a href="pedidos.html" class="u-link">Ir a pedidos</a></li>
-                <li><strong>Pago transferencia #1245 a confirmar</strong> · Laura Cáceres envió comprobante por WhatsApp</li>
-                <li><strong>7 productos con stock bajo</strong> · <a href="productos.html?stock=bajo" class="u-link">Ver listado</a></li>
-              </ul>
+              <h3 class="u-mb-1">Atención <span class="js-alertas-count">—</span></h3>
+              <ul class="u-text-md u-line-loose js-alertas-list" style="padding-left: 16px; margin: 0;"></ul>
             </div>
           </div>
         </div>
 
         <div class="admin-grid-2">
 
-          <!-- Pedidos recientes -->
+          <!-- Productos con stock bajo -->
           <div class="admin-card u-card-flush">
             <div class="admin-card__head">
-              <h3>Pedidos recientes</h3>
-              <a href="pedidos.html" class="u-link-soft">Ver todos →</a>
+              <h3>Productos con stock bajo</h3>
+              <a href="productos.html" class="u-link-soft">Ver catálogo →</a>
             </div>
             <div class="admin-table-wrap">
               <table class="admin-table">
                 <thead>
-                  <tr><th>Pedido</th><th>Clienta</th><th class="col-num">Total</th><th class="col-hide-sm">Pago</th><th>Envío</th></tr>
+                  <tr><th></th><th>Producto</th><th>Categoría</th><th class="col-num">Stock</th></tr>
                 </thead>
-                <tbody class="js-pedidos-recientes"></tbody>
+                <tbody class="js-stock-bajo"><tr><td colspan="4" style="padding:24px; text-align:center; color:#7A736B;">Cargando…</td></tr></tbody>
               </table>
             </div>
           </div>
 
-          <!-- Acciones rápidas + Sugerencia -->
+          <!-- Acciones rápidas -->
           <div>
             <div class="admin-card">
               <h3 class="u-mb-3">Acciones rápidas</h3>
               <div class="u-flex-col u-gap-2">
-                <a href="productos.html" class="btn-sm u-text-center">+ Cargar producto nuevo</a>
+                <a href="producto-edit.html" class="btn-sm u-text-center">+ Cargar producto nuevo</a>
                 <a href="banners.html" class="btn-sm u-text-center">Cambiar banner home</a>
-                <a href="ofertas.html" class="btn-sm u-text-center">Crear oferta del día</a>
-                <a href="productos.html?import=1" class="btn-sm u-text-center">Importar lote (Excel)</a>
+                <a href="newsletter.html" class="btn-sm u-text-center">Ver suscriptores newsletter</a>
+                <a href="../index.html" target="_blank" class="btn-sm u-text-center">Abrir tienda pública ↗</a>
               </div>
             </div>
 
@@ -84,32 +85,37 @@
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--color-text)" stroke-width="1.5">
                   <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12c1 1 1 2 1 4h6c0-2 0-3 1-4a7 7 0 0 0-4-12Z"/>
                 </svg>
-                <h3>Sugerencia</h3>
+                <h3>Pendientes técnicos</h3>
               </div>
-              <p>El banner principal no se cambia hace 18 días. Las visitas que repiten ven la misma imagen. Refrescar puede mejorar la conversión 8-12%.</p>
-              <a href="banners.html" class="btn-sm">Ir a banners →</a>
+              <ul style="padding-left: 16px; line-height: 1.7; font-size: 13px; color: var(--color-text-soft); margin: 8px 0 12px;">
+                <li>Pedidos reales <em>(esperan pasarela Bancard)</em></li>
+                <li>Reportes de ventas <em>(esperan pedidos)</em></li>
+                <li>Dominio <strong>momar.com.py</strong> <em>(NIC.PY procesando)</em></li>
+              </ul>
             </div>
           </div>
         </div>
 
         <div class="admin-grid-2">
-          <!-- Más vendidos -->
+
+          <!-- Productos más nuevos -->
           <div class="admin-card u-card-flush">
             <div class="admin-card__head">
-              <h3>Más vendidos del mes</h3>
+              <h3>Últimos productos cargados</h3>
+              <a href="productos.html" class="u-link-soft">Ver todos →</a>
             </div>
             <div class="admin-table-wrap">
               <table class="admin-table">
-                <thead><tr><th>Producto</th><th class="col-num">Vendidos</th><th class="col-num">Ingreso</th><th>Stock</th></tr></thead>
-                <tbody class="js-top-productos"></tbody>
+                <thead><tr><th></th><th>Producto</th><th class="col-hide-sm">SKU</th><th class="col-num">Precio</th><th>Cargado</th></tr></thead>
+                <tbody class="js-ultimos"><tr><td colspan="5" style="padding:24px; text-align:center; color:#7A736B;">Cargando…</td></tr></tbody>
               </table>
             </div>
           </div>
 
-          <!-- Notificaciones -->
+          <!-- Distribución por categoría -->
           <div class="admin-card">
-            <h3 class="u-mb-3">Últimas notificaciones</h3>
-            <ul class="js-notifs u-list-none"></ul>
+            <h3 class="u-mb-3">Distribución del catálogo</h3>
+            <div class="js-distribucion">cargando…</div>
           </div>
         </div>
 
@@ -117,66 +123,158 @@
     </div>
   </div>
 
-  <script src="../js/products.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data-2026-05-15.js"></script>
   <script src="js/admin-shell-2026-05-15.js"></script>
   <script>
     MOMAR_renderAdminShell('index.html', 'Inicio');
-    const fmt = window.MOMAR_fmtGs;
 
-    const k = window.MOMAR_KPIS;
-    const gs = window.MOMAR_kpiGs;
-    document.querySelector('.js-kpis').innerHTML = `
-      <div class="kpi">
-        <div class="kpi__label">Ventas hoy</div>
-        <div class="kpi__value">${gs(k.ventas_hoy)}</div>
-        <div class="kpi__delta">↑ ${k.ventas_hoy_delta}% vs ayer</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi__label">Pedidos hoy</div>
-        <div class="kpi__value">${k.pedidos_hoy}</div>
-        <div class="kpi__delta kpi__delta--warn">${k.pedidos_pendientes} esperan envío</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi__label">Ventas del mes</div>
-        <div class="kpi__value">${gs(k.ventas_mes)}</div>
-        <div class="kpi__delta">↑ ${k.ventas_mes_delta}% vs mes pasado</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi__label">Stock bajo</div>
-        <div class="kpi__value">${k.productos_bajo_stock}</div>
-        <div class="kpi__delta kpi__delta--bad">Revisar →</div>
-      </div>
-    `;
+    (async function() {
+      await window.MOMAR_AUTH_READY;
+      const supa = window.MOMAR_supabase;
+      const fmt = window.MOMAR_fmtGs;
+      const $ = sel => document.querySelector(sel);
 
-    document.querySelector('.js-pedidos-recientes').innerHTML = window.MOMAR_PEDIDOS.slice(0, 5).map(p => `
-      <tr>
-        <td><a href="pedido.html?n=${p.num.replace('#','')}">${p.num}</a><br><span class="u-text-sm u-text-soft">${p.fecha}</span></td>
-        <td>${p.cliente}</td>
-        <td class="col-num">${fmt(p.total)}</td>
-        <td class="col-hide-sm">${window.MOMAR_pillPago(p.pagoEstado)}</td>
-        <td>${window.MOMAR_pillEnvio(p.envioEstado)}</td>
-      </tr>
-    `).join('');
+      // Saludo + fecha
+      const hora = new Date().getHours();
+      const saludo = hora < 13 ? 'Buen día' : hora < 19 ? 'Buenas tardes' : 'Buenas noches';
+      const nombre = (window.MOMAR_ADMIN_USER && window.MOMAR_ADMIN_USER.nombre) || 'Admin';
+      $('.js-saludo').firstChild.nodeValue = `${saludo}, ${nombre}`;
+      $('.js-fecha').textContent = new Date().toLocaleDateString('es-PY', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      });
 
-    const topProds = window.MOMAR_PRODUCTS.slice(0, 4).map((p, i) => ({...p, vendidos: 8 - i*2, ingreso: p.precio * (8 - i*2), stockTxt: i === 0 ? 'OK' : i === 1 ? 'Quedan 2' : i === 2 ? 'OK' : 'Sin stock'}));
-    document.querySelector('.js-top-productos').innerHTML = topProds.map(p => `
-      <tr>
-        <td><div class="u-flex u-items-center u-gap-2"><img src="${p.imagen}" class="u-img-thumb" onerror="this.style.opacity=0;">${p.nombre}</div></td>
-        <td class="col-num">${p.vendidos}</td>
-        <td class="col-num">${fmt(p.ingreso)}</td>
-        <td><span class="pill ${p.stockTxt === 'OK' ? 'pill--green' : p.stockTxt === 'Sin stock' ? 'pill--red' : 'pill--amber'}">${p.stockTxt}</span></td>
-      </tr>
-    `).join('');
+      // KPIs en paralelo
+      const [pubR, bajoR, sinR, catsR] = await Promise.all([
+        supa.from('productos').select('id', { count: 'exact', head: true }).eq('estado', 'publicado'),
+        supa.from('productos').select('id', { count: 'exact', head: true }).eq('estado', 'publicado').gt('stock', 0).lte('stock', 2),
+        supa.from('productos').select('id', { count: 'exact', head: true }).eq('estado', 'publicado').eq('stock', 0),
+        supa.from('categorias').select('id', { count: 'exact', head: true }).eq('activa', true),
+      ]);
 
-    document.querySelector('.js-notifs').innerHTML = window.MOMAR_NOTIFS.map(n => `
-      <li style="padding: 10px 0; border-bottom: 1px solid var(--color-line);">
-        <div class="u-text-md">${n.texto}</div>
-        <div class="u-text-sm u-text-soft u-mt-1">${n.tiempo}</div>
-      </li>
-    `).join('');
+      $('.js-k-pub').textContent     = pubR.count ?? 0;
+      $('.js-k-pub-sub').textContent = 'visibles en la tienda';
+      $('.js-k-bajo').textContent    = bajoR.count ?? 0;
+      $('.js-k-bajo-sub').textContent = (bajoR.count ?? 0) === 0 ? 'nada urgente' : 'revisar reposición';
+      $('.js-k-sin').textContent     = sinR.count ?? 0;
+      $('.js-k-sin-sub').textContent = (sinR.count ?? 0) === 0 ? 'todo con stock' : 'reponer o despublicar';
+      $('.js-k-cats').textContent    = catsR.count ?? 0;
+      $('.js-k-cats-sub').textContent = 'en el catálogo';
+
+      // Alertas: solo mostrar si hay algo concreto
+      const alertas = [];
+      if ((bajoR.count ?? 0) > 0) {
+        alertas.push(`<strong>${bajoR.count} productos con stock bajo</strong> · <a href="productos.html" class="u-link">Ver</a>`);
+      }
+      if ((sinR.count ?? 0) > 0) {
+        alertas.push(`<strong>${sinR.count} productos sin stock</strong> publicados · <a href="productos.html" class="u-link">Revisar</a>`);
+      }
+      if (alertas.length > 0) {
+        $('.js-alertas-card').style.display = '';
+        $('.js-alertas-count').textContent = `hoy · ${alertas.length} ${alertas.length === 1 ? 'pendiente' : 'pendientes'}`;
+        $('.js-alertas-list').innerHTML = alertas.map(t => `<li>${t}</li>`).join('');
+      }
+
+      // Productos con stock bajo (top 5)
+      const stockBajoR = await supa
+        .from('productos')
+        .select('sku, nombre, stock, categoria:categorias(nombre), fotos:producto_fotos(url,es_principal)')
+        .eq('estado', 'publicado')
+        .gt('stock', 0)
+        .lte('stock', 2)
+        .order('stock', { ascending: true })
+        .limit(5);
+      const stockBajoEl = $('.js-stock-bajo');
+      if ((stockBajoR.data || []).length === 0) {
+        stockBajoEl.innerHTML = `<tr><td colspan="4" style="padding:24px; text-align:center; color:#7A736B;">Ningún producto con stock bajo. 🎉</td></tr>`;
+      } else {
+        stockBajoEl.innerHTML = stockBajoR.data.map(p => {
+          const fotos = p.fotos || [];
+          const principal = fotos.find(f => f.es_principal) || fotos[0];
+          const cat = (p.categoria && p.categoria.nombre) || '—';
+          return `
+            <tr>
+              <td class="col-mini-img">${principal ? `<img src="${principal.url}" onerror="this.style.opacity=0;">` : '<div style="width:48px;height:48px;background:#F4F4F4;"></div>'}</td>
+              <td><a href="producto-edit.html?sku=${encodeURIComponent(p.sku)}"><strong>${escapeHTML(p.nombre)}</strong></a><br><span class="u-text-sm u-text-soft" style="font-family:monospace;">${escapeHTML(p.sku)}</span></td>
+              <td>${escapeHTML(cat)}</td>
+              <td class="col-num"><span class="pill pill--amber">${p.stock} unid.</span></td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Últimos productos cargados
+      const ultimosR = await supa
+        .from('productos')
+        .select('sku, nombre, precio_gs, created_at, fotos:producto_fotos(url,es_principal)')
+        .order('created_at', { ascending: false })
+        .limit(5);
+      const ultimosEl = $('.js-ultimos');
+      if ((ultimosR.data || []).length === 0) {
+        ultimosEl.innerHTML = `<tr><td colspan="5" style="padding:24px; text-align:center; color:#7A736B;">Todavía no cargaste productos.</td></tr>`;
+      } else {
+        ultimosEl.innerHTML = ultimosR.data.map(p => {
+          const fotos = p.fotos || [];
+          const principal = fotos.find(f => f.es_principal) || fotos[0];
+          const cargado = relativeTime(p.created_at);
+          return `
+            <tr>
+              <td class="col-mini-img">${principal ? `<img src="${principal.url}" onerror="this.style.opacity=0;">` : '<div style="width:48px;height:48px;background:#F4F4F4;"></div>'}</td>
+              <td><a href="producto-edit.html?sku=${encodeURIComponent(p.sku)}">${escapeHTML(p.nombre)}</a></td>
+              <td class="col-hide-sm"><span style="font-family:monospace;font-size:12px;">${escapeHTML(p.sku)}</span></td>
+              <td class="col-num">${fmt(p.precio_gs)}</td>
+              <td><span class="u-text-sm u-text-soft">${cargado}</span></td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Distribución por categoría
+      const distR = await supa
+        .from('productos')
+        .select('categoria:categorias(slug,nombre)')
+        .eq('estado', 'publicado');
+      const counts = {};
+      let sinCat = 0;
+      (distR.data || []).forEach(r => {
+        const c = r.categoria;
+        if (!c) { sinCat++; return; }
+        counts[c.nombre] = (counts[c.nombre] || 0) + 1;
+      });
+      const total = (distR.data || []).length;
+      const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      if (sinCat > 0) entries.push(['Sin categoría', sinCat]);
+      const distEl = $('.js-distribucion');
+      if (total === 0) {
+        distEl.innerHTML = '<div style="color:#7A736B;">Sin productos cargados aún.</div>';
+      } else {
+        distEl.innerHTML = entries.map(([name, n]) => {
+          const pct = Math.round((n / total) * 100);
+          return `
+            <div style="margin-bottom: 14px;">
+              <div style="display:flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px;">
+                <span>${escapeHTML(name)}</span>
+                <span class="u-text-soft">${n} · ${pct}%</span>
+              </div>
+              <div style="background:#F4F4F4; height:6px;">
+                <div style="background:#0F0F0F; height:100%; width:${pct}%;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function escapeHTML(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+      function relativeTime(iso) {
+        const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+        if (diff < 60) return 'hace unos segundos';
+        if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+        if (diff < 86400) return `hace ${Math.floor(diff / 3600)} h`;
+        if (diff < 86400 * 7) return `hace ${Math.floor(diff / 86400)} días`;
+        return new Date(iso).toLocaleDateString('es-PY', { day: '2-digit', month: 'short', year: 'numeric' });
+      }
+    })();
   </script>
   <script src="js/pwa.js"></script>
 </body>

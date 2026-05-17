@@ -11,6 +11,43 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin-2026-05-15.css">
+  <style>
+    .banner-row {
+      display: grid;
+      grid-template-columns: 200px 1fr auto;
+      gap: 16px;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid var(--color-line, #E5E1DA);
+      margin-bottom: 12px;
+      align-items: center;
+    }
+    .banner-row__img { width: 100%; aspect-ratio: 21/9; background: #F4F4F4; overflow: hidden; }
+    .banner-row__img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .banner-row__info h3 { margin: 0 0 4px; font-size: 16px; }
+    .banner-row__info p { margin: 0; color: var(--color-text-soft); font-size: 13px; }
+    .banner-row__meta { display: flex; gap: 12px; align-items: center; margin-top: 8px; font-size: 12px; color: var(--color-text-soft); }
+    .banner-row__actions { display: flex; flex-direction: column; gap: 6px; }
+    .banner-row__actions .btn-sm { width: 100%; }
+    .banner-empty { padding: 32px; text-align: center; color: var(--color-text-soft); background: var(--color-bg-alt); }
+
+    /* Modal */
+    .b-modal { position: fixed; inset: 0; background: rgba(15,15,15,0.55); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+    .b-modal.is-open { display: flex; }
+    .b-modal__inner { background: #fff; max-width: 720px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; }
+    .b-modal h2 { margin: 0 0 16px; }
+    .b-modal__footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; border-top: 1px solid var(--color-line); padding-top: 16px; }
+    .b-img-preview { aspect-ratio: 21/9; background: #F4F4F4; margin-bottom: 12px; overflow: hidden; }
+    .b-img-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .b-fb { padding: 12px; font-size: 13px; margin-bottom: 12px; display: none; }
+    .b-fb.is-ok { background: #EFE; color: #285; border-left: 3px solid #285; display: block; }
+    .b-fb.is-err { background: #FEE; color: #B33; border-left: 3px solid #B33; display: block; }
+
+    @media (max-width: 768px) {
+      .banner-row { grid-template-columns: 1fr; }
+      .banner-row__actions { flex-direction: row; }
+    }
+  </style>
 </head>
 <body>
   <div class="admin-shell">
@@ -22,118 +59,349 @@
         <div class="admin-main__head">
           <div>
             <h1>Banners de la tienda</h1>
-            <p class="u-text-md u-text-soft u-mt-1 u-mb-0">Hero principal, banners promocionales y home secundarios. Arrastrá para reordenar.</p>
+            <p class="u-text-md u-text-soft u-mt-1 u-mb-0">Hero principal de la home y banners promocionales. Solo un banner activo por ubicación.</p>
           </div>
           <div class="actions">
-            <button class="btn-sm">📐 Plantillas Canva</button>
-            <button class="btn-sm btn-sm--primary">+ Banner nuevo</button>
+            <button class="btn-sm btn-sm--primary js-new-banner">+ Nuevo banner</button>
           </div>
         </div>
 
         <div class="admin-card">
-          <h3 class="u-mb-3">Hero principal de la home</h3>
-          <p class="admin-card__sub u-mb-3">Solo uno activo a la vez. Cambia automáticamente cuando programás otro.</p>
-
-          <div class="js-banners-hero"></div>
-
-          <div class="uploader u-mt-3">
-            <svg class="uploader__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4v12m0-12 4 4m-4-4-4 4M4 20h16"/></svg>
-            <div class="uploader__title">Subir nuevo banner</div>
-            <div class="uploader__sub">JPG o PNG · proporción 21:9 · mín. 1920×820 px · máx. 800 KB</div>
+          <div class="admin-card__head">
+            <h3>Hero principal · home <span class="u-text-md u-text-soft u-fw-400">(arriba de todo)</span></h3>
           </div>
-        </div>
-
-        <div class="admin-grid-2">
-
-          <div class="admin-card">
-            <h3 class="u-mb-3">Plantilla del banner</h3>
-            <div class="admin-form">
-              <div class="admin-form__group">
-                <label>Título (titular del banner)</label>
-                <input type="text" value="Colección Otoño 2026">
-                <div class="hint">Sale grande, en serif itálica.</div>
-              </div>
-              <div class="admin-form__group">
-                <label>Subtítulo</label>
-                <input type="text" value="Piezas que perduran">
-              </div>
-              <div class="admin-form__group">
-                <label>Texto del botón (CTA)</label>
-                <input type="text" value="Ver colección">
-              </div>
-              <div class="admin-form__group">
-                <label>Link del botón</label>
-                <select>
-                  <option>Catálogo completo</option>
-                  <option>Catálogo · Joyería</option>
-                  <option>Catálogo · Hogar</option>
-                  <option>Categoría específica…</option>
-                  <option>URL personalizada…</option>
-                </select>
-              </div>
-              <div class="admin-form__row">
-                <div class="admin-form__group">
-                  <label>Activar desde</label>
-                  <input type="date" value="2026-05-14">
-                </div>
-                <div class="admin-form__group">
-                  <label>Hasta</label>
-                  <input type="date">
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="admin-card">
-            <h3 class="u-mb-3">Banner promo del home</h3>
-            <p class="admin-card__sub u-mb-3">El banner ancho oscuro que aparece después de productos destacados.</p>
-            <div class="js-banner-promo"></div>
-            <button class="btn-sm u-w-full u-mt-3">Editar banner promo</button>
-          </div>
-
+          <div class="js-list-hero"><div class="banner-empty">Cargando…</div></div>
         </div>
 
         <div class="admin-card">
-          <h3 class="u-mb-3">Banners programados / inactivos</h3>
-          <div class="js-banners-inactivos"></div>
+          <div class="admin-card__head">
+            <h3>Banner promo · home <span class="u-text-md u-text-soft u-fw-400">(después de destacados)</span></h3>
+          </div>
+          <div class="js-list-promo"><div class="banner-empty">Cargando…</div></div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card__head">
+            <h3>Otros / inactivos</h3>
+          </div>
+          <div class="js-list-otros"><div class="banner-empty">Cargando…</div></div>
         </div>
 
       </main>
     </div>
   </div>
 
-  <script src="../js/products.js?v=1"></script>
+  <!-- Modal Crear/Editar banner -->
+  <div class="b-modal js-modal">
+    <div class="b-modal__inner">
+      <h2 class="js-modal-title">Nuevo banner</h2>
+      <div class="b-fb js-modal-fb"></div>
+
+      <div class="b-img-preview js-modal-preview">
+        <div style="display:flex; align-items:center; justify-content:center; height:100%; color:#999; font-size:13px;">Sin imagen</div>
+      </div>
+      <input type="file" accept="image/*" class="js-modal-file" style="display:none;">
+      <button class="btn-sm js-modal-upload">📷 Subir imagen</button>
+      <div class="hint" style="margin: 6px 0 16px;">JPG o PNG · proporción 21:9 recomendada · mín. 1920×820 px · máx. 10 MB</div>
+
+      <div class="admin-form">
+        <div class="admin-form__group">
+          <label>Ubicación *</label>
+          <select class="js-modal-ubicacion">
+            <option value="hero">Hero principal de home</option>
+            <option value="promo">Banner promo de home</option>
+            <option value="categoria">Hero de categoría</option>
+          </select>
+        </div>
+        <div class="admin-form__group js-cat-group" style="display:none;">
+          <label>Categoría (slug)</label>
+          <select class="js-modal-cat-slug"></select>
+        </div>
+        <div class="admin-form__group">
+          <label>Título *</label>
+          <input type="text" class="js-modal-titulo">
+          <div class="hint">Sale grande, en serif itálica.</div>
+        </div>
+        <div class="admin-form__group">
+          <label>Subtítulo (eyebrow)</label>
+          <input type="text" class="js-modal-subtitulo">
+        </div>
+        <div class="admin-form__row">
+          <div class="admin-form__group">
+            <label>Texto del botón (CTA)</label>
+            <input type="text" class="js-modal-cta-texto" placeholder="Ver catálogo">
+          </div>
+          <div class="admin-form__group">
+            <label>Link del botón</label>
+            <input type="text" class="js-modal-cta-link" placeholder="catalogo.html">
+          </div>
+        </div>
+        <div class="admin-form__row">
+          <div class="admin-form__group">
+            <label>Vigente desde</label>
+            <input type="datetime-local" class="js-modal-desde">
+          </div>
+          <div class="admin-form__group">
+            <label>Hasta</label>
+            <input type="datetime-local" class="js-modal-hasta">
+          </div>
+        </div>
+        <div class="admin-form__group">
+          <label><input type="checkbox" class="js-modal-activo" checked style="width:auto; margin-right:6px;">Activo (visible en la tienda)</label>
+        </div>
+      </div>
+
+      <div class="b-modal__footer">
+        <button class="btn-sm js-modal-cancel">Cancelar</button>
+        <button class="btn-sm btn-sm--danger js-modal-delete" style="display:none;">Eliminar</button>
+        <button class="btn-sm btn-sm--primary js-modal-save">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/admin-auth.js"></script>
   <script src="js/admin-data-2026-05-15.js"></script>
   <script src="js/admin-shell-2026-05-15.js"></script>
   <script>
     MOMAR_renderAdminShell('banners.html', 'Banners');
-    const bs = window.MOMAR_BANNERS;
 
-    const renderBanner = (b) => `
-      <div class="banner-card">
-        <img src="${b.img}" onerror="this.style.opacity=0;">
-        <div class="banner-card__overlay">
-          <div>
-            <h3>${b.titulo}</h3>
-            <p style="margin: 6px 0 0; opacity: 0.85; font-size: 13px;">${b.sub}</p>
+    (async function() {
+      await window.MOMAR_AUTH_READY;
+      const supa = window.MOMAR_supabase;
+      const $ = sel => document.querySelector(sel);
+
+      let banners = [];
+      let editingId = null;
+      let stagedImageUrl = null; // URL pública si el usuario subió una imagen en el modal
+
+      // Cargar categorías para el dropdown
+      const { data: cats } = await supa.from('categorias').select('slug,nombre').order('orden');
+      const catSel = $('.js-modal-cat-slug');
+      (cats || []).forEach(c => {
+        const o = document.createElement('option');
+        o.value = c.slug; o.textContent = c.nombre;
+        catSel.appendChild(o);
+      });
+
+      async function cargarBanners() {
+        const { data, error } = await supa.from('banners').select('*').order('ubicacion').order('orden').order('created_at', { ascending: false });
+        if (error) { alert('Error cargando banners: ' + error.message); return; }
+        banners = data || [];
+        renderListas();
+      }
+
+      function bannerCard(b) {
+        const activo = b.activo;
+        const vigDesde = b.vigente_desde ? new Date(b.vigente_desde).toLocaleDateString('es-PY') : null;
+        const vigHasta = b.vigente_hasta ? new Date(b.vigente_hasta).toLocaleDateString('es-PY') : null;
+        return `
+          <div class="banner-row" data-id="${b.id}">
+            <div class="banner-row__img">${b.imagen_url ? `<img src="${escapeHTML(b.imagen_url)}" onerror="this.style.opacity=0;">` : ''}</div>
+            <div class="banner-row__info">
+              <h3>${escapeHTML(b.titulo || '(sin título)')}</h3>
+              <p>${escapeHTML(b.subtitulo || '—')}</p>
+              <div class="banner-row__meta">
+                <span>${activo ? '<span class="pill pill--green">Activo</span>' : '<span class="pill pill--gray">Inactivo</span>'}</span>
+                <span>${escapeHTML(b.ubicacion)}${b.ubicacion === 'categoria' && b.ubicacion_ref ? ' / ' + b.ubicacion_ref : ''}</span>
+                ${vigDesde ? `<span>📅 desde ${vigDesde}</span>` : ''}
+                ${vigHasta ? `<span>hasta ${vigHasta}</span>` : ''}
+                ${b.clicks_count > 0 ? `<span>${b.clicks_count.toLocaleString('es-PY')} clicks</span>` : ''}
+              </div>
+            </div>
+            <div class="banner-row__actions">
+              <button class="btn-sm js-banner-edit">Editar</button>
+              <button class="btn-sm js-banner-toggle">${activo ? 'Pausar' : 'Activar'}</button>
+            </div>
           </div>
-        </div>
-        <div class="banner-card__actions">
-          <button>Editar</button>
-          <button>${b.activo ? 'Pausar' : 'Activar'}</button>
-        </div>
-      </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--color-text-soft); margin-bottom: var(--space-3);">
-        <span>${b.ubicacion} · ${b.activo ? '<span class="pill pill--green">Activo</span>' : '<span class="pill pill--gray">Inactivo</span>'}</span>
-        <span>${b.clicks.toLocaleString('es-PY')} clicks</span>
-      </div>
-    `;
+        `;
+      }
 
-    document.querySelector('.js-banners-hero').innerHTML = renderBanner(bs[0]);
-    document.querySelector('.js-banner-promo').innerHTML = renderBanner(bs[1]);
-    document.querySelector('.js-banners-inactivos').innerHTML = bs.filter(b => !b.activo).map(renderBanner).join('');
+      function renderListas() {
+        const grupos = {
+          hero: banners.filter(b => b.ubicacion === 'hero' && b.activo),
+          promo: banners.filter(b => b.ubicacion === 'promo' && b.activo),
+          otros: banners.filter(b => !b.activo || (b.ubicacion !== 'hero' && b.ubicacion !== 'promo')),
+        };
+
+        $('.js-list-hero').innerHTML = grupos.hero.length === 0
+          ? '<div class="banner-empty">Sin banner hero activo. La home usa el inline default.</div>'
+          : grupos.hero.map(bannerCard).join('');
+
+        $('.js-list-promo').innerHTML = grupos.promo.length === 0
+          ? '<div class="banner-empty">Sin banner promo activo.</div>'
+          : grupos.promo.map(bannerCard).join('');
+
+        $('.js-list-otros').innerHTML = grupos.otros.length === 0
+          ? '<div class="banner-empty">No hay banners pausados ni en otras ubicaciones.</div>'
+          : grupos.otros.map(bannerCard).join('');
+
+        // Wirear botones
+        document.querySelectorAll('.js-banner-edit').forEach(btn => btn.addEventListener('click', e => {
+          const id = e.target.closest('.banner-row').dataset.id;
+          abrirEditar(id);
+        }));
+        document.querySelectorAll('.js-banner-toggle').forEach(btn => btn.addEventListener('click', async e => {
+          const id = e.target.closest('.banner-row').dataset.id;
+          const b = banners.find(x => x.id === id);
+          if (!b) return;
+          const { error } = await supa.from('banners').update({ activo: !b.activo }).eq('id', id);
+          if (error) { alert('Error: ' + error.message); return; }
+          await cargarBanners();
+        }));
+      }
+
+      // ===== Modal =====
+      function abrirNuevo() {
+        editingId = null;
+        stagedImageUrl = null;
+        $('.js-modal-title').textContent = 'Nuevo banner';
+        $('.js-modal-delete').style.display = 'none';
+        resetForm();
+        $('.js-modal').classList.add('is-open');
+      }
+      function abrirEditar(id) {
+        const b = banners.find(x => x.id === id);
+        if (!b) return;
+        editingId = id;
+        stagedImageUrl = b.imagen_url;
+        $('.js-modal-title').textContent = 'Editar banner';
+        $('.js-modal-delete').style.display = '';
+        $('.js-modal-ubicacion').value = b.ubicacion;
+        $('.js-modal-cat-slug').value = b.ubicacion_ref || '';
+        toggleCatGroup();
+        $('.js-modal-titulo').value = b.titulo || '';
+        $('.js-modal-subtitulo').value = b.subtitulo || '';
+        $('.js-modal-cta-texto').value = b.cta_texto || '';
+        $('.js-modal-cta-link').value = b.cta_link || '';
+        $('.js-modal-desde').value = b.vigente_desde ? b.vigente_desde.slice(0, 16) : '';
+        $('.js-modal-hasta').value = b.vigente_hasta ? b.vigente_hasta.slice(0, 16) : '';
+        $('.js-modal-activo').checked = !!b.activo;
+        updatePreview(b.imagen_url);
+        $('.js-modal').classList.add('is-open');
+      }
+      function cerrarModal() {
+        $('.js-modal').classList.remove('is-open');
+        $('.js-modal-fb').className = 'b-fb';
+        editingId = null;
+        stagedImageUrl = null;
+      }
+      function resetForm() {
+        $('.js-modal-ubicacion').value = 'hero';
+        $('.js-modal-cat-slug').value = '';
+        toggleCatGroup();
+        $('.js-modal-titulo').value = '';
+        $('.js-modal-subtitulo').value = '';
+        $('.js-modal-cta-texto').value = '';
+        $('.js-modal-cta-link').value = '';
+        $('.js-modal-desde').value = '';
+        $('.js-modal-hasta').value = '';
+        $('.js-modal-activo').checked = true;
+        updatePreview(null);
+      }
+      function toggleCatGroup() {
+        $('.js-cat-group').style.display = $('.js-modal-ubicacion').value === 'categoria' ? '' : 'none';
+      }
+      function updatePreview(url) {
+        const p = $('.js-modal-preview');
+        if (url) p.innerHTML = `<img src="${escapeHTML(url)}">`;
+        else p.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#999; font-size:13px;">Sin imagen</div>`;
+      }
+      function feedback(msg, ok) {
+        const el = $('.js-modal-fb');
+        el.textContent = msg;
+        el.className = 'b-fb ' + (ok ? 'is-ok' : 'is-err');
+      }
+
+      $('.js-new-banner').addEventListener('click', abrirNuevo);
+      $('.js-modal-cancel').addEventListener('click', cerrarModal);
+      $('.js-modal-ubicacion').addEventListener('change', toggleCatGroup);
+
+      $('.js-modal-upload').addEventListener('click', () => $('.js-modal-file').click());
+
+      $('.js-modal-file').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 10 * 1024 * 1024) { feedback('La imagen pesa más de 10 MB.', false); return; }
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const key = `banner-${Date.now()}.${ext}`;
+        feedback('Subiendo imagen…', true);
+        const { error } = await supa.storage.from('banners').upload(key, file, { contentType: file.type });
+        if (error) { feedback('Error subiendo: ' + error.message, false); return; }
+        const { data: pub } = supa.storage.from('banners').getPublicUrl(key);
+        stagedImageUrl = pub.publicUrl;
+        updatePreview(stagedImageUrl);
+        feedback('Imagen lista. No te olvides de guardar.', true);
+        e.target.value = '';
+      });
+
+      $('.js-modal-save').addEventListener('click', async () => {
+        const titulo = $('.js-modal-titulo').value.trim();
+        if (!titulo) { feedback('El título es obligatorio.', false); return; }
+        if (!stagedImageUrl) { feedback('Subí una imagen primero.', false); return; }
+
+        const ubicacion = $('.js-modal-ubicacion').value;
+        const payload = {
+          titulo,
+          subtitulo: $('.js-modal-subtitulo').value.trim() || null,
+          cta_texto: $('.js-modal-cta-texto').value.trim() || null,
+          cta_link:  $('.js-modal-cta-link').value.trim()  || null,
+          imagen_url: stagedImageUrl,
+          ubicacion,
+          ubicacion_ref: ubicacion === 'categoria' ? ($('.js-modal-cat-slug').value || null) : null,
+          vigente_desde: $('.js-modal-desde').value ? new Date($('.js-modal-desde').value).toISOString() : null,
+          vigente_hasta: $('.js-modal-hasta').value ? new Date($('.js-modal-hasta').value).toISOString() : null,
+          activo: $('.js-modal-activo').checked,
+        };
+
+        const btn = $('.js-modal-save');
+        btn.disabled = true; btn.textContent = 'Guardando…';
+        try {
+          let res;
+          if (editingId) {
+            res = await supa.from('banners').update(payload).eq('id', editingId).select().single();
+          } else {
+            res = await supa.from('banners').insert(payload).select().single();
+          }
+          if (res.error) throw res.error;
+
+          // Si el nuevo banner queda activo, desactivar otros en la misma ubicación
+          // (regla: solo un banner activo por ubicación al mismo tiempo)
+          if (payload.activo) {
+            await supa.from('banners')
+              .update({ activo: false })
+              .eq('ubicacion', ubicacion)
+              .neq('id', res.data.id);
+          }
+
+          feedback('Guardado.', true);
+          setTimeout(() => { cerrarModal(); cargarBanners(); }, 600);
+        } catch (err) {
+          feedback('Error: ' + (err.message || err), false);
+        } finally {
+          btn.disabled = false; btn.textContent = 'Guardar';
+        }
+      });
+
+      $('.js-modal-delete').addEventListener('click', async () => {
+        if (!editingId) return;
+        if (!confirm('¿Eliminar este banner? La imagen también se borra del storage.')) return;
+        const b = banners.find(x => x.id === editingId);
+        // Borrar imagen del storage (extraer key del URL)
+        if (b && b.imagen_url) {
+          const m = b.imagen_url.match(/\/banners\/(.+)$/);
+          if (m) await supa.storage.from('banners').remove([m[1]]).catch(() => {});
+        }
+        const { error } = await supa.from('banners').delete().eq('id', editingId);
+        if (error) { feedback('No se pudo eliminar: ' + error.message, false); return; }
+        cerrarModal();
+        cargarBanners();
+      });
+
+      function escapeHTML(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+      cargarBanners();
+    })();
   </script>
   <script src="js/pwa.js"></script>
 </body>
