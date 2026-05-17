@@ -208,8 +208,11 @@
       }
     });
 
-    // Si esta página es carrito.html, renderizar items dinámicos
-    renderCartPage();
+    // Si esta página es carrito.html o checkout.html, renderizar items dinámicos.
+    // IMPORTANTE: esperar a que Supabase haya cargado los productos (sino
+    // enriched() devuelve vacío y los totales quedan en 0).
+    renderCartPage(); // render inmediato con lo que haya en memoria
+    ready.then(() => renderCartPage()); // re-render cuando llegue la data real
 
     // Toast persistente: "Tenés piezas guardadas" si visita siguiente con items en carrito (#12)
     if (window.cart.items.length > 0
