@@ -105,6 +105,7 @@
 
   // Carga los counts reales para los badges del sidebar (Pedidos, etc.)
   // No bloquea el render del shell — se actualiza apenas resuelve.
+  let realtimeSubscribed = false;
   async function loadSidebarBadges() {
     if (!window.MOMAR_supabase) return;
     try {
@@ -125,6 +126,22 @@
         } else {
           el.style.display = 'none';
         }
+      }
+
+      // Subscripción Realtime: cuando hay un cambio en pedidos, refrescar badge
+      // Solo una vez por sesión (no recrear al renderizar shell de nuevo)
+      if (!realtimeSubscribed) {
+        realtimeSubscribed = true;
+        supa.channel('admin-pedidos-badge')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => {
+            // Recargar count cuando hay cualquier cambio en pedidos
+            loadSidebarBadges();
+            // Si hay un mini-toast helper, avisar al admin
+            if (window.MOMAR_toast && document.visibilityState === 'visible') {
+              window.MOMAR_toast('Hay novedad en pedidos', { kind: 'ok' });
+            }
+          })
+          .subscribe();
       }
     } catch (e) { /* sin red, simplemente no mostramos badge */ }
   }

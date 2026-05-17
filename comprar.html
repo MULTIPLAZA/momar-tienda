@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="momar-shell" content="full">
+  <title>Cómo comprar · MoMar</title>
+  <meta name="description" content="Cómo comprar en MoMar en 3 pasos: elegís, coordinamos pago por WhatsApp, te lo enviamos.">
+  <link rel="canonical" href="https://momar-tienda.pages.dev/comprar.html">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0F0F0F">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MoMar">
+  <meta property="og:title" content="Cómo comprar · MoMar">
+  <meta property="og:description" content="Elegís tu pieza, coordinamos el pago por WhatsApp, te llega a casa. Tres pasos.">
+  <meta property="og:image" content="https://momar-tienda.pages.dev/img/og-image.jpg?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=20260517m">
+  <style>
+    .comprar-hero { text-align: center; max-width: 720px; margin: var(--space-6) auto var(--space-5); padding: 0 var(--space-3); }
+    .comprar-pasos { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); max-width: 1080px; margin: 0 auto; padding: 0 var(--space-3); }
+    @media (max-width: 768px) { .comprar-pasos { grid-template-columns: 1fr; gap: var(--space-5); } }
+    .comprar-paso { text-align: center; padding: var(--space-4); position: relative; }
+    .comprar-paso__num {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 96px;
+      line-height: 1;
+      color: var(--color-nude-dark, #C5B8A4);
+      margin-bottom: var(--space-3);
+      opacity: 0.9;
+    }
+    .comprar-paso__icon {
+      width: 56px; height: 56px; margin: 0 auto var(--space-3);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--color-bg-alt);
+      border-radius: 50%;
+    }
+    .comprar-paso__icon svg { width: 28px; height: 28px; stroke: var(--color-text); fill: none; stroke-width: 1.4; }
+    .comprar-paso h3 { font-size: 22px; font-style: italic; margin: 0 0 var(--space-2); font-family: var(--font-display); font-weight: 500; }
+    .comprar-paso p { color: var(--color-text-soft); line-height: 1.6; font-size: 15px; }
+
+    .comprar-detalle { max-width: 760px; margin: var(--space-7) auto; padding: var(--space-5) var(--space-4); background: var(--color-bg-alt); }
+    .comprar-detalle h2 { font-style: italic; margin-bottom: var(--space-3); font-family: var(--font-display); }
+    .comprar-detalle ul { padding-left: 20px; line-height: 1.8; color: var(--color-text-soft); }
+    .comprar-detalle ul li { margin-bottom: 8px; }
+    .comprar-detalle strong { color: var(--color-text); }
+  </style>
+</head>
+<body>
+  <div class="js-shell-top"></div>
+
+  <div class="container" style="padding-top: var(--space-4); padding-bottom: var(--space-7);">
+
+    <div class="breadcrumb"><a href="index.html">Inicio</a><span>/</span> Cómo comprar</div>
+
+    <header class="comprar-hero">
+      <span class="eyebrow">Comprar en MoMar</span>
+      <h1 style="font-style: italic; font-family: var(--font-display); font-size: clamp(40px, 6vw, 64px); margin: var(--space-3) 0 var(--space-3); font-weight: 500;">Tres pasos. Sin vueltas.</h1>
+      <p style="color: var(--color-text-soft); font-size: 17px; line-height: 1.6;">
+        Te explicamos cómo es comprar online en MoMar. Es simple, humano, y tenés atención directa de nosotras todo el camino.
+      </p>
+    </header>
+
+    <div class="comprar-pasos">
+      <div class="comprar-paso">
+        <div class="comprar-paso__num">01</div>
+        <div class="comprar-paso__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </div>
+        <h3>Elegís tu pieza</h3>
+        <p>Recorrés el catálogo, agregás lo que te gusta al carrito y completás tus datos en el checkout. Solo necesitamos email + WhatsApp + dirección.</p>
+      </div>
+
+      <div class="comprar-paso">
+        <div class="comprar-paso__num">02</div>
+        <div class="comprar-paso__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="1.5"/><path d="M2 10h20M6 15h4"/></svg>
+        </div>
+        <h3>Coordinamos el pago</h3>
+        <p>Te escribimos por WhatsApp en pocas horas con las opciones: <strong>transferencia bancaria</strong> (con descuento) o <strong>tarjeta</strong> cuando esté Bancard. Confirmás y listo.</p>
+      </div>
+
+      <div class="comprar-paso">
+        <div class="comprar-paso__num">03</div>
+        <div class="comprar-paso__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM17 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+        </div>
+        <h3>Te llega a casa</h3>
+        <p>Envío gratis en Asunción <strong>al día hábil siguiente</strong>. Al interior, 3-5 días con encomienda asegurada. Empaquetado a mano en bolsa MoMar.</p>
+      </div>
+    </div>
+
+    <div class="comprar-detalle">
+      <h2>Lo que necesitás saber</h2>
+      <ul>
+        <li><strong>No necesitás crear cuenta.</strong> Compras como invitado.</li>
+        <li><strong>Envío gratis</strong> en Asunción sobre Gs 500.000. Pedidos menores tienen envío con costo variable.</li>
+        <li><strong>Interior del país</strong>: te avisamos el costo de encomienda antes de confirmar el pedido.</li>
+        <li><strong>Es regalo</strong>: marcá la casilla en el checkout. Lo enviamos en packaging sin precio y con nota escrita si querés.</li>
+        <li><strong>Cambios</strong>: 15 días desde que recibís, en Asunción te lo retiramos sin costo. Ver <a href="info.html#cambios" style="color: var(--color-text); border-bottom: 1px solid var(--color-line);">condiciones completas</a>.</li>
+        <li><strong>Garantía</strong>: si una pieza llega con falla, te la reponemos. Avisanos en los primeros 7 días.</li>
+        <li><strong>Pago seguro</strong>: las tarjetas se procesan vía Bancard (cuando esté activo). Mientras tanto coordinamos por transferencia bancaria o efectivo en Asunción.</li>
+      </ul>
+    </div>
+
+    <section class="section section--alt" style="margin-top: var(--space-6); padding: var(--space-5) 0;">
+      <div class="container" style="text-align: center; max-width: 560px;">
+        <span class="eyebrow">Listas cuando lo estés</span>
+        <h2 style="font-style: italic; margin: var(--space-3) 0 var(--space-3); font-family: var(--font-display);">¿Arrancamos?</h2>
+        <p style="color: var(--color-text-soft); margin-bottom: var(--space-4);">El catálogo está lleno. Las piezas son únicas — si ves algo que te gusta, mejor no esperarlo.</p>
+        <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
+          <a href="catalogo.html" class="btn btn--primary">Ver catálogo</a>
+          <a href="https://wa.me/595981353110?text=Hola%2C%20tengo%20una%20consulta%20de%20MoMar." target="_blank" rel="noopener" class="btn btn--outline">Tengo una pregunta</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="js-shell-bottom"></div>
+
+  <script src="js/supabase-config.js?v=20260517m"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/products.js?v=20260517m"></script>
+  <script src="js/supabase-data.js?v=20260517m"></script>
+  <script src="js/shell.js?v=20260517m"></script>
+  <script src="js/cart.js?v=20260517m"></script>
+</body>
+</html>

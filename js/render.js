@@ -324,8 +324,41 @@
     const fichaCont = document.querySelector('.js-producto-detalle');
     if (fichaCont) {
       const params = new URLSearchParams(location.search);
-      const sku = params.get('sku') || (window.MOMAR_PRODUCTS && window.MOMAR_PRODUCTS[0]?.sku);
-      const p = window.MOMAR_findProduct(sku) || window.MOMAR_PRODUCTS[0];
+      const skuParam = params.get('sku');
+      // Si NO viene sku en la URL, sí caemos al primero (para preview/dev).
+      // Si VIENE sku pero no matchea, mostramos empty state — NO engañamos con otro producto.
+      const sku = skuParam || (window.MOMAR_PRODUCTS && window.MOMAR_PRODUCTS[0]?.sku);
+      const p = window.MOMAR_findProduct(sku);
+
+      if (!p && skuParam) {
+        // SKU vino en URL pero no existe → empty state
+        fichaCont.innerHTML = `
+          <div style="max-width: 540px; margin: 80px auto; text-align: center; padding: 0 var(--space-3);">
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--color-bg-alt); color: var(--color-text-soft); display:flex; align-items:center; justify-content:center; margin: 0 auto 24px;">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/>
+                <path d="m20 20-3.5-3.5"/>
+                <path d="M8 11h6"/>
+              </svg>
+            </div>
+            <h1 style="font-family: var(--font-display); font-style: italic; font-size: clamp(32px, 5vw, 48px); margin: 0 0 12px;">Esta pieza ya no está disponible</h1>
+            <p style="color: var(--color-text-soft); font-size: 17px; line-height: 1.6; max-width: 460px; margin: 0 auto 32px;">
+              La referencia <code style="font-family: monospace; background: var(--color-bg-alt); padding: 2px 8px;">${escapeHTML(skuParam)}</code> no existe en el catálogo, o se agotó.
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+              <a href="catalogo.html" class="btn btn--primary">Ver catálogo</a>
+              <a href="https://wa.me/595981353110?text=${encodeURIComponent('Hola, busqué la pieza ' + skuParam + ' en momar.com.py y no la encontré. ¿Tienen algo parecido?')}" target="_blank" rel="noopener" class="btn btn--outline">Consultar por WhatsApp</a>
+            </div>
+          </div>
+        `;
+        // Marcar la respuesta como 404 a nivel doc para que Google sepa
+        const meta = document.createElement('meta');
+        meta.name = 'robots';
+        meta.content = 'noindex,nofollow';
+        document.head.appendChild(meta);
+        document.title = 'Pieza no disponible · MoMar';
+        return;
+      }
       if (p) {
         renderFicha(p);
         updateFichaMeta(p);

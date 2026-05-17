@@ -1741,6 +1741,16 @@ body.menu-open .mobile-menu { transform: translateX(0); }
 body.has-sticky-bar .wa-float {
   bottom: calc(96px + env(safe-area-inset-bottom));
 }
+/* En mobile ficha-producto ya hay 2 CTAs de WhatsApp (consulta-wa + sticky-bar
+   con boton agregar). Ocultamos el flotante para no triplicar. */
+@media (max-width: 768px) {
+  body.has-sticky-bar .wa-float { display: none; }
+}
+/* En checkout mobile hay sticky-bar con CTA propio. Ocultamos el WA para
+   no estorbar al boton "Continuar" / "Confirmar pedido". */
+@media (max-width: 768px) {
+  body.checkout-page .wa-float { display: none; }
+}
 @media (max-width: 480px) {
   .wa-float {
     width: 52px; height: 52px;

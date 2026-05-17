@@ -175,11 +175,23 @@ export async function onRequest(context) {
       }),
     });
 
+    // Mandar emails de confirmación (al cliente + a la dueña) — no bloquea el flow si falla
+    await enviarEmailsPedido({
+      env,
+      pedidoNumero,
+      cliente,
+      items,
+      total,
+      envioConfig: { tipo: envio?.tipo || 'asuncion', gs: envio_gs || 0 },
+      notas,
+      esRegalo: !!es_regalo,
+    }).catch(e => console.warn('[MoMar] Email fail:', e));
+
     return json({
       mode: 'sin-bancard',
       pedido_id: pedidoId,
       pedido_numero: pedidoNumero,
-      mensaje: 'El pedido se registró correctamente pero la pasarela Bancard aún no está activada. La dueña te va a contactar por WhatsApp para coordinar el pago por transferencia.',
+      mensaje: 'El pedido se registró correctamente pero la pasarela Bancard aún no está activada. Te vamos a contactar por WhatsApp para coordinar el pago por transferencia.',
       whatsapp_url: `https://wa.me/595981353110?text=${encodeURIComponent(`Hola, hice el pedido #${pedidoNumero} en momar.com.py. Espero por las instrucciones de pago. Total: Gs ${total.toLocaleString('es-PY')}.`)}`,
     }, 200, corsHeaders);
   }
@@ -247,4 +259,112 @@ function json(body, status, extraHeaders) {
     status,
     headers: { 'Content-Type': 'application/json', ...extraHeaders },
   });
+}
+
+// ===== Envío de emails post-pedido vía Resend =====
+// Env vars opcionales:
+//   RESEND_API_KEY   — la API key de https://resend.com (free 100/día)
+//   RESEND_FROM      — email "From" verificado en Resend (ej: "MoMar <pedidos@momar.com.py>")
+//   ADMIN_NOTIFY_EMAIL — email donde te llegan las notificaciones de pedidos
+//
+// Si las env vars no están, NO se manda nada y NO se rompe el flow.
+async function enviarEmailsPedido({ env, pedidoNumero, cliente, items, total, envioConfig, notas, esRegalo }) {
+  if (!env.RESEND_API_KEY) return; // no configurado, salimos silencioso
+  const from = env.RESEND_FROM || 'MoMar <onboarding@resend.dev>';
+  const adminEmail = env.ADMIN_NOTIFY_EMAIL || 'multitechmulti727@gmail.com';
+
+  const fmtGs = (n) => 'Gs ' + Number(n || 0).toLocaleString('es-PY');
+  const itemsHtml = items.map(i => `
+    <tr>
+      <td style="padding:8px 0;border-bottom:1px solid #eee;">${escapeHtml(i.nombre)}<br><small style="color:#999;font-family:monospace;">${escapeHtml(i.sku || '')}</small></td>
+      <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:center;">×${i.cantidad}</td>
+      <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">${fmtGs(i.precio_unit * i.cantidad)}</td>
+    </tr>
+  `).join('');
+
+  // Email para la clienta
+  const emailClienta = {
+    from,
+    to: cliente.email,
+    subject: `Recibimos tu pedido #${pedidoNumero} · MoMar`,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #0F0F0F; background: #F7F5F0;">
+        <div style="background: #fff; padding: 32px;">
+          <div style="text-align: center; margin-bottom: 32px;">
+            <div style="font-family: Georgia, serif; font-style: italic; font-size: 36px; font-weight: 500; color: #0F0F0F;">MoMar</div>
+            <div style="font-size: 11px; letter-spacing: 3px; color: #7A736B; margin-top: 4px;">HOGAR &amp; MÁS</div>
+          </div>
+          <h1 style="font-family: Georgia, serif; font-style: italic; font-size: 28px; margin: 0 0 8px;">¡Recibimos tu pedido!</h1>
+          <p style="color: #7A736B; line-height: 1.6;">Hola ${escapeHtml(cliente.nombre)}, gracias por elegir MoMar. Tu pedido <strong style="color:#0F0F0F;font-family:monospace;">#${pedidoNumero}</strong> quedó registrado.</p>
+          <p style="color: #7A736B; line-height: 1.6;"><strong style="color:#0F0F0F;">Te escribimos por WhatsApp en las próximas horas</strong> para coordinar el pago (transferencia o tarjeta) y la entrega.</p>
+          <table style="width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 14px;">
+            <thead><tr><th style="text-align:left;padding:8px 0;border-bottom:2px solid #0F0F0F;">Pieza</th><th style="text-align:center;padding:8px 0;border-bottom:2px solid #0F0F0F;">Cant.</th><th style="text-align:right;padding:8px 0;border-bottom:2px solid #0F0F0F;">Subtotal</th></tr></thead>
+            <tbody>${itemsHtml}</tbody>
+          </table>
+          <div style="text-align: right; padding-top: 12px; border-top: 1px solid #ddd; font-size: 16px;">
+            <strong>Total: ${fmtGs(total)}</strong>
+            ${envioConfig.gs > 0 ? `<br><small style="color:#7A736B;font-size:12px;">Incluye envío ${fmtGs(envioConfig.gs)}</small>` : ''}
+          </div>
+          ${esRegalo ? '<p style="margin-top:24px;padding:12px;background:#FFF7E6;color:#6E5418;font-size:13px;">🎁 Tu pedido es regalo: lo enviamos sin precio en el packaging.</p>' : ''}
+          <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #ddd; text-align: center;">
+            <a href="https://wa.me/595981353110?text=${encodeURIComponent('Hola, hice el pedido #' + pedidoNumero + ' en momar.com.py.')}" style="display: inline-block; background: #25D366; color: #fff; padding: 12px 24px; text-decoration: none; font-size: 14px; font-weight: 600;">Escribir por WhatsApp</a>
+          </div>
+          <p style="text-align: center; color: #999; font-size: 11px; margin-top: 32px; letter-spacing: 1px;">MOMAR · HOGAR &amp; MÁS · ASUNCIÓN</p>
+        </div>
+      </div>
+    `,
+  };
+
+  // Email para Moni y Marga (admin notify)
+  const direccion = [envioConfig.calle, envioConfig.ciudad, envioConfig.referencia].filter(Boolean).join(' · ');
+  const emailAdmin = {
+    from,
+    to: adminEmail,
+    subject: `Pedido nuevo #${pedidoNumero} · ${fmtGs(total)}`,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; color: #0F0F0F;">
+        <h1 style="font-size: 22px; margin: 0 0 16px;">📦 Pedido nuevo #${pedidoNumero}</h1>
+        <table style="width: 100%; font-size: 13px; margin-bottom: 16px;">
+          <tr><td style="padding:6px 0;color:#7A736B;width:120px;">Clienta</td><td><strong>${escapeHtml(cliente.nombre)} ${escapeHtml(cliente.apellido || '')}</strong></td></tr>
+          <tr><td style="padding:6px 0;color:#7A736B;">Email</td><td>${escapeHtml(cliente.email)}</td></tr>
+          <tr><td style="padding:6px 0;color:#7A736B;">WhatsApp</td><td><a href="https://wa.me/${(cliente.whatsapp || '').replace(/[^0-9]/g,'')}" style="color:#25D366;">${escapeHtml(cliente.whatsapp || '—')}</a></td></tr>
+          ${cliente.ci_ruc ? `<tr><td style="padding:6px 0;color:#7A736B;">CI/RUC</td><td>${escapeHtml(cliente.ci_ruc)}</td></tr>` : ''}
+          <tr><td style="padding:6px 0;color:#7A736B;">Envío</td><td>${escapeHtml(envioConfig.tipo)} · ${fmtGs(envioConfig.gs)}</td></tr>
+          ${direccion ? `<tr><td style="padding:6px 0;color:#7A736B;">Dirección</td><td>${escapeHtml(direccion)}</td></tr>` : ''}
+          ${esRegalo ? '<tr><td style="padding:6px 0;color:#7A736B;">🎁</td><td><strong>Es regalo</strong></td></tr>' : ''}
+        </table>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+          <thead><tr><th style="text-align:left;padding:6px;background:#F7F5F0;">Pieza</th><th style="text-align:center;padding:6px;background:#F7F5F0;">Cant.</th><th style="text-align:right;padding:6px;background:#F7F5F0;">Subtotal</th></tr></thead>
+          <tbody>${itemsHtml}</tbody>
+        </table>
+        <div style="text-align: right; margin-top: 16px; font-size: 16px;"><strong>Total: ${fmtGs(total)}</strong></div>
+        ${notas ? `<div style="margin-top:16px;padding:12px;background:#F7F5F0;font-size:13px;"><strong>Notas:</strong> ${escapeHtml(notas)}</div>` : ''}
+        <p style="margin-top:24px;">
+          <a href="https://momar-tienda.pages.dev/admin/pedidos.html" style="background:#0F0F0F;color:#fff;padding:10px 18px;text-decoration:none;font-size:13px;">Abrir en el panel</a>
+        </p>
+      </div>
+    `,
+  };
+
+  const sendOne = async (payload) => {
+    try {
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) console.warn('[MoMar] Resend status', r.status, await r.text());
+    } catch (e) {
+      console.warn('[MoMar] Resend fetch err:', e);
+    }
+  };
+
+  await Promise.all([sendOne(emailClienta), sendOne(emailAdmin)]);
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 }

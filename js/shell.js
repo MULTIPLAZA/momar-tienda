@@ -92,6 +92,7 @@
               <h4>Atención</h4>
               <ul>
                 <li><a href="${SOCIAL.whatsapp}" target="_blank" rel="noopener">Contacto · WhatsApp</a></li>
+                <li><a href="comprar.html">Cómo comprar</a></li>
                 <li><a href="info.html#envios">Envíos</a></li>
                 <li><a href="info.html#cambios">Cambios y devoluciones</a></li>
                 <li><a href="info.html#garantia">Garantía</a></li>
