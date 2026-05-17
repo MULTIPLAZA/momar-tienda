@@ -12,7 +12,9 @@ const OUT_DIR = path.resolve('scripts/desc-batch');
 if (!fs.existsSync(TMP_DIR)) fs.mkdirSync(TMP_DIR, { recursive: true });
 if (!fs.existsSync(OUT_DIR)) fs.mkdirSync(OUT_DIR, { recursive: true });
 
-const productos = JSON.parse(fs.readFileSync(JSON_PATH, 'utf-8'));
+// Lee el JSON. PowerShell escribe con BOM UTF-8, hay que removerlo antes del parse.
+const raw = fs.readFileSync(JSON_PATH, 'utf-8').replace(/^﻿/, '');
+const productos = JSON.parse(raw);
 const conFoto = productos.filter(p => p.foto);
 const sinFoto = productos.filter(p => !p.foto);
 
